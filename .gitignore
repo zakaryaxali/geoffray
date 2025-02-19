@@ -23,3 +23,17 @@ go.work.sum
 
 # env file
 .env
+
+# Ignore JetBrains IDE settings
+.idea/
+
+# Keep workspace-specific settings out
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries/
+.idea/vcs.xml
+
+# Optional: Keep useful shared settings
+!.idea/codeStyles/
+!.idea/inspectionProfiles/
+!.idea/runConfigurations/
