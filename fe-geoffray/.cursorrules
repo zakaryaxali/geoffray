@@ -1,0 +1,137 @@
+# React Native Expo TypeScript Rules
+
+## Project Overview
+This is a React Native Expo project using Expo Router for navigation, TypeScript for type safety, and modern React Native development practices.
+
+## React Native Expo Best Practices
+- Use functional components with React hooks
+- Utilize Expo SDK features and APIs extensively
+- Implement proper navigation using Expo Router (file-based routing)
+- Use Expo's asset system for images, fonts, and other static resources
+- Implement proper error handling and crash reporting with Expo
+- Utilize Expo's push notification system
+- Use Expo's secure store for sensitive data storage
+- Implement proper offline support and data persistence
+- Follow React Native performance best practices
+- Use Expo's OTA updates for quick deployments
+
+## TypeScript Guidelines
+- Always use TypeScript for type safety
+- Define proper interfaces and types for all data structures
+- Use strict TypeScript configuration
+- Implement proper typing for API responses and requests
+- Use generics where appropriate for reusable components
+- Avoid `any` type - use proper typing or `unknown` instead
+
+## Folder Structure
+```
+app/                    # Expo Router pages (file-based routing)
+  _layout.tsx          # Root layout component
+  index.tsx           # Home page
+  auth/               # Authentication pages
+  home/               # Home section pages
+  event/              # Event-related pages
+  create-event/       # Event creation pages
+  invite/             # Invitation pages
+  privacy-policy/     # Privacy policy pages
+  +not-found.tsx      # 404 page
+src/
+  components/         # Reusable UI components
+  screens/           # Screen components (if not using Expo Router)
+  contexts/          # React Context providers
+  hooks/             # Custom React hooks
+  api/               # API layer and configuration
+  constants/         # App constants and configuration
+  localization/      # Internationalization files
+  crossPlatformStorage.ts # Storage utilities
+assets/             # Static assets (images, fonts, etc.)
+```
+
+## Development Guidelines
+
+### Component Development
+- Use functional components with hooks exclusively
+- Implement proper component composition and reusability
+- Use React.memo() for performance optimization when needed
+- Follow single responsibility principle
+- Use TypeScript interfaces for component props
+- Implement proper error boundaries
+
+### State Management
+- Use React Context for global state management
+- Implement custom hooks for complex state logic
+- Use AsyncStorage or Expo SecureStore for persistence
+- Consider using React Query/TanStack Query for server state
+
+### Navigation
+- Use Expo Router for file-based navigation
+- Implement proper navigation types
+- Use navigation guards for protected routes
+- Handle deep linking appropriately
+- Implement proper navigation state management
+
+### Styling
+- Use StyleSheet.create() for performance
+- Implement responsive design principles
+- Use Expo's vector icons (@expo/vector-icons)
+- Consider using design system or component libraries
+- Use consistent spacing and typography
+- Implement proper dark mode support
+
+### API Integration
+- Centralize API configuration and endpoints
+- Use proper error handling and retry logic
+- Implement proper loading states
+- Use TypeScript interfaces for API responses
+- Handle network connectivity issues
+- Implement proper request/response interceptors
+
+### Performance Optimization
+- Use React.memo(), useMemo(), and useCallback() appropriately
+- Implement proper image optimization
+- Use FlatList for large lists
+- Implement proper bundle splitting
+- Use Expo's performance monitoring tools
+- Optimize bundle size and startup time
+
+### Testing
+- Write unit tests for utilities and hooks
+- Implement component testing with React Native Testing Library
+- Use Jest for testing framework
+- Mock external dependencies properly
+- Test across different platforms (iOS, Android, Web)
+
+### Security
+- Use Expo SecureStore for sensitive data
+- Implement proper authentication flows
+- Validate all user inputs
+- Use HTTPS for all API communications
+- Follow React Native security best practices
+
+### Internationalization
+- Use i18next with react-i18next for translations
+- Implement proper locale handling
+- Support RTL languages if needed
+- Use Expo's localization utilities
+
+### Platform-Specific Code
+- Use Platform.select() for platform-specific logic
+- Implement proper cross-platform storage utilities
+- Handle platform-specific navigation patterns
+- Use platform-specific styling when necessary
+
+## Code Quality
+- Use ESLint and Prettier for code formatting
+- Follow consistent naming conventions
+- Write self-documenting code with proper comments
+- Implement proper error logging and crash reporting
+- Use meaningful commit messages
+- Review code before merging
+
+## Development Workflow
+- Use Expo development build for testing
+- Implement proper environment configuration
+- Use EAS Build for production builds
+- Implement proper CI/CD pipelines
+- Use Expo's development tools and debugger
+- Test on both iOS and Android devices regularly 

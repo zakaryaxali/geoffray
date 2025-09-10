@@ -37,3 +37,78 @@ go.work.sum
 !.idea/codeStyles/
 !.idea/inspectionProfiles/
 !.idea/runConfigurations/
+
+# Frontend (Node.js/React Native/Expo) specific ignores
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Compiled binary addons (http://nodejs.org/api/addons.html)
+build/Release
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Distribution directories
+dist/
+web-build/
+
+# Typescript
+typings/
+*.tsbuildinfo
+expo-env.d.ts
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# IDE and editor folders
+/.vscode/
+
+# Project specific
+/.specstory/
+app-example
+
+# Expo
+.expo/
+
+# Native
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# iOS/Android build directories
+/ios/
+/android/
+
+# Frontend specific paths
+fe-geoffray/ios/
+fe-geoffray/android/

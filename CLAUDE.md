@@ -112,11 +112,15 @@ docker compose logs postgres # View logs
 ### Frontend Structure
 - **Expo Router**: File-based routing with tabs navigation
 - **Components**: 
-  - Reusable UI components in `components/`
+  - Reusable UI components in `src/components/`
   - Platform-specific components (`.ios.tsx` vs `.tsx`)
   - Themed components for consistent styling
+  - Authentication, event management, and chat components
+- **API Layer**: Organized in `src/api/` with separate modules for auth, events, chat
+- **Localization**: Multi-language support with i18next in `src/localization/`
 - **Styling**: Uses `Colors` constants and `useColorScheme` hook for theme support
 - **TypeScript**: Strict mode enabled with path alias `@/*`
+- **Storage**: Cross-platform storage abstraction for tokens and user data
 
 ### Backend Structure
 - **API Framework**: Gin for HTTP routing and middleware
@@ -134,10 +138,20 @@ docker compose logs postgres # View logs
 
 ### Current Features
 - **Frontend Tabs**:
-  - Events (index) - Main events listing
-  - Chat - Messaging interface with bot responses
-  - Settings - Application preferences
+  - Home - Main events listing and event management
+  - Create Event - Event creation with location, date/time selection
+  - Profile - User profile management with photo upload
+  - Authentication - Login/signup flows with validation
   
+- **Frontend Features**:
+  - Multi-language support (English/French)
+  - Event creation and management
+  - User authentication and profile management
+  - Chat functionality with AI integration
+  - Location autocomplete and mapping
+  - Date/time pickers (cross-platform)
+  - Event invitations and participant management
+
 - **Backend Endpoints** (fully implemented):
   - `/auth/register` - User registration
   - `/auth/login` - User login with JWT
@@ -154,11 +168,12 @@ docker compose logs postgres # View logs
 ## Key Dependencies
 
 ### Frontend
-- React Native 0.76.7 + React 18.3.1
-- Expo SDK 52
+- React Native 0.79.2 + React 19.0.0
+- Expo SDK 53
 - Expo Router for navigation
 - React Native Reanimated for animations
 - TypeScript with strict mode
+- Additional packages: AsyncStorage, DateTimePicker, i18next, SecureStore
 
 ### Backend
 - Go 1.21+
@@ -173,7 +188,9 @@ docker compose logs postgres # View logs
 
 ## Development Notes
 
+- Frontend migrated from rendez-vous-front codebase with full feature set
 - Frontend uses SF Symbols icons via `IconSymbol` component
+- API configuration points to local backend (`http://localhost:8080`)
 - CORS is configured for all origins in development (handled by Gin middleware)
 - Environment variables loaded from `.env` file in backend
 - Mobile app uses haptic feedback for tab switches
@@ -182,6 +199,8 @@ docker compose logs postgres # View logs
 - JWT tokens expire in 24h by default (configurable)
 - Mistral AI and Amadeus APIs are optional but enhance chat functionality
 - Database migrations run automatically on startup
+- Frontend includes comprehensive test suite with React Native Testing Library
+- Cross-platform storage handling for user data and authentication tokens
 
 ## Claude Code Best Practices
 

@@ -1,3 +1,7 @@
+# Rendez-Vous Front
+
+App Concept: A conversational event creation tool. Users interact with a chatbot-like interface to define and set up their event details.
+
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).

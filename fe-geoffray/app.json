@@ -1,33 +1,48 @@
 {
   "expo": {
-    "name": "fe-geoffray",
+    "name": "geoffray",
     "slug": "fe-geoffray",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "icon": "./assets/images/logo.png",
+    "scheme": "geoffray",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.geoffray.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "Allow Geoffray to access your photos to set your profile picture.",
+        "NSCameraUsageDescription": "Allow Geoffray to use your camera to take profile pictures."
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/logo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.geoffray.app",
+      "permissions": ["android.permission.CAMERA", "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"]
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./web/favicon/favicon-48x48.png",
+      "favicon-192": "./web/favicon/favicon-192x192.png"
     },
     "plugins": [
       "expo-router",
+      ["expo-image-picker",
+        {
+          "photosPermission": "Allow Geoffray to access your photos to set your profile picture.",
+          "cameraPermission": "Allow Geoffray to use your camera to take profile pictures."
+        }
+      ],
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
@@ -36,6 +51,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "8e1b564f-84b4-4cd2-81fb-4f146ae360e6"
+      }
+    },
+    "owner": "geoffray"
   }
 }
