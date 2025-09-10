@@ -1,0 +1,16 @@
+FROM postgres:15
+
+# Environment variables for PostgreSQL configuration
+ENV POSTGRES_USER=${POSTGRES_USER}
+ENV POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+ENV POSTGRES_DB=${POSTGRES_DB}
+
+# Expose the PostgreSQL port
+EXPOSE 5432
+
+# Add any custom initialization scripts if needed
+# COPY ./init-scripts/ /docker-entrypoint-initdb.d/
+
+# Health check to verify database is running
+HEALTHCHECK --interval=5s --timeout=5s --retries=5 \
+  CMD pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} || exit 1
