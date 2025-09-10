@@ -1,6 +1,6 @@
-# Rendez-vous API Integration
+# Geoffray API Integration
 
-This directory contains the API integration layer for the Rendez-vous application, following React Native Expo best practices.
+This directory contains the API integration layer for the Geoffray application, following React Native Expo best practices.
 
 ## Authentication API
 
@@ -36,8 +36,8 @@ All methods automatically:
 The API configuration is environment-aware and provides different settings for development, staging, and production environments:
 
 - Development: `http://localhost:8080`
-- Staging: `https://staging-api.rendez-vous.com`
-- Production: `https://api.rendez-vous.com`
+- Staging: `https://staging-api.geoffray.com`
+- Production: `https://api.geoffray.com`
 
 ## Usage Example
 

@@ -15,7 +15,7 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const THEME_PREFERENCE_KEY = '@rendez-vous/theme-preference';
+const THEME_PREFERENCE_KEY = '@geoffray/theme-preference';
 
 type ThemeProviderProps = {
   children: ReactNode | ((themeContext: ThemeContextType) => ReactNode);

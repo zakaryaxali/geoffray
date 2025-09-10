@@ -182,7 +182,7 @@ export const eventApi = {
         success: true,
         message: userExists ? 'Participant invited successfully' : 'User not found',
         userExists: userExists,
-        inviteLink: userExists ? undefined : `https://rendez-vous.app/invite/${eventId}`
+        inviteLink: userExists ? undefined : `https://geoffray.app/invite/${eventId}`
       };
     }
   },

@@ -35,7 +35,7 @@ export default function SplashScreen() {
           </div>
         ) : null}
       </View>
-      <Text style={styles.appName}>rendez-vous-front</Text>
+      <Text style={styles.appName}>geoffray</Text>
       <View style={styles.bottomIndicator} />
     </View>
   );

@@ -70,7 +70,7 @@ export default function LoginScreen() {
       <StatusBar style="auto" />
       
       <View style={styles.headerContainer}>
-        <Text style={styles.title}>Rendez-vous</Text>
+        <Text style={styles.title}>Geoffray</Text>
       </View>
       
       <View style={styles.formContainer}>
