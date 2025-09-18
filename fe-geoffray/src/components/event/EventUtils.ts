@@ -81,7 +81,7 @@ export const formatDateRange = (startDateString: string, endDateString: string |
 // Helper function to format time only based on user's locale
 export const formatTime = (dateString: string, locale: string): string => {
   const date = new Date(dateString);
-  return date.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric' });
+  return date.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric', hour12: false });
 };
 
 // Helper function to format time range based on user's locale

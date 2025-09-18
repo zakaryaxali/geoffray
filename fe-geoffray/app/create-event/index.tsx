@@ -11,9 +11,9 @@ import {ThemedView} from '@/src/components/ThemedView';
 import {BrandColors, Colors} from '@/src/constants/Colors';
 import {useTheme} from '@/src/contexts/ThemeContext';
 import {eventApi, EventCreateRequest} from '@/src/api/eventApi';
-import {WebDateTimePicker} from '@/src/components/DateTimePickers/WebDateTimePicker';
 import {NativeDateTimePicker} from '@/src/components/DateTimePickers/NativeDateTimePicker';
 import {LocationAutocomplete} from '@/src/components/LocationAutocomplete/LocationAutocomplete';
+import {TimeInput} from '@/src/components/TimeInput';
 
 
 export default function CreateEventScreen() {
@@ -34,10 +34,62 @@ export default function CreateEventScreen() {
     location: '',
   });
 
+  // Separate date and time state
+  const [startDate, setStartDate] = useState(new Date().toISOString().substring(0, 10));
+  const [startHours, setStartHours] = useState(0);
+  const [startMinutes, setStartMinutes] = useState(0);
+  
+  // End date state with checkbox control
+  const [hasEndDate, setHasEndDate] = useState(false);
+  const [endDate, setEndDate] = useState('');
+  const [endHours, setEndHours] = useState(0);
+  const [endMinutes, setEndMinutes] = useState(0);
+
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
-  const [showStartDatePickerModal, setShowStartDatePickerModal] = useState(false);
-  const [showEndDatePickerModal, setShowEndDatePickerModal] = useState(false);
+
+  // Helper function to combine date and time into ISO string
+  const combineDateTime = (dateStr: string, hours: number, minutes: number): string => {
+    const date = new Date(dateStr);
+    date.setHours(hours, minutes, 0, 0);
+    return date.toISOString();
+  };
+
+  // Helper function to get combined start date time
+  const getStartDateTime = (): string => {
+    return combineDateTime(startDate, startHours, startMinutes);
+  };
+
+  // Helper function to get combined end date time
+  const getEndDateTime = (): string => {
+    if (!hasEndDate || !endDate) return '';
+    return combineDateTime(endDate, endHours, endMinutes);
+  };
+
+  // Handle checkbox toggle with smart defaults
+  const handleEndDateToggle = (checked: boolean) => {
+    setHasEndDate(checked);
+    
+    if (checked) {
+      // When enabling end date, set smart defaults
+      setEndDate(startDate); // Same day as start
+      // Set end time to 1 hour after start time
+      const endHour = startHours + 1;
+      if (endHour < 24) {
+        setEndHours(endHour);
+        setEndMinutes(startMinutes);
+      } else {
+        // If start + 1 hour exceeds midnight, just set to 23:59
+        setEndHours(23);
+        setEndMinutes(59);
+      }
+    } else {
+      // When disabling, clear all end date/time
+      setEndDate('');
+      setEndHours(0);
+      setEndMinutes(0);
+    }
+  };
 
   const handleCreateEvent = async () => {
     try {
@@ -49,16 +101,19 @@ export default function CreateEventScreen() {
         throw new Error(t('event.errors.titleRequired'));
       }
 
-      if (!formData.start_date) {
+      if (!startDate) {
         throw new Error(t('event.errors.startDateRequired'));
       }
 
-      // Create a copy of the form data for submission
-      const eventDataToSubmit = {...formData};
+      // Create a copy of the form data for submission with combined date-time
+      const eventDataToSubmit: EventCreateRequest = {
+        ...formData,
+        start_date: getStartDateTime(),
+      };
 
-      // If end_date is empty string, set it to null or remove it
-      if (eventDataToSubmit.end_date === '') {
-        delete eventDataToSubmit.end_date;
+      // Only include end_date if checkbox is checked and we have valid data
+      if (hasEndDate && endDate) {
+        eventDataToSubmit.end_date = getEndDateTime();
       }
 
       // Log the data being sent (for debugging)
@@ -80,38 +135,6 @@ export default function CreateEventScreen() {
     }
   };
 
-  const handleDateChange = (field: 'start_date' | 'end_date', date?: Date) => {
-    if (date) {
-      setFormData((prev: EventCreateRequest) => ({
-        ...prev,
-        [field]: date.toISOString(),
-      }));
-    }
-    // Only close the pickers for native platforms or when explicitly confirmed
-    if (field === 'start_date') {
-      setShowStartDatePicker(false);
-      if (!isWeb) setShowStartDatePickerModal(false);
-    } else {
-      setShowEndDatePicker(false);
-      if (!isWeb) setShowEndDatePickerModal(false);
-    }
-  };
-
-  const handleDateButtonPress = (type: 'start_date' | 'end_date') => {
-    if (isWeb) {
-      if (type === 'start_date') {
-        setShowStartDatePickerModal(true);
-      } else {
-        setShowEndDatePickerModal(true);
-      }
-    } else {
-      if (type === 'start_date') {
-        setShowStartDatePicker(true);
-      } else {
-        setShowEndDatePicker(true);
-      }
-    }
-  };
 
   return (
     <ThemedView style={styles.container}>
@@ -129,182 +152,151 @@ export default function CreateEventScreen() {
             onChangeText={(text) => setFormData((prev: EventCreateRequest) => ({ ...prev, title: text }))}
           />
 
-          <TouchableOpacity
-            style={[styles.dateButton, {
-              backgroundColor: theme === 'dark' ? '#FFFFFF' : themeColors.inputBackground,
-              borderColor: themeColors.border
-            }]}
-            onPress={() => handleDateButtonPress('start_date')}
-          >
-            <Text style={{
-              color: theme === 'dark' ? '#000000' : themeColors.text
-            }}>{t('event.startDate')}: {format(new Date(formData.start_date), 'PPp')}</Text>
-          </TouchableOpacity>
-
-          {!isWeb && showStartDatePicker && (
-            <NativeDateTimePicker
-              value={new Date(formData.start_date)}
-              onChange={(event: DateTimePickerEvent, date?: Date) => handleDateChange('start_date', date)}
-            />
-          )}
-
-          {isWeb && showStartDatePickerModal && (
-            <WebDateTimePicker
-              visible={showStartDatePickerModal}
-              onClose={() => setShowStartDatePickerModal(false)}
-              onConfirm={() => setShowStartDatePickerModal(false)}
-              title={t('event.startDate')}
-              dateValue={formData.start_date.substring(0, 10)}
-              timeValue={formData.start_date.substring(11, 16)}
-              onDateChange={(dateStr) => {
-                try {
-                  // Get the current time part
-                  const currentDate = new Date(formData.start_date);
-                  const hours = currentDate.getHours();
-                  const minutes = currentDate.getMinutes();
-
-                  // Create new date with the selected date and current time
-                  const newDate = new Date(dateStr);
-                  newDate.setHours(hours);
-                  newDate.setMinutes(minutes);
-
-                  if (!isNaN(newDate.getTime())) {
-                    setFormData((prev: EventCreateRequest) => ({
-                      ...prev,
-                      start_date: newDate.toISOString()
-                    }));
-                  }
-                } catch (error) {
-                  console.log('Invalid date input');
-                }
-              }}
-              onTimeChange={(timeStr) => {
-                try {
-                  // Get the current date part
-                  const currentDate = new Date(formData.start_date);
-                  const year = currentDate.getFullYear();
-                  const month = currentDate.getMonth();
-                  const day = currentDate.getDate();
-
-                  // Parse the time string (HH:MM)
-                  const [hours, minutes] = timeStr.split(':').map(Number);
-
-                  // Create new date with the current date and selected time
-                  const newDate = new Date(year, month, day, hours, minutes);
-
-                  if (!isNaN(newDate.getTime())) {
-                    setFormData((prev: EventCreateRequest) => ({
-                      ...prev,
-                      start_date: newDate.toISOString()
-                    }));
-                  }
-                } catch (error) {
-                  console.log('Invalid time input');
-                }
-              }}
-            />
-          )}
-
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-            <TouchableOpacity
-              style={[styles.dateButton, {
-                backgroundColor: theme === 'dark' ? '#FFFFFF' : themeColors.inputBackground,
-                borderColor: themeColors.border,
-                flex: 1,
-                marginBottom: 0
-              }]}
-              onPress={() => handleDateButtonPress('end_date')}
-            >
-              <Text style={{
-                color: theme === 'dark' ? '#000000' : themeColors.text
-              }}>{t('event.endDate')}: {formData.end_date ? format(new Date(formData.end_date), 'PPp') : t('event.optional')}</Text>
-            </TouchableOpacity>
-
-            {formData.end_date && (
-              <TouchableOpacity
-                style={[{
-                  backgroundColor: '#ff6b6b',
-                  padding: 12,
-                  borderRadius: 8,
-                  marginLeft: 8,
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }]}
-                onPress={() => {
-                  setFormData((prev: EventCreateRequest) => ({
-                    ...prev,
-                    end_date: ''
-                  }));
+          {/* Start Date Section */}
+          <View style={styles.dateTimeSection}>
+            <ThemedText style={[styles.sectionTitle, { color: themeColors.text }]}>
+              {t('event.startDate')}
+            </ThemedText>
+            
+            {isWeb ? (
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                style={{
+                  ...styles.webDateInput,
+                  backgroundColor: themeColors.inputBackground,
+                  color: themeColors.text,
+                  borderColor: themeColors.border,
                 }}
+              />
+            ) : (
+              <TouchableOpacity
+                style={[styles.dateButton, {
+                  backgroundColor: themeColors.inputBackground,
+                  borderColor: themeColors.border
+                }]}
+                onPress={() => setShowStartDatePicker(true)}
               >
-                <Text style={{ color: '#FFFFFF' }}>✕</Text>
+                <Text style={{ color: themeColors.text }}>
+                  {format(new Date(startDate), 'PP')}
+                </Text>
               </TouchableOpacity>
             )}
+
+            {!isWeb && showStartDatePicker && (
+              <NativeDateTimePicker
+                value={new Date(startDate)}
+                onChange={(event: DateTimePickerEvent, date?: Date) => {
+                  if (date) {
+                    setStartDate(date.toISOString().substring(0, 10));
+                  }
+                  setShowStartDatePicker(false);
+                }}
+              />
+            )}
+
+            <TimeInput
+              hours={startHours}
+              minutes={startMinutes}
+              onTimeChange={(hours, minutes) => {
+                setStartHours(hours);
+                setStartMinutes(minutes);
+              }}
+              label={t('event.time')}
+            />
           </View>
 
-          {!isWeb && showEndDatePicker && (
-            <NativeDateTimePicker
-              value={new Date(formData.end_date || formData.start_date)}
-              onChange={(event: DateTimePickerEvent, date?: Date) => handleDateChange('end_date', date)}
-            />
-          )}
+          {/* End Date Section */}
+          <View style={styles.dateTimeSection}>
+            {/* Checkbox to enable/disable end date */}
+            <View style={styles.checkboxContainer}>
+              {isWeb ? (
+                <label style={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={hasEndDate}
+                    onChange={(e) => handleEndDateToggle(e.target.checked)}
+                    style={styles.webCheckbox}
+                  />
+                  <ThemedText style={[styles.checkboxText, { color: themeColors.text }]}>
+                    Set end date and time
+                  </ThemedText>
+                </label>
+              ) : (
+                <TouchableOpacity
+                  style={styles.nativeCheckboxContainer}
+                  onPress={() => handleEndDateToggle(!hasEndDate)}
+                >
+                  <View style={[
+                    styles.nativeCheckbox,
+                    { borderColor: themeColors.border },
+                    hasEndDate && { backgroundColor: BrandColors.coral }
+                  ]}>
+                    {hasEndDate && (
+                      <Text style={styles.checkmark}>✓</Text>
+                    )}
+                  </View>
+                  <ThemedText style={[styles.checkboxText, { color: themeColors.text }]}>
+                    Set end date and time
+                  </ThemedText>
+                </TouchableOpacity>
+              )}
+            </View>
 
-          {isWeb && showEndDatePickerModal && (
-            <WebDateTimePicker
-              visible={showEndDatePickerModal}
-              onClose={() => setShowEndDatePickerModal(false)}
-              onConfirm={() => setShowEndDatePickerModal(false)}
-              title={t('event.endDate')}
-              dateValue={(formData.end_date || formData.start_date).substring(0, 10)}
-              timeValue={(formData.end_date || formData.start_date).substring(11, 16)}
-              onDateChange={(dateStr) => {
-                try {
-                  // Get the current time part or use start date's time
-                  const currentDate = new Date(formData.end_date || formData.start_date);
-                  const hours = currentDate.getHours();
-                  const minutes = currentDate.getMinutes();
+            {/* End Date Controls - Always show both date and time when enabled */}
+            {hasEndDate && (
+              <>
+                {isWeb ? (
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    style={{
+                      ...styles.webDateInput,
+                      backgroundColor: themeColors.inputBackground,
+                      color: themeColors.text,
+                      borderColor: themeColors.border,
+                    }}
+                  />
+                ) : (
+                  <TouchableOpacity
+                    style={[styles.dateButton, {
+                      backgroundColor: themeColors.inputBackground,
+                      borderColor: themeColors.border
+                    }]}
+                    onPress={() => setShowEndDatePicker(true)}
+                  >
+                    <Text style={{ color: themeColors.text }}>
+                      {endDate ? format(new Date(endDate), 'PP') : 'Select date'}
+                    </Text>
+                  </TouchableOpacity>
+                )}
 
-                  // Create new date with the selected date and current time
-                  const newDate = new Date(dateStr);
-                  newDate.setHours(hours);
-                  newDate.setMinutes(minutes);
+                {!isWeb && showEndDatePicker && (
+                  <NativeDateTimePicker
+                    value={new Date(endDate || startDate)}
+                    onChange={(event: DateTimePickerEvent, date?: Date) => {
+                      if (date) {
+                        setEndDate(date.toISOString().substring(0, 10));
+                      }
+                      setShowEndDatePicker(false);
+                    }}
+                  />
+                )}
 
-                  if (!isNaN(newDate.getTime())) {
-                    setFormData((prev: EventCreateRequest) => ({
-                      ...prev,
-                      end_date: newDate.toISOString()
-                    }));
-                  }
-                } catch (error) {
-                  console.log('Invalid date input');
-                }
-              }}
-              onTimeChange={(timeStr) => {
-                try {
-                  // Get the current date part
-                  const currentDate = new Date(formData.end_date || formData.start_date);
-                  const year = currentDate.getFullYear();
-                  const month = currentDate.getMonth();
-                  const day = currentDate.getDate();
-
-                  // Parse the time string (HH:MM)
-                  const [hours, minutes] = timeStr.split(':').map(Number);
-
-                  // Create new date with the current date and selected time
-                  const newDate = new Date(year, month, day, hours, minutes);
-
-                  if (!isNaN(newDate.getTime())) {
-                    setFormData((prev: EventCreateRequest) => ({
-                      ...prev,
-                      end_date: newDate.toISOString()
-                    }));
-                  }
-                } catch (error) {
-                  console.log('Invalid time input');
-                }
-              }}
-            />
-          )}
+                <TimeInput
+                  hours={endHours}
+                  minutes={endMinutes}
+                  onTimeChange={(hours, minutes) => {
+                    setEndHours(hours);
+                    setEndMinutes(minutes);
+                  }}
+                  label={t('event.time')}
+                />
+              </>
+            )}
+          </View>
 
           <LocationAutocomplete
             value={formData.location || ''}
@@ -331,7 +323,7 @@ export default function CreateEventScreen() {
           <TouchableOpacity
             style={[styles.button, loading && styles.buttonDisabled]}
             onPress={handleCreateEvent}
-            disabled={loading || !formData.title || !formData.start_date}
+            disabled={loading || !formData.title || !startDate}
           >
             <ThemedText style={styles.buttonText}>
               {loading ? t('common.loading') : t('event.create')}
@@ -386,5 +378,68 @@ const styles = StyleSheet.create({
   error: {
     color: '#ff6b6b',
     marginBottom: 16,
-  }
+  },
+  dateTimeSection: {
+    marginBottom: 24,
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#333',
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  webDateInput: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    fontSize: 16,
+    boxSizing: 'border-box',
+  },
+  clearButton: {
+    backgroundColor: '#ff6b6b',
+    padding: 8,
+    borderRadius: 6,
+    minWidth: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxContainer: {
+    marginBottom: 16,
+  },
+  checkboxLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    cursor: 'pointer',
+  },
+  webCheckbox: {
+    marginRight: 8,
+    cursor: 'pointer',
+  },
+  nativeCheckboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  nativeCheckbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 2,
+    borderRadius: 4,
+    marginRight: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkmark: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  checkboxText: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
 });

@@ -113,7 +113,7 @@ export const NativeDateTimePicker: React.FC<NativeDateTimePickerProps> = ({
   
   // Format the date for display
   const formatDateTime = (date: Date) => {
-    return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}`;
   };
   
   if (Platform.OS === 'android') {

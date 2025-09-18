@@ -8,9 +8,9 @@ import { EventResponse, UpdateEventRequest } from '@/src/api/eventApi';
 import { eventStyles } from './EventStyles';
 import { Colors } from '@/src/constants/Colors';
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { formatDate, formatTime } from './EventUtils';
+import { formatDate } from './EventUtils';
 import { NativeDateTimePicker } from '@/src/components/DateTimePickers/NativeDateTimePicker';
-import { WebDateTimePicker } from '@/src/components/DateTimePickers/WebDateTimePicker';
+import { TimeInput } from '@/src/components/TimeInput';
 
 interface EditEventDetailsProps {
   event: EventResponse;
@@ -32,20 +32,23 @@ export const EditEventDetails: React.FC<EditEventDetailsProps> = ({
   const [description, setDescription] = useState(event.description || '');
   const [location, setLocation] = useState(event.location || '');
   
-  // Date handling
+  // Separate date and time state (matching create event approach)
   const startDate = new Date(event.start_date);
   const endDate = event.end_date ? new Date(event.end_date) : null;
   
-  const [selectedStartDate, setSelectedStartDate] = useState(startDate);
-  const [selectedEndDate, setSelectedEndDate] = useState(endDate);
+  const [startDateStr, setStartDateStr] = useState(startDate.toISOString().substring(0, 10));
+  const [startHours, setStartHours] = useState(startDate.getHours());
+  const [startMinutes, setStartMinutes] = useState(startDate.getMinutes());
   
-  // Date picker visibility
+  // End date state with checkbox control
+  const [hasEndDate, setHasEndDate] = useState(!!event.end_date);
+  const [endDateStr, setEndDateStr] = useState(endDate ? endDate.toISOString().substring(0, 10) : '');
+  const [endHours, setEndHours] = useState(endDate ? endDate.getHours() : 0);
+  const [endMinutes, setEndMinutes] = useState(endDate ? endDate.getMinutes() : 0);
+  
+  // Date picker visibility (only for native)
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
-  
-  // Modal visibility for web date pickers
-  const [showStartDatePickerModal, setShowStartDatePickerModal] = useState(false);
-  const [showEndDatePickerModal, setShowEndDatePickerModal] = useState(false);
   
   // Check if we're on web platform
   const isWeb = Platform.OS === 'web';
@@ -54,50 +57,49 @@ export const EditEventDetails: React.FC<EditEventDetailsProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
 
-  // Handle date changes
-  const handleDateChange = (field: 'start_date' | 'end_date', date?: Date) => {
-    if (!date) return;
-    
-    if (field === 'start_date') {
-      setSelectedStartDate(date);
-      setShowStartDatePicker(false);
-    } else {
-      setSelectedEndDate(date);
-      setShowEndDatePicker(false);
-    }
+  // Helper function to combine date and time into ISO string
+  const combineDateTime = (dateStr: string, hours: number, minutes: number): string => {
+    const date = new Date(dateStr);
+    date.setHours(hours, minutes, 0, 0);
+    return date.toISOString();
   };
-  
-  // Handle date button press
-  const handleDateButtonPress = (field: 'start_date' | 'end_date') => {
-    if (isWeb) {
-      // For web, show the modal
-      if (field === 'start_date') {
-        setShowStartDatePickerModal(true);
+
+  // Helper function to get combined start date time
+  const getStartDateTime = (): string => {
+    return combineDateTime(startDateStr, startHours, startMinutes);
+  };
+
+  // Helper function to get combined end date time
+  const getEndDateTime = (): string => {
+    if (!hasEndDate || !endDateStr) return '';
+    return combineDateTime(endDateStr, endHours, endMinutes);
+  };
+
+  // Handle checkbox toggle with smart defaults
+  const handleEndDateToggle = (checked: boolean) => {
+    setHasEndDate(checked);
+    
+    if (checked) {
+      // When enabling end date, set smart defaults
+      setEndDateStr(startDateStr); // Same day as start
+      // Set end time to 1 hour after start time
+      const endHour = startHours + 1;
+      if (endHour < 24) {
+        setEndHours(endHour);
+        setEndMinutes(startMinutes);
       } else {
-        setShowEndDatePickerModal(true);
+        // If start + 1 hour exceeds midnight, just set to 23:59
+        setEndHours(23);
+        setEndMinutes(59);
       }
     } else {
-      // For native, show the picker
-      if (field === 'start_date') {
-        setShowStartDatePicker(true);
-      } else {
-        setShowEndDatePicker(true);
-      }
+      // When disabling, clear all end date/time
+      setEndDateStr('');
+      setEndHours(0);
+      setEndMinutes(0);
     }
   };
 
-  // Toggle end date (enable/disable)
-  const toggleEndDate = () => {
-    if (selectedEndDate) {
-      // When unchecking the box, remove the end date
-      setSelectedEndDate(null);
-    } else {
-      // Initialize end date as 1 hour after start date
-      const newEndDate = new Date(selectedStartDate);
-      newEndDate.setHours(newEndDate.getHours() + 1);
-      setSelectedEndDate(newEndDate);
-    }
-  };
 
   // Handle form submission
   const handleSave = async () => {
@@ -108,7 +110,10 @@ export const EditEventDetails: React.FC<EditEventDetailsProps> = ({
     }
 
     // Validate dates
-    if (selectedEndDate && selectedEndDate < selectedStartDate) {
+    const startDateTime = new Date(getStartDateTime());
+    const endDateTime = hasEndDate && endDateStr ? new Date(getEndDateTime()) : null;
+    
+    if (endDateTime && endDateTime < startDateTime) {
       setError(t('event.endDateBeforeStart'));
       return;
     }
@@ -117,17 +122,17 @@ export const EditEventDetails: React.FC<EditEventDetailsProps> = ({
     setError('');
 
     try {
-      // Prepare update data
+      // Prepare update data using our new date/time approach
       const updateData: UpdateEventRequest = {
         title: title.trim(),
         description: description.trim() || undefined,
         location: location.trim() || undefined,
-        start_date: selectedStartDate.toISOString(),
+        start_date: getStartDateTime(),
       };
       
-      // Handle end date based on whether it's enabled
-      if (selectedEndDate) {
-        updateData.end_date = selectedEndDate.toISOString();
+      // Handle end date based on checkbox state
+      if (hasEndDate && endDateStr) {
+        updateData.end_date = getEndDateTime();
         console.log('Setting end_date to:', updateData.end_date);
       } else {
         // Add a special field to signal that end_date should be removed
@@ -183,80 +188,169 @@ export const EditEventDetails: React.FC<EditEventDetailsProps> = ({
         {t('event.dateAndTime')}
       </ThemedText>
       
-      {/* Start Date and Time */}
-      <View>
-        <TouchableOpacity 
-          style={[eventStyles.datePickerButton, { borderColor: themeColors.border }]}
-          onPress={() => handleDateButtonPress('start_date')}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <IconSymbol 
-              name="calendar" 
-              size={24} 
-              color={themeColors.primary} 
-              style={eventStyles.detailIcon} 
-            />
-            <ThemedText style={[eventStyles.detailText, { color: themeColors.text }]}>
-              {formatDate(selectedStartDate.toISOString(), i18n.language)} {formatTime(selectedStartDate.toISOString(), i18n.language)}
-            </ThemedText>
-          </View>
-        </TouchableOpacity>
+      {/* Start Date Section */}
+      <View style={[eventStyles.dateTimeSection, { borderColor: themeColors.border }]}>
+        <ThemedText style={[eventStyles.subSectionTitle, { color: themeColors.text }]}>
+          {t('event.startDate')}
+        </ThemedText>
         
+        {isWeb ? (
+          <input
+            type="date"
+            value={startDateStr}
+            onChange={(e) => setStartDateStr(e.target.value)}
+            style={{
+              padding: '12px 15px',
+              fontSize: '16px',
+              borderRadius: '8px',
+              backgroundColor: themeColors.inputBackground,
+              color: themeColors.text,
+              width: '100%',
+              border: `1px solid ${themeColors.border}`,
+              cursor: 'pointer',
+              boxSizing: 'border-box',
+              marginBottom: '16px',
+            }}
+          />
+        ) : (
+          <TouchableOpacity
+            style={[eventStyles.datePickerButton, { borderColor: themeColors.border }]}
+            onPress={() => setShowStartDatePicker(true)}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <IconSymbol 
+                name="calendar" 
+                size={24} 
+                color={themeColors.primary} 
+                style={eventStyles.detailIcon} 
+              />
+              <ThemedText style={[eventStyles.detailText, { color: themeColors.text }]}>
+                {formatDate(getStartDateTime(), i18n.language)}
+              </ThemedText>
+            </View>
+          </TouchableOpacity>
+        )}
+
         {!isWeb && showStartDatePicker && (
           <NativeDateTimePicker
-            value={selectedStartDate}
-            onChange={(event: DateTimePickerEvent, date?: Date) => handleDateChange('start_date', date)}
+            value={new Date(startDateStr)}
+            onChange={(event: DateTimePickerEvent, date?: Date) => {
+              if (date) {
+                setStartDateStr(date.toISOString().substring(0, 10));
+              }
+              setShowStartDatePicker(false);
+            }}
           />
         )}
+
+        <TimeInput
+          hours={startHours}
+          minutes={startMinutes}
+          onTimeChange={(hours, minutes) => {
+            setStartHours(hours);
+            setStartMinutes(minutes);
+          }}
+          label={t('event.time')}
+        />
       </View>
 
-      {/* End Date Toggle */}
-      <View style={[eventStyles.toggleRow, { marginTop: 16 }]}>
-        <TouchableOpacity 
-          style={[eventStyles.toggleButton, { borderColor: themeColors.border }]}
-          onPress={toggleEndDate}
-        >
-          <IconSymbol 
-            name={selectedEndDate ? "checkmark.square.fill" : "square"} 
-            size={24} 
-            color={themeColors.primary} 
-          />
-          <ThemedText style={[eventStyles.toggleText, { color: themeColors.text }]}>
-            {t('event.includeEndTime')}
-          </ThemedText>
-        </TouchableOpacity>
-      </View>
-
-      {/* End Date and Time (if enabled) */}
-      {selectedEndDate && (
-        <>
-          <View>
-            <TouchableOpacity 
-              style={[eventStyles.datePickerButton, { borderColor: themeColors.border, marginTop: 8 }]}
-              onPress={() => handleDateButtonPress('end_date')}
+      {/* End Date Section */}
+      <View style={[eventStyles.dateTimeSection, { borderColor: themeColors.border, marginTop: 16 }]}>
+        {/* Checkbox to enable/disable end date */}
+        <View style={eventStyles.checkboxContainer}>
+          {isWeb ? (
+            <label style={eventStyles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={hasEndDate}
+                onChange={(e) => handleEndDateToggle(e.target.checked)}
+                style={eventStyles.webCheckbox}
+              />
+              <ThemedText style={[eventStyles.checkboxText, { color: themeColors.text }]}>
+                {t('event.includeEndTime')}
+              </ThemedText>
+            </label>
+          ) : (
+            <TouchableOpacity
+              style={eventStyles.nativeCheckboxContainer}
+              onPress={() => handleEndDateToggle(!hasEndDate)}
             >
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <IconSymbol 
-                  name="calendar" 
-                  size={24} 
-                  color={themeColors.primary} 
-                  style={eventStyles.detailIcon} 
-                />
-                <ThemedText style={[eventStyles.detailText, { color: themeColors.text }]}>
-                  {formatDate(selectedEndDate.toISOString(), i18n.language)} {formatTime(selectedEndDate.toISOString(), i18n.language)}
-                </ThemedText>
-              </View>
+              <IconSymbol 
+                name={hasEndDate ? "checkmark.square.fill" : "square"} 
+                size={24} 
+                color={themeColors.primary} 
+              />
+              <ThemedText style={[eventStyles.checkboxText, { color: themeColors.text }]}>
+                {t('event.includeEndTime')}
+              </ThemedText>
             </TouchableOpacity>
-            
+          )}
+        </View>
+
+        {/* End Date Controls - Always show both date and time when enabled */}
+        {hasEndDate && (
+          <>
+            {isWeb ? (
+              <input
+                type="date"
+                value={endDateStr}
+                onChange={(e) => setEndDateStr(e.target.value)}
+                style={{
+                  padding: '12px 15px',
+                  fontSize: '16px',
+                  borderRadius: '8px',
+                  backgroundColor: themeColors.inputBackground,
+                  color: themeColors.text,
+                  width: '100%',
+                  border: `1px solid ${themeColors.border}`,
+                  cursor: 'pointer',
+                  boxSizing: 'border-box',
+                  marginBottom: '16px',
+                }}
+              />
+            ) : (
+              <TouchableOpacity
+                style={[eventStyles.datePickerButton, { borderColor: themeColors.border }]}
+                onPress={() => setShowEndDatePicker(true)}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <IconSymbol 
+                    name="calendar" 
+                    size={24} 
+                    color={themeColors.primary} 
+                    style={eventStyles.detailIcon} 
+                  />
+                  <ThemedText style={[eventStyles.detailText, { color: themeColors.text }]}>
+                    {endDateStr ? formatDate(getEndDateTime(), i18n.language) : 'Select date'}
+                  </ThemedText>
+                </View>
+              </TouchableOpacity>
+            )}
+
             {!isWeb && showEndDatePicker && (
               <NativeDateTimePicker
-                value={selectedEndDate}
-                onChange={(event: DateTimePickerEvent, date?: Date) => handleDateChange('end_date', date)}
+                value={new Date(endDateStr || startDateStr)}
+                onChange={(event: DateTimePickerEvent, date?: Date) => {
+                  if (date) {
+                    setEndDateStr(date.toISOString().substring(0, 10));
+                  }
+                  setShowEndDatePicker(false);
+                }}
               />
             )}
-          </View>
-        </>
-      )}
+
+            <TimeInput
+              hours={endHours}
+              minutes={endMinutes}
+              onTimeChange={(hours, minutes) => {
+                setEndHours(hours);
+                setEndMinutes(minutes);
+              }}
+              label={t('event.time')}
+            />
+          </>
+        )}
+      </View>
 
       {/* Location */}
       <ThemedText style={[eventStyles.sectionTitle, { color: themeColors.text, marginTop: 16 }]}>
@@ -338,100 +432,6 @@ export const EditEventDetails: React.FC<EditEventDetailsProps> = ({
         </TouchableOpacity>
       </View>
 
-      {/* Web Date/Time Pickers are rendered as modals */}
-      
-      {/* Web Date/Time Pickers */}
-      {isWeb && showStartDatePickerModal && (
-        <WebDateTimePicker
-          visible={showStartDatePickerModal}
-          onClose={() => setShowStartDatePickerModal(false)}
-          onConfirm={() => setShowStartDatePickerModal(false)}
-          title={t('event.startDateTime')}
-          dateValue={selectedStartDate.toISOString().substring(0, 10)}
-          timeValue={selectedStartDate.toISOString().substring(11, 16)}
-          onDateChange={(dateStr) => {
-            try {
-              const currentDate = new Date(selectedStartDate);
-              const hours = currentDate.getHours();
-              const minutes = currentDate.getMinutes();
-              
-              const newDate = new Date(dateStr);
-              newDate.setHours(hours);
-              newDate.setMinutes(minutes);
-              
-              if (!isNaN(newDate.getTime())) {
-                setSelectedStartDate(newDate);
-              }
-            } catch (error) {
-              console.log('Invalid date input');
-            }
-          }}
-          onTimeChange={(timeStr) => {
-            try {
-              const currentDate = new Date(selectedStartDate);
-              const year = currentDate.getFullYear();
-              const month = currentDate.getMonth();
-              const day = currentDate.getDate();
-              
-              const [hours, minutes] = timeStr.split(':').map(Number);
-              
-              const newDate = new Date(year, month, day, hours, minutes);
-              
-              if (!isNaN(newDate.getTime())) {
-                setSelectedStartDate(newDate);
-              }
-            } catch (error) {
-              console.log('Invalid time input');
-            }
-          }}
-        />
-      )}
-      
-      {isWeb && showEndDatePickerModal && selectedEndDate && (
-        <WebDateTimePicker
-          visible={showEndDatePickerModal}
-          onClose={() => setShowEndDatePickerModal(false)}
-          onConfirm={() => setShowEndDatePickerModal(false)}
-          title={t('event.endDateTime')}
-          dateValue={selectedEndDate.toISOString().substring(0, 10)}
-          timeValue={selectedEndDate.toISOString().substring(11, 16)}
-          onDateChange={(dateStr) => {
-            try {
-              const currentDate = new Date(selectedEndDate);
-              const hours = currentDate.getHours();
-              const minutes = currentDate.getMinutes();
-              
-              const newDate = new Date(dateStr);
-              newDate.setHours(hours);
-              newDate.setMinutes(minutes);
-              
-              if (!isNaN(newDate.getTime())) {
-                setSelectedEndDate(newDate);
-              }
-            } catch (error) {
-              console.log('Invalid date input');
-            }
-          }}
-          onTimeChange={(timeStr) => {
-            try {
-              const currentDate = new Date(selectedEndDate);
-              const year = currentDate.getFullYear();
-              const month = currentDate.getMonth();
-              const day = currentDate.getDate();
-              
-              const [hours, minutes] = timeStr.split(':').map(Number);
-              
-              const newDate = new Date(year, month, day, hours, minutes);
-              
-              if (!isNaN(newDate.getTime())) {
-                setSelectedEndDate(newDate);
-              }
-            } catch (error) {
-              console.log('Invalid time input');
-            }
-          }}
-        />
-      )}
     </ScrollView>
   );
 };

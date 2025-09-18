@@ -401,4 +401,38 @@ export const eventStyles = StyleSheet.create({
     padding: 20,
     height: 100,
   },
+  // New styles for improved date/time pickers
+  dateTimeSection: {
+    marginBottom: 16,
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  subSectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  checkboxContainer: {
+    marginBottom: 16,
+  },
+  checkboxLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    cursor: 'pointer',
+  },
+  webCheckbox: {
+    marginRight: 8,
+    cursor: 'pointer',
+  },
+  nativeCheckboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkboxText: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginLeft: 12,
+  },
 });
