@@ -42,6 +42,7 @@
   "common.goBack": "Retour",
   "common.you": "Vous",
   "common.creator": "Créateur",
+  "auth.tagline": "Se rassembler pour offrir.",
   "auth.login": "Connexion",
   "auth.signup": "Inscription",
   "auth.email": "Email",

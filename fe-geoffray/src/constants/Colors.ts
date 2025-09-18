@@ -13,6 +13,14 @@ const tintColorDark = '#e88a7c';
 export const BrandColors = {
   peach: '#f5a78b',
   coral: '#e88a7c',
+  // New gradient colors for the modern design
+  gradientPink: '#e88a7c',
+  gradientPeach: '#f5a78b',
+  // Contrast colors for text on gradient backgrounds
+  gradientText: '#FFFFFF',
+  gradientTextSecondary: 'rgba(255, 255, 255, 0.8)',
+  gradientInput: '#FFFFFF',
+  gradientInputText: '#11181C',
 };
 
 /**
