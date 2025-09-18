@@ -233,5 +233,6 @@
   "settings.systemDefault": "System Default",
   "event.lookingForward": "Looking forward to seeing you all at the event.",
   "event.parkingQuestion": "Does anyone know if there is parking nearby?",
-  "event.parkingAnswer": "Yes, there is a parking garage one block away. It costs $10 for the day."
+  "event.parkingAnswer": "Yes, there is a parking garage one block away. It costs $10 for the day.",
+  "home.giftSearch": "I'm looking for the perfect gift"
 }

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList, SafeAreaView, StatusBar, StyleSheet, View} from 'react-native';
+import {ActivityIndicator, FlatList, SafeAreaView, StatusBar, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {useTranslation} from 'react-i18next';
 
 import {ThemedText} from '@/src/components/ThemedText';
@@ -134,6 +134,21 @@ export default function HomeScreen() {
         onFilterChange={handleFilterChange} 
       />
       
+      {/* Gift Search Button - only show on "Events" tab */}
+      {activeFilter === 'next' && (
+        <TouchableOpacity 
+          style={styles.giftSearchButton}
+          onPress={() => {
+            // TODO: Add gift search functionality
+            console.log('Gift search pressed');
+          }}
+        >
+          <ThemedText style={styles.giftSearchText}>
+            {t('home.giftSearch')}
+          </ThemedText>
+        </TouchableOpacity>
+      )}
+      
       {filteredEvents.length === 0 ? (
         <View style={styles.emptyContainer}>
           <ThemedText style={styles.emptyText}>
@@ -218,5 +233,28 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: 'center',
+  },
+  giftSearchButton: {
+    backgroundColor: '#FFA726', // Orange/yellow color matching the wireframe
+    marginHorizontal: 16,
+    marginVertical: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  giftSearchText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
 });

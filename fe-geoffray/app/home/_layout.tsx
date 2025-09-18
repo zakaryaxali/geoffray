@@ -1,7 +1,6 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
-import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import { HapticTab } from '@/src/components/HapticTab';
@@ -13,10 +12,6 @@ import { useColorScheme } from '@/src/hooks/useColorScheme';
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { t } = useTranslation();
-
-  const handleCreateEventPress = () => {
-    router.push('/create-event');
-  };
 
   return (
     <Tabs
@@ -38,21 +33,6 @@ export default function TabLayout() {
         options={{
           title: t('home.events'),
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="list.bullet" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="create-event-tab"
-        listeners={{
-          tabPress: (e) => {
-            // Prevent default action
-            e.preventDefault();
-            // Navigate to create event screen
-            router.push('/create-event');
-          },
-        }}
-        options={{
-          title: t('home.createEvent'),
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="plus.circle.fill" color={color} />,
         }}
       />
       <Tabs.Screen
