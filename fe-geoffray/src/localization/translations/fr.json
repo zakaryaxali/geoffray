@@ -233,5 +233,12 @@
   "event.lookingForward": "J'ai hâte de vous voir tous à l'événement.",
   "event.parkingQuestion": "Est-ce que quelqu'un sait s'il y a un parking à proximité ?",
   "event.parkingAnswer": "Oui, il y a un parking à un pâté de maisons. Cela coûte 10$ pour la journée.",
-  "home.giftSearch": "Je cherche le cadeau parfait"
+  "home.giftSearch": "Je cherche le cadeau parfait",
+  "gift.pageTitle": "C'est pour...",
+  "gift.categories.gourmet": "Un gourmet",
+  "gift.categories.adventurer": "Un aventurier",
+  "gift.categories.geek": "Un geek",
+  "gift.categories.parent": "Un parent",
+  "gift.categories.artist": "L'Artiste",
+  "gift.categories.trendy": "Le Frenchy"
 }

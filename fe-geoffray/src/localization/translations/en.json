@@ -234,5 +234,12 @@
   "event.lookingForward": "Looking forward to seeing you all at the event.",
   "event.parkingQuestion": "Does anyone know if there is parking nearby?",
   "event.parkingAnswer": "Yes, there is a parking garage one block away. It costs $10 for the day.",
-  "home.giftSearch": "I'm looking for the perfect gift"
+  "home.giftSearch": "I'm looking for the perfect gift",
+  "gift.pageTitle": "It's for...",
+  "gift.categories.gourmet": "A gourmet",
+  "gift.categories.adventurer": "An adventurer",
+  "gift.categories.geek": "A geek",
+  "gift.categories.parent": "A parent",
+  "gift.categories.artist": "The Artist",
+  "gift.categories.trendy": "The Trendy"
 }

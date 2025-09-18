@@ -45,6 +45,7 @@ function RootLayoutNav() {
       <Stack.Screen name="event/[id]" options={{ headerShown: true }} />
       <Stack.Screen name="invite/[code]" options={{ headerShown: true }} />
       <Stack.Screen name="create-event" options={{ headerShown: false }} />
+      <Stack.Screen name="gift-selection/index" options={{ headerShown: false }} />
       <Stack.Screen name="privacy-policy/index" options={{ headerShown: false }} />
       <Stack.Screen name="+not-found" />
     </Stack>

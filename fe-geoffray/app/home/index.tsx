@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, FlatList, SafeAreaView, StatusBar, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {useTranslation} from 'react-i18next';
+import {useRouter} from 'expo-router';
 
 import {ThemedText} from '@/src/components/ThemedText';
 import {ThemedView} from '@/src/components/ThemedView';
@@ -40,6 +41,7 @@ const mapApiEventToComponentEvent = (apiEvent: EventResponse): Event => {
 
 export default function HomeScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [activeFilter, setActiveFilter] = useState<FilterType>('next');
@@ -139,8 +141,7 @@ export default function HomeScreen() {
         <TouchableOpacity 
           style={styles.giftSearchButton}
           onPress={() => {
-            // TODO: Add gift search functionality
-            console.log('Gift search pressed');
+            router.push('/gift-selection');
           }}
         >
           <ThemedText style={styles.giftSearchText}>

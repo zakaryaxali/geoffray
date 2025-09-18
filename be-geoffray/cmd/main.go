@@ -65,6 +65,9 @@ func main() {
 		routes.RegisterLocalizationRoutes(localizationRoutes)
 	}
 
+	// Gift routes (some public, some protected)
+	routes.SetupGiftRoutes(router, db.DB)
+
 	// Protected routes (JWT required)
 	protected := router.Group("/")
 	protected.Use(middlewares.JWTAuthMiddleware()) // Apply JWT middleware only to protected routes
