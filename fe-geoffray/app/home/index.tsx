@@ -106,9 +106,6 @@ export default function HomeScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" />
-        <ThemedView style={styles.header}>
-          <ThemedText type="title">{t('home.events')}</ThemedText>
-        </ThemedView>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" />
           <ThemedText style={styles.loadingText}>{t('common.loading')}</ThemedText>
@@ -121,9 +118,6 @@ export default function HomeScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" />
-        <ThemedView style={styles.header}>
-          <ThemedText type="title">{t('home.events')}</ThemedText>
-        </ThemedView>
         <View style={styles.errorContainer}>
           <ThemedText style={styles.errorText}>{error}</ThemedText>
         </View>
@@ -134,9 +128,6 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <ThemedView style={styles.header}>
-        <ThemedText type="title">{t('home.events')}</ThemedText>
-      </ThemedView>
       
       <EventsFilter 
         activeFilter={activeFilter} 
@@ -196,11 +187,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
-  },
-  header: {
     paddingTop: 16,
-    paddingBottom: 16,
-    paddingLeft: 16, // Increased left padding to match container horizontal padding
   },
   listContent: {
     paddingBottom: 20,

@@ -65,7 +65,6 @@ export const EventsFilter: React.FC<EventsFilterProps> = ({ activeFilter, onFilt
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    marginTop: 12,
     marginBottom: 20,
     paddingHorizontal: 4,
   },
