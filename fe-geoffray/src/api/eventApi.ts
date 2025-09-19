@@ -11,6 +11,11 @@ export interface EventCreateRequest {
   location?: string;
 }
 
+export interface GiftEventCreateRequest extends EventCreateRequest {
+  giftee_persona: string;
+  event_occasion: string;
+}
+
 export interface Participant {
   id: string;
   first_name: string;
@@ -132,6 +137,18 @@ export const eventApi = {
       true
     );
     return response.event;
+  },
+
+  /**
+   * Create a new event with gift suggestions
+   */
+  createEventWithGifts: async (eventData: GiftEventCreateRequest): Promise<EventResponse> => {
+    const response = await apiClient.post<EventResponse>(
+      '/api/events/with-gifts', 
+      eventData, 
+      true
+    );
+    return response;
   },
 
   /**

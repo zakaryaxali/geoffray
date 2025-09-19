@@ -17,4 +17,6 @@ type Event struct {
 	Banner            string     `json:"banner"`
 	Location          string     `json:"location"`
 	ParticipantsCount int        `json:"participants_count"`
+	GifteePersona     string     `json:"giftee_persona,omitempty"`
+	EventOccasion     string     `json:"event_occasion,omitempty"`
 }

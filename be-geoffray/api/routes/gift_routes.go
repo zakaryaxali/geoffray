@@ -11,6 +11,7 @@ import (
 // SetupGiftRoutes sets up gift-related routes
 func SetupGiftRoutes(router *gin.Engine, db *sql.DB) {
 	giftController := controllers.NewGiftController(db)
+	giftEventController := controllers.NewGiftEventController(db)
 
 	// Public routes
 	giftRoutes := router.Group("/api/gifts")
@@ -28,5 +29,19 @@ func SetupGiftRoutes(router *gin.Engine, db *sql.DB) {
 	{
 		// Track user's category selection
 		protectedGiftRoutes.POST("/track-selection", giftController.TrackSelection)
+	}
+
+	// Protected event-with-gifts routes
+	protectedEventGiftRoutes := router.Group("/api/events")
+	protectedEventGiftRoutes.Use(middlewares.JWTAuthMiddleware())
+	{
+		// Create event with gift suggestions
+		protectedEventGiftRoutes.POST("/with-gifts", giftEventController.CreateEventWithGifts)
+
+		// Get gift suggestions for a specific event
+		protectedEventGiftRoutes.GET("/:id/gift-suggestions", giftEventController.GetEventGiftSuggestions)
+
+		// Regenerate gift suggestions for an event
+		protectedEventGiftRoutes.POST("/:id/regenerate-gift-suggestions", giftEventController.RegenerateEventGiftSuggestions)
 	}
 }

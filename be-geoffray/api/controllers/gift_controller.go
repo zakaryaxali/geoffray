@@ -20,73 +20,61 @@ func NewGiftController(db *sql.DB) *GiftController {
 	return &GiftController{DB: db}
 }
 
-// GetCategories retrieves all active gift categories
+// GetCategories retrieves all active giftee personas
 func (gc *GiftController) GetCategories(c *gin.Context) {
 	query := `
-		SELECT id, name_key, color, order_index, active, created_at, updated_at
-		FROM gift_categories
+		SELECT id, persona_key, color, order_index, active, created_at, updated_at
+		FROM giftee_personas
 		WHERE active = true
 		ORDER BY order_index ASC
 	`
 
 	rows, err := gc.DB.Query(query)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch gift categories"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch giftee personas"})
 		return
 	}
 	defer rows.Close()
 
-	var categories []models.GiftCategory
+	var personas []models.GifteePersona
 	for rows.Next() {
-		var category models.GiftCategory
+		var persona models.GifteePersona
 		err := rows.Scan(
-			&category.ID,
-			&category.NameKey,
-			&category.Color,
-			&category.OrderIndex,
-			&category.Active,
-			&category.CreatedAt,
-			&category.UpdatedAt,
+			&persona.ID,
+			&persona.PersonaKey,
+			&persona.Color,
+			&persona.OrderIndex,
+			&persona.Active,
+			&persona.CreatedAt,
+			&persona.UpdatedAt,
 		)
 		if err != nil {
 			continue
 		}
-		categories = append(categories, category)
+		personas = append(personas, persona)
 	}
 
-	c.JSON(http.StatusOK, categories)
+	c.JSON(http.StatusOK, personas)
 }
 
-// GetSuggestions retrieves gift suggestions for a category
+// GetSuggestions retrieves gift suggestions for an event
 func (gc *GiftController) GetSuggestions(c *gin.Context) {
-	categoryID := c.Query("category_id")
 	eventID := c.Query("event_id")
 
-	if categoryID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "category_id is required"})
+	if eventID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "event_id is required"})
 		return
 	}
 
 	query := `
-		SELECT id, category_id, event_id, name, description, price_range, 
-			   url, image_url, created_at, updated_at
+		SELECT id, event_id, name_en, name_fr, description_en, description_fr,
+			   price_range, category, url, generated_at, created_at, updated_at
 		FROM gift_suggestions
-		WHERE category_id = $1
+		WHERE event_id = $1
+		ORDER BY created_at DESC
 	`
 
-	args := []interface{}{categoryID}
-
-	// Add event filter if provided
-	if eventID != "" {
-		query += " AND (event_id = $2 OR event_id IS NULL)"
-		args = append(args, eventID)
-	} else {
-		query += " AND event_id IS NULL"
-	}
-
-	query += " ORDER BY created_at DESC"
-
-	rows, err := gc.DB.Query(query, args...)
+	rows, err := gc.DB.Query(query, eventID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch gift suggestions"})
 		return
@@ -98,13 +86,15 @@ func (gc *GiftController) GetSuggestions(c *gin.Context) {
 		var suggestion models.GiftSuggestion
 		err := rows.Scan(
 			&suggestion.ID,
-			&suggestion.CategoryID,
 			&suggestion.EventID,
-			&suggestion.Name,
-			&suggestion.Description,
+			&suggestion.NameEN,
+			&suggestion.NameFR,
+			&suggestion.DescriptionEN,
+			&suggestion.DescriptionFR,
 			&suggestion.PriceRange,
+			&suggestion.Category,
 			&suggestion.URL,
-			&suggestion.ImageURL,
+			&suggestion.GeneratedAt,
 			&suggestion.CreatedAt,
 			&suggestion.UpdatedAt,
 		)

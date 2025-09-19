@@ -1,23 +1,24 @@
 import React from 'react';
 import {SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {useRouter} from 'expo-router';
+import {useRouter, useLocalSearchParams} from 'expo-router';
 import {useTranslation} from 'react-i18next';
 import {Ionicons} from '@expo/vector-icons';
 import {useTheme} from '@/src/contexts/ThemeContext';
 
-// Gift categories with their colors
-const giftCategories = [
-  { id: 'gourmet', key: 'gift.categories.gourmet', color: '#e88a7c' },
-  { id: 'adventurer', key: 'gift.categories.adventurer', color: '#FFA726' },
-  { id: 'geek', key: 'gift.categories.geek', color: '#e88a7c' },
-  { id: 'parent', key: 'gift.categories.parent', color: '#888888' },
-  { id: 'artist', key: 'gift.categories.artist', color: '#FFA726' },
-  { id: 'trendy', key: 'gift.categories.trendy', color: '#888888' },
+// Event occasions with their colors matching the wireframe
+const eventOccasions = [
+  { id: 'birthday', key: 'giftEvent.occasions.birthday', color: '#FFA726' },
+  { id: 'retirement', key: 'giftEvent.occasions.retirement', color: '#e88a7c' },
+  { id: 'barbecue', key: 'giftEvent.occasions.barbecue', color: '#e88a7c' },
+  { id: 'christmas', key: 'giftEvent.occasions.christmas', color: '#888888' },
+  { id: 'wedding', key: 'giftEvent.occasions.wedding', color: '#FFA726' },
+  { id: 'justForFun', key: 'giftEvent.occasions.justForFun', color: '#888888' },
 ];
 
-export default function GiftSelectionScreen() {
+export default function OccasionSelectionScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { persona } = useLocalSearchParams<{ persona: string }>();
   const { theme } = useTheme();
   
   const themeColors = {
@@ -26,9 +27,8 @@ export default function GiftSelectionScreen() {
     textSecondary: theme === 'dark' ? '#AAAAAA' : '#666666',
   };
 
-  const handleCategoryPress = (categoryId: string) => {
-    // TODO: Navigate to gift suggestions page with category
-    console.log('Selected category:', categoryId);
+  const handleOccasionPress = (occasionId: string) => {
+    router.push(`/create-event-with-gifts/details/${persona}/${occasionId}`);
   };
 
   const handleBack = () => {
@@ -44,26 +44,26 @@ export default function GiftSelectionScreen() {
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <Ionicons name="chevron-back" size={24} color={themeColors.text} />
         </TouchableOpacity>
-        <Text style={[styles.title, { color: themeColors.text }]}>{t('gift.pageTitle')}</Text>
+        <Text style={[styles.title, { color: themeColors.text }]}>{t('giftEvent.occasionTitle')}</Text>
         <View style={styles.placeholder} />
       </View>
 
-      {/* Categories Grid */}
+      {/* Occasions Grid */}
       <ScrollView 
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.categoriesGrid}>
-          {giftCategories.map((category) => (
+        <View style={styles.occasionsGrid}>
+          {eventOccasions.map((occasion) => (
             <TouchableOpacity
-              key={category.id}
-              onPress={() => handleCategoryPress(category.id)}
-              style={styles.categoryContainer}
+              key={occasion.id}
+              onPress={() => handleOccasionPress(occasion.id)}
+              style={styles.occasionContainer}
               activeOpacity={0.7}
             >
-              <View style={[styles.categoryCircle, { backgroundColor: category.color }]}>
-                <Text style={styles.categoryText}>
-                  {t(category.key)}
+              <View style={[styles.occasionCircle, { backgroundColor: occasion.color }]}>
+                <Text style={styles.occasionText}>
+                  {t(occasion.key)}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -103,20 +103,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 40,
   },
-  categoriesGrid: {
+  occasionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     paddingHorizontal: 10,
   },
-  categoryContainer: {
+  occasionContainer: {
     width: '45%',
     aspectRatio: 1,
     marginBottom: 30,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  categoryCircle: {
+  occasionCircle: {
     width: '100%',
     height: '100%',
     borderRadius: 999,
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  categoryText: {
+  occasionText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',

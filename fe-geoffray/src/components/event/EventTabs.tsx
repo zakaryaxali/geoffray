@@ -6,7 +6,7 @@ import { ThemedText } from '@/src/components/ThemedText';
 import { eventStyles } from './EventStyles';
 import { Colors } from '@/src/constants/Colors';
 
-export type TabType = 'details' | 'discussion';
+export type TabType = 'details' | 'gifts' | 'discussion';
 
 interface EventTabsProps {
   activeTab: TabType;
@@ -41,6 +41,29 @@ export const EventTabs: React.FC<EventTabsProps> = ({ activeTab, onTabChange }) 
           ]}
         >
           {t('event.details')}
+        </ThemedText>
+      </TouchableOpacity>
+      <TouchableOpacity 
+        style={[
+          eventStyles.tab, 
+          activeTab === 'gifts' && [
+            eventStyles.activeTab, 
+            { borderBottomColor: themeColors.primary }
+          ]
+        ]}
+        onPress={() => onTabChange('gifts')}
+      >
+        <ThemedText 
+          style={[
+            eventStyles.tabText, 
+            { color: themeColors.textSecondary }, 
+            activeTab === 'gifts' && { 
+              color: themeColors.primary, 
+              fontWeight: 'bold' 
+            }
+          ]}
+        >
+          {t('event.gifts')}
         </ThemedText>
       </TouchableOpacity>
       <TouchableOpacity 

@@ -141,7 +141,7 @@ export default function HomeScreen() {
         <TouchableOpacity 
           style={styles.giftSearchButton}
           onPress={() => {
-            router.push('/gift-selection');
+            router.push('/create-event-with-gifts');
           }}
         >
           <ThemedText style={styles.giftSearchText}>

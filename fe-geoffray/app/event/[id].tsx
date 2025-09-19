@@ -14,6 +14,7 @@ import { EventBanner } from '@/src/components/event/EventBanner';
 import { EventTabs, TabType } from '@/src/components/event/EventTabs';
 import { EventDetails } from '@/src/components/event/EventDetails';
 import { EventDiscussion } from '@/src/components/event/EventDiscussion';
+import { EventGifts } from '@/src/components/event/EventGifts';
 import { InviteParticipantModal } from '@/src/components/event/InviteParticipantModal';
 import { useEventData } from '@/src/components/event/useEventData';
 import { eventStyles } from '@/src/components/event/EventStyles';
@@ -106,7 +107,7 @@ export default function EventScreen() {
       
       {/* Tab content */}
       <View style={eventStyles.contentContainer}>
-        {activeTab === 'details' ? (
+        {activeTab === 'details' && (
           <EventDetails 
             event={event!} 
             participants={participants} 
@@ -119,7 +120,16 @@ export default function EventScreen() {
             isEditMode={isEditing}
             onEditComplete={() => setIsEditing(false)}
           />
-        ) : (
+        )}
+        
+        {activeTab === 'gifts' && (
+          <EventGifts 
+            eventId={typeof id === 'string' ? id : String(id)}
+            isCreator={isCreator}
+          />
+        )}
+        
+        {activeTab === 'discussion' && (
           <EventDiscussion 
             eventId={typeof id === 'object' ? String(id) : id}
             onScroll={(offsetY: number) => {
