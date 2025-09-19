@@ -62,15 +62,17 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
     }
   };
 
-  // Regenerate gift suggestions
+  // Generate or regenerate gift suggestions
   const handleRegenerateGifts = async () => {
+    const isInitialGeneration = !suggestions || suggestions.length === 0;
+    
     Alert.alert(
-      t('event.gifts.regenerateTitle'),
-      t('event.gifts.regenerateMessage'),
+      isInitialGeneration ? t('event.gifts.generateTitle') : t('event.gifts.regenerateTitle'),
+      isInitialGeneration ? t('event.gifts.generateMessage') : t('event.gifts.regenerateMessage'),
       [
         { text: t('common.cancel'), style: 'cancel' },
         {
-          text: t('event.gifts.regenerate'),
+          text: isInitialGeneration ? t('event.gifts.generate') : t('event.gifts.regenerate'),
           style: 'default',
           onPress: async () => {
             try {
@@ -88,7 +90,7 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
               }, 2000);
               
             } catch (err: any) {
-              console.error('Error regenerating suggestions:', err);
+              console.error('Error generating suggestions:', err);
               setError(t('event.gifts.regenerateError'));
               setRegenerating(false);
             }
@@ -135,7 +137,7 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
             {t('event.gifts.title')}
           </ThemedText>
           
-          {isCreator && suggestions && suggestions.length > 0 && (
+          {isCreator && (
             <TouchableOpacity
               onPress={handleRegenerateGifts}
               disabled={regenerating}
@@ -152,10 +154,17 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
               {regenerating ? (
                 <ActivityIndicator size="small" color="#FFFFFF" />
               ) : (
-                <Ionicons name="refresh" size={16} color="#FFFFFF" />
+                <Ionicons 
+                  name={suggestions && suggestions.length > 0 ? "refresh" : "sparkles"} 
+                  size={16} 
+                  color="#FFFFFF" 
+                />
               )}
               <ThemedText style={{ color: '#FFFFFF', marginLeft: 6, fontSize: 14, fontWeight: '600' }}>
-                {t('event.gifts.regenerate')}
+                {suggestions && suggestions.length > 0 
+                  ? t('event.gifts.regenerate') 
+                  : t('event.gifts.generate')
+                }
               </ThemedText>
             </TouchableOpacity>
           )}
