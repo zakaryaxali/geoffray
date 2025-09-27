@@ -26,7 +26,7 @@ func InitDB() {
 	case "production":
 		sslMode = "require" // Enforce SSL in production
 	case "staging":
-		sslMode = "prefer" // Try SSL first, fallback if not available
+		sslMode = "disable" // Staging uses internal Docker network, no SSL needed
 	default:
 		sslMode = "disable" // Development/local environments
 	}
