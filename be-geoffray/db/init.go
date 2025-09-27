@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"be-geoffray/config"
-	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
