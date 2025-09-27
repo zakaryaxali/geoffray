@@ -7,7 +7,7 @@ This guide walks you through deploying Geoffray to a Hetzner Cloud VM using Dock
 - Hetzner Cloud account  
 - Domain name (optional, for SSL in production)
 - GitHub account (for CI/CD)
-- API keys for external services (Mistral, Amadeus, Stripe - optional)
+- API keys for external services (Mistral, Stripe - optional)
 
 **Note**: This guide is optimized for staging environments. For production, additional security hardening is recommended.
 
@@ -76,8 +76,6 @@ Configure the following secrets in your GitHub repository (Settings > Secrets):
 - `DB_NAME`: Database name
 - `JWT_SECRET`: Random JWT secret
 - `MISTRAL_API_KEY`: (Optional) Mistral AI API key
-- `AMADEUS_CLIENT_ID`: (Optional) Amadeus API client ID
-- `AMADEUS_CLIENT_SECRET`: (Optional) Amadeus API client secret
 - `STRIPE_SECRET_KEY`: (Optional) Stripe secret key
 - `SLACK_WEBHOOK_URL`: (Optional) Slack webhook for notifications
 
@@ -100,7 +98,6 @@ EMAIL=admin@yourdomain.com
 
 # Optional API Keys
 MISTRAL_API_KEY=...
-AMADEUS_CLIENT_ID=...
 STRIPE_SECRET_KEY=...
 ```
 

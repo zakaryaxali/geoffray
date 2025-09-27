@@ -1,13 +1,12 @@
 # BE-Geoffray Backend
 
-Backend service for the Geoffray application, providing authentication, event management, chat with AI, and flight search capabilities.
+Backend service for the Geoffray application, providing authentication, event management, and chat with AI capabilities.
 
 ## Features
 
 - **Authentication System** - JWT-based user authentication
 - **Event Management** - Create, manage, and join events
 - **Chat with AI** - Mistral AI integration for conversational capabilities
-- **Flight Search** - Amadeus API integration for flight inspiration and date search
 - **Localization** - Multi-language support with translation system
 - **Payment Processing** - Stripe integration for payments
 
@@ -27,7 +26,7 @@ cp .env.example .env
 
 # Edit .env with your configuration
 # Required: Database credentials, JWT secret
-# Optional: Mistral API, Amadeus API keys for AI/flight features
+# Optional: Mistral API keys for AI features
 ```
 
 ### 2. Start the Database
@@ -137,16 +136,6 @@ Content-Type: application/json
 }
 ```
 
-### Flight Search API
-
-The AI assistant can search for flights using these integrated tools:
-
-- **Flight Inspiration** - Find destinations from a city with price filters
-- **Cheapest Dates** - Find best dates to fly between cities
-
-Example queries to the chat:
-- "What destinations can I fly to from Paris?"
-- "When is the cheapest time to fly from London to Tokyo?"
 
 ### Health Check
 
@@ -175,7 +164,6 @@ be-geoffray/
 ├── localization/        # Translation system
 ├── models/              # Data models
 ├── services/            # Business logic
-│   ├── amadeus.go       # Flight search service
 │   ├── mistral_service.go # AI chat service
 │   └── event_service.go # Event management
 ├── docker-compose.yml   # PostgreSQL setup
@@ -224,7 +212,6 @@ Key environment variables:
 - `DB_*` - Database connection settings
 - `JWT_SECRET` - Secret key for JWT tokens
 - `MISTRAL_API_KEY` - For AI chat features
-- `AMADEUS_CLIENT_ID/SECRET` - For flight search
 - `STRIPE_SECRET_KEY` - For payment processing
 - `GIN_MODE` - Set to "release" for production
 

@@ -152,8 +152,6 @@ jobs:
             MISTRAL_API_KEY=${{ secrets.MISTRAL_API_KEY }}
             MISTRAL_API_URL=${{ secrets.MISTRAL_API_URL }}
             MISTRAL_AGENT_ID=${{ secrets.MISTRAL_AGENT_ID }}
-            AMADEUS_CLIENT_ID=${{ secrets.AMADEUS_CLIENT_ID }}
-            AMADEUS_CLIENT_SECRET=${{ secrets.AMADEUS_CLIENT_SECRET }}
             STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
             STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
             FRONTEND_API_URL=https://${{ secrets.DOMAIN }}/api

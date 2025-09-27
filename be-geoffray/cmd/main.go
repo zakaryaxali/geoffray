@@ -72,9 +72,8 @@ func main() {
 	protected := router.Group("/")
 	protected.Use(middlewares.JWTAuthMiddleware()) // Apply JWT middleware only to protected routes
 	{
-		routes.RegisterUserRoutes(protected)  // Only these routes need authentication
-		routes.RegisterEventRoutes(protected) // Protected event routes
-		routes.RegisterFlightRoutes(protected)
+		routes.RegisterUserRoutes(protected)          // Only these routes need authentication
+		routes.RegisterEventRoutes(protected)         // Protected event routes
 		routes.RegisterEventMessagesRoutes(protected) // Protected event messages routes
 	}
 
