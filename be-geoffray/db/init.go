@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
+	"strings"
 	"time"
 
 	"be-geoffray/config"
@@ -18,11 +20,39 @@ var DB *sql.DB
 func InitDB() {
 	var err error
 
+	// Determine SSL mode based on environment
+	env := os.Getenv("ENV")
+	var sslMode string
+	switch env {
+	case "production":
+		sslMode = "require" // Enforce SSL in production
+	case "staging":
+		sslMode = "prefer" // Try SSL first, fallback if not available
+	default:
+		sslMode = "disable" // Development/local environments
+	}
+	log.Printf("Environment: %s, Using SSL mode: %s\n", env, sslMode)
+
 	// Check if DATABASE_URL environment variable is set
 	databaseURL := os.Getenv("DATABASE_URL")
 	if databaseURL != "" {
 		// Use the full connection string if available
 		log.Println("Using DATABASE_URL environment variable for database connection")
+
+		// Ensure DATABASE_URL uses our determined SSL mode
+		if strings.Contains(databaseURL, "sslmode=") {
+			// Replace existing sslmode with our determined one
+			re := regexp.MustCompile(`sslmode=\w+`)
+			databaseURL = re.ReplaceAllString(databaseURL, fmt.Sprintf("sslmode=%s", sslMode))
+		} else {
+			// Add sslmode parameter
+			if strings.Contains(databaseURL, "?") {
+				databaseURL += fmt.Sprintf("&sslmode=%s", sslMode)
+			} else {
+				databaseURL += fmt.Sprintf("?sslmode=%s", sslMode)
+			}
+		}
+
 		DB, err = sql.Open("postgres", databaseURL)
 		if err != nil {
 			log.Printf("Error opening database connection with DATABASE_URL: %v\n", err)
@@ -31,12 +61,6 @@ func InitDB() {
 	} else {
 		// Construct the connection string with configurable SSL mode
 		log.Println("Constructing database connection string from individual parameters")
-
-		// Determine SSL mode based on Gin mode
-		sslMode := "disable" // Default for local development
-		if gin.Mode() == gin.ReleaseMode {
-			sslMode = "require" // Use SSL in production
-		}
 
 		// Get configuration from AppConfig
 		appConfig := config.GetConfig()
