@@ -359,15 +359,7 @@ func ProcessAgentMessageWithMistral(c *gin.Context, eventID string, messageID st
 		return fmt.Errorf("error getting agent messages: %w", err)
 	}
 
-	// Get event data to use for flight date parameters
-	event, err := GetEventByID(eventID)
-	// Continue even if event data can't be retrieved - not a critical error
-	var eventData *models.Event
-	if err == nil {
-		eventData = event
-	} else {
-		fmt.Printf("Warning: %v\n", err)
-	}
+	// Note: Event data retrieval removed as it's no longer needed after Amadeus removal
 
 	// Convert event messages to Mistral format
 	mistralMessages := ConvertEventMessagesToMistralMessages(messages)
