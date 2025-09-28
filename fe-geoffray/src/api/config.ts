@@ -4,7 +4,7 @@
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 
-type Environment = 'local' | 'development' | 'production';
+type Environment = 'local' | 'development' | 'staging' | 'production';
 
 interface ApiConfig {
   baseUrl: string;
@@ -13,7 +13,13 @@ interface ApiConfig {
 
 // Get the API URL from Expo Constants or fallback to a reasonable default
 const getApiUrl = (): string => {
-  // First check if we have an API URL from app.config.js
+  // First check if we have EXPO_PUBLIC_API_URL environment variable (runtime configuration)
+  // This is set in docker-compose.staging.yml and takes precedence
+  if (process.env.EXPO_PUBLIC_API_URL) {
+    return process.env.EXPO_PUBLIC_API_URL;
+  }
+  
+  // Then check if we have an API URL from app.config.js (build-time configuration)
   const configApiUrl = Constants.expoConfig?.extra?.apiUrl;
   if (configApiUrl) {
     return configApiUrl;
@@ -38,6 +44,11 @@ const getApiUrl = (): string => {
     return 'http://localhost:8080';
   }
   
+  if (environment === 'staging') {
+    // For staging environment, use the staging server
+    return 'https://91.98.207.252/api';
+  }
+  
   // For development and production, use the local geoffray API
   return 'http://localhost:8080';
 };
@@ -48,6 +59,10 @@ const configs: Record<Environment, ApiConfig> = {
     timeout: 10000,
   },
   local: {
+    baseUrl: getApiUrl(),
+    timeout: 10000,
+  },
+  staging: {
     baseUrl: getApiUrl(),
     timeout: 10000,
   },

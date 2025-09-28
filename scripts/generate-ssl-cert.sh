@@ -51,7 +51,7 @@ OU = IT Department
 CN = $SERVER_IP
 
 [v3_req]
-keyUsage = keyEncipherment, dataEncipherment
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 extendedKeyUsage = serverAuth
 subjectAltName = @alt_names
 

@@ -1,6 +1,14 @@
 # Multi-stage build for Expo Web application
 FROM node:20-alpine AS builder
 
+# Accept build arguments for environment configuration
+ARG ENV=development
+ARG EXPO_PUBLIC_API_URL
+
+# Set environment variables for build
+ENV ENV=${ENV}
+ENV EXPO_PUBLIC_API_URL=${EXPO_PUBLIC_API_URL}
+
 # Set working directory
 WORKDIR /app
 
@@ -13,7 +21,7 @@ RUN npm ci --only=production
 # Copy all source files
 COPY . .
 
-# Build Expo web application
+# Build Expo web application with environment configuration
 RUN npx expo export --platform web --output-dir dist
 
 # Production stage with Nginx

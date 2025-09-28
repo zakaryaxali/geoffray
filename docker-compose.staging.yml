@@ -58,12 +58,13 @@ services:
     build:
       context: ./fe-geoffray
       dockerfile: Dockerfile
+      args:
+        ENV: staging
+        EXPO_PUBLIC_API_URL: https://${SERVER_IP:-91.98.207.252}/api
     container_name: geoffray-frontend
     networks:
       - geoffray-network
     restart: unless-stopped
-    environment:
-      EXPO_PUBLIC_API_URL: https://${SERVER_IP:-91.98.207.252}/api
 
   nginx:
     image: nginx:alpine

@@ -3,7 +3,8 @@ const { getDefaultConfig } = require('expo/metro-config');
 
 // Get the app environment or default to development
 const getAppEnv = () => {
-  return process.env.APP_ENV || 'development';
+  // Use ENV for consistency with backend, fallback to APP_ENV for compatibility
+  return process.env.ENV || process.env.APP_ENV || 'development';
 };
 
 // Define configuration for each environment
@@ -13,7 +14,7 @@ const envConfig = {
     slug: 'fe-geoffray', // Same slug for all environments
     scheme: 'geoffraylocal',
     extra: {
-      apiUrl: 'http://localhost:8080',
+      apiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080',
       eas: {
         projectId: '8e1b564f-84b4-4cd2-81fb-4f146ae360e6',
       },
@@ -26,11 +27,23 @@ const envConfig = {
     icon: './assets/images/icon-dev.png', // You can create a dev icon with a badge
     scheme: 'geoffraydev',
     extra: {
-      apiUrl: 'http://localhost:8080',
+      apiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080',
       eas: {
         projectId: '8e1b564f-84b4-4cd2-81fb-4f146ae360e6',
       },
       environment: 'development',
+    },
+  },
+  staging: {
+    name: 'Geoffray (Staging)',
+    slug: 'fe-geoffray',
+    scheme: 'geoffraystaging',
+    extra: {
+      apiUrl: process.env.EXPO_PUBLIC_API_URL || 'https://91.98.207.252/api',
+      eas: {
+        projectId: '8e1b564f-84b4-4cd2-81fb-4f146ae360e6',
+      },
+      environment: 'staging',
     },
   },
   production: {
@@ -38,7 +51,7 @@ const envConfig = {
     slug: 'fe-geoffray', // Same slug for all environments
     scheme: 'geoffray',
     extra: {
-      apiUrl: 'http://localhost:8080',
+      apiUrl: process.env.EXPO_PUBLIC_API_URL || 'https://api.geoffray.com',
       eas: {
         projectId: '8e1b564f-84b4-4cd2-81fb-4f146ae360e6',
       },
