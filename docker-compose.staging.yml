@@ -60,7 +60,7 @@ services:
       dockerfile: Dockerfile
       args:
         ENV: staging
-        EXPO_PUBLIC_API_URL: https://${SERVER_IP:-91.98.207.252}/api
+        EXPO_PUBLIC_API_URL: http://staging.geoffray.xyz/api
     container_name: geoffray-frontend
     networks:
       - geoffray-network
@@ -71,11 +71,9 @@ services:
     container_name: geoffray-nginx
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf
       - ./nginx/conf.d/geoffray-staging.conf:/etc/nginx/conf.d/default.conf
-      - ./nginx/ssl:/etc/nginx/ssl:ro
     depends_on:
       - backend
       - frontend
