@@ -102,6 +102,3 @@ volumes:
 networks:
   geoffray-network:
     driver: bridge
-
-
-    git clone https://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@github.com/zakaryaxali/geoffray.git geoffray

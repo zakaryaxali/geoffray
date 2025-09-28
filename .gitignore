@@ -102,6 +102,10 @@ app-example
 .DS_Store
 *.pem
 
+# SSL certificates and keys (environment-specific)
+nginx/ssl/cert.pem
+nginx/ssl/private.key
+
 # local env files
 .env*.local
 
