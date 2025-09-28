@@ -60,7 +60,7 @@ services:
       dockerfile: Dockerfile
       args:
         ENV: staging
-        EXPO_PUBLIC_API_URL: http://staging.geoffray.xyz/api
+        EXPO_PUBLIC_API_URL: https://staging.geoffray.xyz/api
     container_name: geoffray-frontend
     networks:
       - geoffray-network

@@ -46,7 +46,7 @@ const getApiUrl = (): string => {
   
   if (environment === 'staging') {
     // For staging environment, use the staging server
-    return 'https://91.98.207.252/api';
+    return 'https://staging.geoffray.xyz/api';
   }
   
   // For development and production, use the local geoffray API
