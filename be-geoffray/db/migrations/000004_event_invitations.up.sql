@@ -1,6 +1,6 @@
 -- Create event_invitations table
 CREATE TABLE IF NOT EXISTS event_invitations (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
     email VARCHAR(255),
     phone VARCHAR(50),
