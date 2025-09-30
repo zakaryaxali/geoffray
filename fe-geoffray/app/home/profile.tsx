@@ -10,7 +10,6 @@ import {BrandColors} from '@/src/constants/Colors';
 import {useRouter} from 'expo-router';
 
 // Import components
-import {ProfileHeader} from '@/src/components/profile/ProfileHeader';
 import {PersonalInfoSection} from '@/src/components/profile/PersonalInfoSection';
 import {SettingsSection} from '@/src/components/profile/SettingsSection';
 import {LanguageModal} from '@/src/components/profile/LanguageModal';
@@ -52,7 +51,6 @@ export default function ProfileScreen() {
   // Use our custom hook to manage profile data
   const {
     profile,
-    profileImage,
     firstName,
     lastName,
     email,
@@ -64,7 +62,6 @@ export default function ProfileScreen() {
     phoneError,
     isLoading,
     isSaving,
-    setProfileImage,
     setFirstName,
     setLastName,
     setCountryCode,
@@ -152,10 +149,6 @@ export default function ProfileScreen() {
     },
   ];
 
-  const handleEditImage = () => {
-    // This would be implemented to handle image selection
-    console.log('Edit profile image');
-  };
 
   if (isLoading) {
     return (
@@ -167,16 +160,7 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={[profileStyles.safeArea, { backgroundColor: themeColors.background }]}>
-      <ScrollView style={[profileStyles.container, { backgroundColor: themeColors.background }]}>
-        {/* Profile header */}
-        <ProfileHeader
-          firstName={firstName}
-          lastName={lastName}
-          email={email}
-          profileImage={profileImage}
-          onEditImage={handleEditImage}
-          themeColors={themeColors}
-        />
+      <ScrollView style={[profileStyles.container, { backgroundColor: themeColors.background }]} contentContainerStyle={{ paddingTop: 40 }}>
         
         {/* Personal Information Section */}
         <PersonalInfoSection
