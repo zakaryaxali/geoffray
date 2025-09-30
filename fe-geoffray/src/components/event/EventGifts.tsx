@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { ScrollView, View, TouchableOpacity, ActivityIndicator, Alert, Linking } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/src/components/ThemedText';
@@ -101,10 +101,19 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
   };
 
   // Open gift URL
-  const handleOpenGift = (url: string) => {
+  const handleOpenGift = async (url: string) => {
     if (url) {
-      // In a real app, you would use Linking.openURL(url)
-      console.log('Opening gift URL:', url);
+      try {
+        const canOpen = await Linking.canOpenURL(url);
+        if (canOpen) {
+          await Linking.openURL(url);
+        } else {
+          Alert.alert(t('event.gifts.errorTitle'), t('event.gifts.cannotOpenUrl'));
+        }
+      } catch (error) {
+        console.error('Error opening URL:', error);
+        Alert.alert(t('event.gifts.errorTitle'), t('event.gifts.openUrlError'));
+      }
     }
   };
 
