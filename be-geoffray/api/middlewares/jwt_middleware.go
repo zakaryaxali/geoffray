@@ -23,13 +23,11 @@ const (
 
 // Claims structure
 type Claims struct {
-	UserID      string `json:"user_id"`
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	Email       string `json:"email"`
-	CountryCode string `json:"country_code"`
-	PhoneNumber string `json:"phone_number"`
-	Type        string `json:"token_type"` // "access" or "refresh"
+	UserID    string `json:"user_id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
+	Type      string `json:"token_type"` // "access" or "refresh"
 	jwt.RegisteredClaims
 }
 
@@ -49,43 +47,20 @@ func getJWTSecret() []byte {
 func GenerateJWT(userID string) (string, error) {
 	// Get user details from database
 	var firstName, lastName, email string
-	// Use sql.NullString for potentially NULL fields
-	var countryCodeNull, phoneNumberNull sql.NullString
 
-	query := `SELECT first_name, last_name, email, country_code, phone_number FROM users WHERE id = $1`
-	err := db.DB.QueryRow(query, userID).Scan(&firstName, &lastName, &email, &countryCodeNull, &phoneNumberNull)
+	query := `SELECT first_name, last_name, email FROM users WHERE id = $1`
+	err := db.DB.QueryRow(query, userID).Scan(&firstName, &lastName, &email)
 	if err != nil {
 		return "", fmt.Errorf("error fetching user details: %w", err)
 	}
 
-	// Convert NullString to string, using empty string if NULL
-	countryCode := ""
-	if countryCodeNull.Valid {
-		countryCode = countryCodeNull.String
-	}
-
-	phoneNumber := ""
-	if phoneNumberNull.Valid {
-		phoneNumber = phoneNumberNull.String
-	}
-
-	// Handle null values from database
-	if countryCode == "" {
-		countryCode = ""
-	}
-	if phoneNumber == "" {
-		phoneNumber = ""
-	}
-
 	expirationTime := time.Now().Add(AccessTokenExpiration)
 	claims := &Claims{
-		UserID:      userID,
-		FirstName:   firstName,
-		LastName:    lastName,
-		Email:       email,
-		CountryCode: countryCode,
-		PhoneNumber: phoneNumber,
-		Type:        "access",
+		UserID:    userID,
+		FirstName: firstName,
+		LastName:  lastName,
+		Email:     email,
+		Type:      "access",
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

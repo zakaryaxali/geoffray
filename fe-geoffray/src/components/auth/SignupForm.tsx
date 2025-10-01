@@ -10,13 +10,10 @@ interface SignupFormProps {
   lastName: string;
   email: string;
   password: string;
-  phoneNumber: string;
-  countryCode: string;
   isValidFirstName: boolean;
   isValidLastName: boolean;
   isValidEmail: boolean;
   isValidPassword: boolean;
-  isValidPhone: boolean;
   errorMessage: string;
   isRegistering: boolean;
   inviteCode: string | null;
@@ -26,8 +23,6 @@ interface SignupFormProps {
   setLastName: (value: string) => void;
   setEmail: (value: string) => void;
   setPassword: (value: string) => void;
-  setPhoneNumber: (value: string) => void;
-  setCountryCode: (value: string) => void;
   setIsValidFirstName: (value: boolean) => void;
   setIsValidLastName: (value: boolean) => void;
   setIsValidEmail: (value: boolean) => void;
@@ -42,13 +37,10 @@ export const SignupForm = ({
   lastName,
   email,
   password,
-  phoneNumber,
-  countryCode,
   isValidFirstName,
   isValidLastName,
   isValidEmail,
   isValidPassword,
-  isValidPhone,
   errorMessage,
   isRegistering,
   inviteCode,
@@ -58,8 +50,6 @@ export const SignupForm = ({
   setLastName,
   setEmail,
   setPassword,
-  setPhoneNumber,
-  setCountryCode,
   setIsValidFirstName,
   setIsValidLastName,
   setIsValidEmail,
@@ -162,43 +152,6 @@ export const SignupForm = ({
         )}
       </View>
       
-      {/* Phone Number */}
-      <View style={authStyles.inputContainer}>
-        <ThemedText style={[authStyles.inputLabel, { color: themeColors.textSecondary }]}>
-          {t('profile.phoneNumber')} (optional)
-        </ThemedText>
-        <View style={authStyles.phoneInputContainer}>
-          <TextInput
-            style={[authStyles.countryCodeInput, { 
-              color: themeColors.text,
-              borderColor: themeColors.border,
-              backgroundColor: themeColors.surfaceVariant
-            }, !isValidPhone && authStyles.inputError]}
-            placeholder="+1"
-            placeholderTextColor={themeColors.textSecondary}
-            value={countryCode}
-            onChangeText={setCountryCode}
-            keyboardType="phone-pad"
-            editable={!(inviteInfo && inviteInfo.invitedPhone)} // Make phone non-editable if it was provided in the invitation
-          />
-          <TextInput
-            style={[authStyles.phoneInput, { 
-              color: themeColors.text,
-              borderColor: themeColors.border,
-              backgroundColor: themeColors.surfaceVariant
-            }, !isValidPhone && authStyles.inputError]}
-            placeholder="123 456 7890"
-            placeholderTextColor={themeColors.textSecondary}
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-            keyboardType="phone-pad"
-            editable={!(inviteInfo && inviteInfo.invitedPhone)} // Make phone non-editable if it was provided in the invitation
-          />
-        </View>
-        {!isValidPhone && (
-          <ThemedText style={authStyles.validationError}>{t('auth.validPhoneRequired')}</ThemedText>
-        )}
-      </View>
       
       {/* Password */}
       <View style={authStyles.inputContainer}>

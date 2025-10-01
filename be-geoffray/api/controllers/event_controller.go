@@ -114,7 +114,7 @@ func GetEventByID(c *gin.Context) {
 // InviteParticipantInput represents the request body for inviting a participant
 type InviteParticipantInput struct {
 	Identifier string `json:"identifier" binding:"required"`
-	Type       string `json:"type" binding:"required,oneof=email phone"`
+	Type       string `json:"type" binding:"required,oneof=email"`
 }
 
 // InviteParticipantResponse represents the response for the invite participant endpoint
@@ -180,7 +180,7 @@ func InviteParticipant(c *gin.Context) {
 	// Clean the identifier
 	input.Identifier = strings.TrimSpace(input.Identifier)
 
-	// Validate the identifier based on type
+	// Validate the identifier (email only)
 	if input.Type == "email" {
 		// Simple email validation
 		emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
@@ -188,27 +188,11 @@ func InviteParticipant(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email format"})
 			return
 		}
-	} else if input.Type == "phone" {
-		// Simple phone validation (allow numbers, spaces, +, and -)
-		phoneRegex := regexp.MustCompile(`^[\+\d\s\-]+$`)
-		if !phoneRegex.MatchString(input.Identifier) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid phone format"})
-			return
-		}
-		// Normalize phone by removing spaces and dashes
-		input.Identifier = regexp.MustCompile(`[\s\-]`).ReplaceAllString(input.Identifier, "")
 	}
 
-	// Check if a user with this identifier exists
+	// Check if a user with this email exists
 	var existingUserID string
-	userQuery := ""
-	if input.Type == "email" {
-		userQuery = `SELECT id FROM users WHERE email = $1`
-	} else {
-		// For phone, we need to check both the country code and phone number
-		// This is simplified and might need adjustment based on how phone numbers are stored
-		userQuery = `SELECT id FROM users WHERE phone_number = $1`
-	}
+	userQuery := `SELECT id FROM users WHERE email = $1`
 
 	err = db.DB.QueryRow(userQuery, input.Identifier).Scan(&existingUserID)
 
@@ -252,28 +236,17 @@ func InviteParticipant(c *gin.Context) {
 	// Create the invitation record
 	inviteQuery := `
 		INSERT INTO event_invitations 
-		(event_id, email, phone, invite_code, status, expires_at, created_at, updated_at) 
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+		(event_id, email, invite_code, status, expires_at, created_at, updated_at) 
+		VALUES ($1, $2, $3, $4, $5, $6, $7) 
 		RETURNING id
 	`
 
 	var invitationID string
-	var email, phone sql.NullString
-
-	if input.Type == "email" {
-		email = sql.NullString{String: input.Identifier, Valid: true}
-		phone = sql.NullString{Valid: false}
-	} else {
-		email = sql.NullString{Valid: false}
-		phone = sql.NullString{String: input.Identifier, Valid: true}
-	}
-
 	now := time.Now()
 	err = db.DB.QueryRow(
 		inviteQuery,
 		eventID,
-		email,
-		phone,
+		input.Identifier,
 		inviteCode,
 		"pending",
 		expiresAt,

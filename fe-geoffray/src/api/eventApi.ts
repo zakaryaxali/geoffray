@@ -40,8 +40,8 @@ export interface EventResponse {
 }
 
 export interface ParticipantInviteRequest {
-  identifier: string; // email or phone number
-  type: 'email' | 'phone';
+  identifier: string; // email
+  type: 'email';
 }
 
 export interface ParticipantInviteResponse {
@@ -58,7 +58,6 @@ export interface InviteValidationResponse {
   expired?: boolean;
   message: string;
   invitedEmail?: string;
-  invitedPhone?: string;
 }
 
 export interface UpdateParticipantStatusRequest {

@@ -28,15 +28,12 @@ export const useSignupData = (inviteCode: string | null) => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [countryCode, setCountryCode] = useState('+1');
   
   // Form validation state
   const [isValidFirstName, setIsValidFirstName] = useState(true);
   const [isValidLastName, setIsValidLastName] = useState(true);
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [isValidPassword, setIsValidPassword] = useState(true);
-  const [isValidPhone, setIsValidPhone] = useState(true);
   
   // UI state
   const [errorMessage, setErrorMessage] = useState('');
@@ -67,20 +64,6 @@ export const useSignupData = (inviteCode: string | null) => {
         if (response.invitedEmail) {
           setEmail(response.invitedEmail);
         }
-        
-        // Pre-fill phone if it was provided in the invitation
-        if (response.invitedPhone) {
-          // Extract country code and phone number
-          const phone = response.invitedPhone;
-          if (phone.startsWith('+')) {
-            // Simple parsing - this could be more sophisticated
-            const countryCodeEnd = phone.indexOf(' ') > 0 ? phone.indexOf(' ') : 3;
-            setCountryCode(phone.substring(0, countryCodeEnd));
-            setPhoneNumber(phone.substring(countryCodeEnd).trim());
-          } else {
-            setPhoneNumber(phone);
-          }
-        }
       } catch (error) {
         console.error('Error validating invitation:', error);
         setErrorMessage(t('event.failedToValidateInvitation'));
@@ -106,9 +89,6 @@ export const useSignupData = (inviteCode: string | null) => {
     return password.length >= 6;
   };
 
-  const validatePhone = (phone: string) => {
-    return phone.trim().length >= 6;
-  };
 
   // Handle signup (with or without invitation)
   const handleRegister = async () => {
@@ -147,13 +127,6 @@ export const useSignupData = (inviteCode: string | null) => {
       setIsValidPassword(true);
     }
 
-    // Validate phone (only if provided - phone is optional)
-    if (phoneNumber && phoneNumber.trim() !== '' && !validatePhone(phoneNumber)) {
-      setIsValidPhone(false);
-      isValid = false;
-    } else {
-      setIsValidPhone(true);
-    }
 
     if (!isValid) return;
 
@@ -163,12 +136,8 @@ export const useSignupData = (inviteCode: string | null) => {
       // Construct the full name from first and last name
       const fullName = `${firstName} ${lastName}`;
       
-      // Only pass phone number and country code if they are provided
-      const finalPhoneNumber = phoneNumber && phoneNumber.trim() !== '' ? phoneNumber : undefined;
-      const finalCountryCode = finalPhoneNumber ? countryCode : undefined;
-      
       // Call the registration API function with all user details
-      await register(fullName, email, password, firstName, lastName, finalPhoneNumber, finalCountryCode);
+      await register(fullName, email, password, firstName, lastName);
       
       // If we have a valid invite code, accept the invitation
       if (inviteCode && inviteInfo?.valid) {
@@ -254,15 +223,12 @@ export const useSignupData = (inviteCode: string | null) => {
     lastName,
     email,
     password,
-    phoneNumber,
-    countryCode,
     
     // Form validation state
     isValidFirstName,
     isValidLastName,
     isValidEmail,
     isValidPassword,
-    isValidPhone,
     
     // UI state
     errorMessage,
@@ -276,13 +242,10 @@ export const useSignupData = (inviteCode: string | null) => {
     setLastName,
     setEmail,
     setPassword,
-    setPhoneNumber,
-    setCountryCode,
     setIsValidFirstName,
     setIsValidLastName,
     setIsValidEmail,
     setIsValidPassword,
-    setIsValidPhone,
     setErrorMessage,
     
     // Actions

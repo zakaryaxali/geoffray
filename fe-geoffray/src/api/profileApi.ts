@@ -6,8 +6,6 @@ export type ProfileData = {
   last_name?: string;
   email: string;
   profilePicture?: string;
-  country_code?: string;
-  phone_number?: string;
   // Add other profile fields as needed
 };
 

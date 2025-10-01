@@ -23,24 +23,16 @@ interface AuthResponse {
 }
 
 /**
- * Register a new user with first name, last name, email, password, and optional phone number
+ * Register a new user with first name, last name, email, and password
  */
 export const register = async (
   username: string, 
   email: string, 
   password: string, 
   firstName?: string, 
-  lastName?: string, 
-  phoneNumber?: string,
-  countryCode?: string
+  lastName?: string
 ): Promise<void> => {
   try {
-    // Format the country code to ensure it has a + prefix if provided
-    let formattedCountryCode = countryCode;
-    if (countryCode && !countryCode.startsWith('+')) {
-      formattedCountryCode = `+${countryCode}`;
-    }
-
     const response = await fetch(`${apiConfig.baseUrl}/auth/register`, {
       method: 'POST',
       headers: {
@@ -51,9 +43,7 @@ export const register = async (
         email, 
         password, 
         first_name: firstName, 
-        last_name: lastName, 
-        phone_number: phoneNumber,
-        country_code: formattedCountryCode
+        last_name: lastName
       }),
     });
 

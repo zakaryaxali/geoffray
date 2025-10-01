@@ -10,7 +10,7 @@ import {Colors} from '@/src/constants/Colors';
 interface InviteParticipantModalProps {
   visible: boolean;
   onClose: () => void;
-  onInvite: (type: 'email' | 'phone', identifier: string) => Promise<ParticipantInviteResponse>;
+  onInvite: (type: 'email', identifier: string) => Promise<ParticipantInviteResponse>;
 }
 
 export const InviteParticipantModal: React.FC<InviteParticipantModalProps> = ({
@@ -22,7 +22,7 @@ export const InviteParticipantModal: React.FC<InviteParticipantModalProps> = ({
   const { theme } = useTheme();
   const themeColors = theme === 'dark' ? Colors.dark : Colors.light;
   
-  const [inviteType, setInviteType] = useState<'email' | 'phone'>('email');
+  const [inviteType, setInviteType] = useState<'email'>('email');
   const [identifier, setIdentifier] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [inviteResponse, setInviteResponse] = useState<ParticipantInviteResponse | null>(null);
@@ -59,14 +59,6 @@ export const InviteParticipantModal: React.FC<InviteParticipantModalProps> = ({
     onClose();
   };
 
-  const handleTabChange = (type: 'email' | 'phone') => {
-    setInviteType(type);
-    setIdentifier('');
-    setInviteResponse(null);
-    setTimeout(() => {
-      identifierInputRef.current?.focus();
-    }, 100);
-  };
 
   return (
     <Modal
@@ -83,50 +75,6 @@ export const InviteParticipantModal: React.FC<InviteParticipantModalProps> = ({
               {t('event.inviteParticipant')}
             </ThemedText>
             
-            {/* Tab buttons for email/phone */}
-            <View style={eventStyles.tabButtons}>
-              <TouchableOpacity 
-                style={[
-                  eventStyles.tabButton, 
-                  { 
-                    backgroundColor: inviteType === 'email' 
-                      ? themeColors.primary 
-                      : themeColors.surface 
-                  }
-                ]}
-                onPress={() => handleTabChange('email')}
-              >
-                <ThemedText 
-                  style={[
-                    eventStyles.tabButtonText, 
-                    { color: inviteType === 'email' ? '#FFFFFF' : themeColors.text }
-                  ]}
-                >
-                  {t('event.email')}
-                </ThemedText>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[
-                  eventStyles.tabButton, 
-                  { 
-                    backgroundColor: inviteType === 'phone' 
-                      ? themeColors.primary 
-                      : themeColors.surface,
-                    marginLeft: 8
-                  }
-                ]}
-                onPress={() => handleTabChange('phone')}
-              >
-                <ThemedText 
-                  style={[
-                    eventStyles.tabButtonText, 
-                    { color: inviteType === 'phone' ? '#FFFFFF' : themeColors.text }
-                  ]}
-                >
-                  {t('event.phone')}
-                </ThemedText>
-              </TouchableOpacity>
-            </View>
             
             {/* Input field */}
             <TextInput
@@ -139,11 +87,11 @@ export const InviteParticipantModal: React.FC<InviteParticipantModalProps> = ({
                   backgroundColor: themeColors.surface
                 }
               ]}
-              placeholder={inviteType === 'email' ? t('event.enterEmail') : t('event.enterPhone')}
+              placeholder={t('event.enterEmail')}
               placeholderTextColor={themeColors.textSecondary}
               value={identifier}
               onChangeText={setIdentifier}
-              keyboardType={inviteType === 'email' ? 'email-address' : 'phone-pad'}
+              keyboardType="email-address"
               autoCapitalize="none"
               editable={!isLoading}
             />

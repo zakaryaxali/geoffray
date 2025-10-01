@@ -9,7 +9,6 @@ type EventInvitation struct {
 	ID         string    `json:"id"`
 	EventID    string    `json:"event_id"`
 	Email      string    `json:"email"`
-	Phone      string    `json:"phone"`
 	InviteCode string    `json:"invite_code"`
 	Status     string    `json:"status"` // "pending", "accepted", "expired"
 	ExpiresAt  time.Time `json:"expires_at"`

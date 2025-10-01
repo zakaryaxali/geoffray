@@ -9,23 +9,15 @@ interface PersonalInfoSectionProps {
   firstName: string;
   lastName: string;
   email: string;
-  countryCode: string;
-  phoneNumber: string;
   isEditingFirstName: boolean;
   isEditingLastName: boolean;
-  isEditingPhone: boolean;
-  phoneError: string | null;
   isSaving: boolean;
   themeColors: any;
   setFirstName: (value: string) => void;
   setLastName: (value: string) => void;
-  setCountryCode: (value: string) => void;
-  setPhoneNumber: (value: string) => void;
   setIsEditingFirstName: (value: boolean) => void;
   setIsEditingLastName: (value: boolean) => void;
-  setIsEditingPhone: (value: boolean) => void;
   handleSaveProfile: () => void;
-  handleSavePhone: () => void;
 }
 
 export const PersonalInfoSection = ({
@@ -33,23 +25,15 @@ export const PersonalInfoSection = ({
   firstName,
   lastName,
   email,
-  countryCode,
-  phoneNumber,
   isEditingFirstName,
   isEditingLastName,
-  isEditingPhone,
-  phoneError,
   isSaving,
   themeColors,
   setFirstName,
   setLastName,
-  setCountryCode,
-  setPhoneNumber,
   setIsEditingFirstName,
   setIsEditingLastName,
-  setIsEditingPhone,
   handleSaveProfile,
-  handleSavePhone,
 }: PersonalInfoSectionProps) => {
   const { t } = useTranslation();
 
@@ -165,69 +149,6 @@ export const PersonalInfoSection = ({
         </Text>
       </View>
 
-      {/* Phone Number */}
-      <View style={styles.profileInfoContainer}>
-        <View style={styles.profileInfoHeader}>
-          <Text style={[styles.profileInfoLabel, { color: themeColors.textSecondary }]}>{t('profile.phoneNumber')}</Text>
-          {!isEditingPhone && (
-            <TouchableOpacity onPress={() => setIsEditingPhone(true)}>
-              <Ionicons name="create-outline" size={20} color={themeColors.primary} />
-            </TouchableOpacity>
-          )}
-        </View>
-        {isEditingPhone ? (
-          <View style={styles.editContainer}>
-            <View style={styles.phoneInputContainer}>
-              <TextInput
-                style={[styles.phoneInput, styles.countryCodeInput, { backgroundColor: themeColors.inputBackground, color: themeColors.text }]}
-                value={countryCode}
-                onChangeText={setCountryCode}
-                placeholder="+1"
-                placeholderTextColor={themeColors.textSecondary}
-                keyboardType="phone-pad"
-              />
-              <TextInput
-                style={[styles.phoneInput, { backgroundColor: themeColors.inputBackground, color: themeColors.text }]}
-                value={phoneNumber}
-                onChangeText={setPhoneNumber}
-                placeholder={t('profile.enterPhoneNumber')}
-                placeholderTextColor={themeColors.textSecondary}
-                keyboardType="phone-pad"
-              />
-            </View>
-            {phoneError && (
-              <Text style={[styles.errorText, { color: themeColors.error }]}>{phoneError}</Text>
-            )}
-            <View style={styles.editActions}>
-              <TouchableOpacity 
-                style={[styles.editButton, styles.cancelButton, { borderColor: themeColors.border }]} 
-                onPress={() => {
-                  setCountryCode(profile?.country_code || '');
-                  setPhoneNumber(profile?.phone_number || '');
-                  setIsEditingPhone(false);
-                }}
-              >
-                <Text style={[styles.editButtonText, { color: themeColors.text }]}>{t('common.cancel')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.editButton, styles.saveButton, { backgroundColor: themeColors.primary }]} 
-                onPress={handleSavePhone}
-                disabled={isSaving}
-              >
-                {isSaving ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
-                ) : (
-                  <Text style={styles.saveButtonText}>{t('common.save')}</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : (
-          <Text style={[styles.profileInfoValue, { color: themeColors.text }]}>
-            {countryCode && phoneNumber ? `${countryCode} ${phoneNumber}` : '—'}
-          </Text>
-        )}
-      </View>
     </View>
   );
 };
