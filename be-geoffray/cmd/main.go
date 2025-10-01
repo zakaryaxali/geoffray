@@ -8,6 +8,7 @@ import (
 	"be-geoffray/config"
 	"be-geoffray/db"
 	"be-geoffray/localization"
+	"be-geoffray/services"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,6 +22,12 @@ func main() {
 
 	// Setup database
 	db.SetupDatabase(db.DB)
+
+	// Sync participant counts for existing events (maintenance task)
+	eventService := services.NewEventService()
+	if err := eventService.SyncParticipantCounts(); err != nil {
+		log.Printf("Warning: Failed to sync participant counts on startup: %v", err)
+	}
 
 	// Initialize Gin router (Reads GIN_MODE env var)
 	router := gin.Default()

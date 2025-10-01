@@ -43,6 +43,19 @@ func (s *ParticipantService) UpdateParticipantStatus(eventID string, userID inte
 		return errors.New("failed to update participant status")
 	}
 
+	// Update the participants count in the events table
+	_, err = db.DB.Exec(`
+		UPDATE events 
+		SET participants_count = (
+			SELECT COUNT(*) FROM event_participants 
+			WHERE event_id = $1 AND (status = 'accepted' OR status = 'pending' OR status = 'going')
+		) 
+		WHERE id = $1`, eventID)
+	if err != nil {
+		log.Printf("Warning: Failed to update participants count for event %s: %v", eventID, err)
+		// Don't fail the request, just log the warning
+	}
+
 	return nil
 }
 
