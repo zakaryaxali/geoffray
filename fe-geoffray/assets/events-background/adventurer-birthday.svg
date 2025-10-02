@@ -1,0 +1,93 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#F7931E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FDC830;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1920" height="1080" fill="url(#skyGradient)"/>
+  
+  <!-- Mountain silhouettes -->
+  <path d="M 0 700 Q 200 550 400 680 Q 600 500 800 650 Q 1000 480 1200 620 Q 1400 520 1600 640 Q 1800 580 1920 660 L 1920 1080 L 0 1080 Z" 
+        fill="#2D3142" opacity="0.3"/>
+  <path d="M 0 800 Q 300 650 600 760 Q 900 600 1200 740 Q 1500 650 1800 780 L 1920 1080 L 0 1080 Z" 
+        fill="#2D3142" opacity="0.5"/>
+  
+  <!-- Hot air balloons with birthday theme -->
+  <g transform="translate(300, 250)">
+    <!-- Balloon 1 -->
+    <ellipse cx="0" cy="0" rx="70" ry="84" fill="#FF6B9D" opacity="0.9"/>
+    <ellipse cx="-24" cy="0" rx="24" ry="84" fill="#FF4D7D" opacity="0.7"/>
+    <ellipse cx="24" cy="0" rx="24" ry="84" fill="#FF8FB3" opacity="0.7"/>
+    <path d="M -40 70 L -20 120 L 20 120 L 40 70" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+    <rect x="-20" y="120" width="40" height="30" rx="4" fill="#D2691E" stroke="#654321" stroke-width="2"/>
+    <line x1="-40" y1="70" x2="-20" y2="120" stroke="#654321" stroke-width="2"/>
+    <line x1="40" y1="70" x2="20" y2="120" stroke="#654321" stroke-width="2"/>
+  </g>
+  
+  <g transform="translate(800, 180)">
+    <!-- Balloon 2 -->
+    <ellipse cx="0" cy="0" rx="60" ry="76" fill="#4ECDC4" opacity="0.9"/>
+    <ellipse cx="-20" cy="0" rx="20" ry="76" fill="#2FB8B0" opacity="0.7"/>
+    <ellipse cx="20" cy="0" rx="20" ry="76" fill="#6FD9D1" opacity="0.7"/>
+    <path d="M -36 64 L -16 104 L 16 104 L 36 64" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+    <rect x="-16" y="104" width="32" height="24" rx="4" fill="#D2691E" stroke="#654321" stroke-width="2"/>
+  </g>
+  
+  <g transform="translate(1400, 300)">
+    <!-- Balloon 3 -->
+    <ellipse cx="0" cy="0" rx="55" ry="70" fill="#FFD93D" opacity="0.9"/>
+    <ellipse cx="-18" cy="0" rx="18" ry="70" fill="#FFC107" opacity="0.7"/>
+    <ellipse cx="18" cy="0" rx="18" ry="70" fill="#FFEB3B" opacity="0.7"/>
+    <path d="M -32 60 L -16 100 L 16 100 L 32 60" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+    <rect x="-16" y="100" width="32" height="22" rx="3" fill="#D2691E" stroke="#654321" stroke-width="2"/>
+  </g>
+  
+  <g transform="translate(1600, 200)">
+    <!-- Balloon 4 - smaller, farther -->
+    <ellipse cx="0" cy="0" rx="40" ry="50" fill="#FF8FB3" opacity="0.8"/>
+    <ellipse cx="-14" cy="0" rx="14" ry="50" fill="#FF6B9D" opacity="0.6"/>
+    <ellipse cx="14" cy="0" rx="14" ry="50" fill="#FFB3D1" opacity="0.6"/>
+    <path d="M -24 44 L -12 72 L 12 72 L 24 44" fill="#8B4513" stroke="#654321" stroke-width="1.6"/>
+    <rect x="-12" y="72" width="24" height="16" rx="2" fill="#D2691E" stroke="#654321" stroke-width="1.6"/>
+  </g>
+  
+  <!-- Confetti particles -->
+  <circle cx="250" cy="150" r="6" fill="#FF6B9D" opacity="0.8"/>
+  <rect x="500" y="120" width="8" height="16" fill="#4ECDC4" opacity="0.8" transform="rotate(20 504 128)"/>
+  <circle cx="700" cy="200" r="5" fill="#FFD93D" opacity="0.8"/>
+  <rect x="950" y="180" width="6" height="12" fill="#FF6B9D" opacity="0.8" transform="rotate(-30 953 186)"/>
+  <circle cx="1100" cy="250" r="4" fill="#6FD9D1" opacity="0.8"/>
+  <rect x="1250" y="140" width="10" height="10" fill="#FFD93D" opacity="0.8" transform="rotate(45 1255 145)"/>
+  <circle cx="1450" cy="160" r="6" fill="#FF8FB3" opacity="0.8"/>
+  <rect x="1650" y="220" width="6" height="14" fill="#4ECDC4" opacity="0.8" transform="rotate(-15 1653 227)"/>
+  <circle cx="400" cy="280" r="5" fill="#FFD93D" opacity="0.8"/>
+  <rect x="600" y="300" width="7" height="13" fill="#FF8FB3" opacity="0.8" transform="rotate(35 603 306)"/>
+  <circle cx="1750" cy="350" r="4" fill="#4ECDC4" opacity="0.8"/>
+  <rect x="1050" y="120" width="8" height="8" fill="#FF6B9D" opacity="0.8" transform="rotate(-40 1054 124)"/>
+  
+  <!-- Distant birds -->
+  <path d="M 200 350 Q 210 340 220 350" stroke="#2D3142" stroke-width="3" fill="none" opacity="0.4"/>
+  <path d="M 230 350 Q 240 340 250 350" stroke="#2D3142" stroke-width="3" fill="none" opacity="0.4"/>
+  
+  <path d="M 1200 450 Q 1210 440 1220 450" stroke="#2D3142" stroke-width="3" fill="none" opacity="0.3"/>
+  <path d="M 1230 450 Q 1240 440 1250 450" stroke="#2D3142" stroke-width="3" fill="none" opacity="0.3"/>
+  
+  <path d="M 1700 380 Q 1710 370 1720 380" stroke="#2D3142" stroke-width="2.5" fill="none" opacity="0.35"/>
+  <path d="M 1728 380 Q 1738 370 1748 380" stroke="#2D3142" stroke-width="2.5" fill="none" opacity="0.35"/>
+  
+  <!-- Foreground elements -->
+  <ellipse cx="200" cy="1040" rx="150" ry="60" fill="#2D3142" opacity="0.6"/>
+  <ellipse cx="1700" cy="1050" rx="180" ry="50" fill="#2D3142" opacity="0.6"/>
+</svg>

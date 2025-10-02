@@ -1,0 +1,209 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="trendyFunGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ee0979;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff6a00;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="partyGlow" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#ffff00;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#ff00ff;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#00ffff;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <rect width="1920" height="1080" fill="url(#trendyFunGradient)"/>
+  
+  <!-- Party glow effects -->
+  <ellipse cx="400" cy="400" rx="300" ry="300" fill="url(#partyGlow)" opacity="0.5"/>
+  <ellipse cx="1500" cy="500" rx="350" ry="350" fill="url(#partyGlow)" opacity="0.4"/>
+  
+  <!-- Modern club floor -->
+  <rect x="0" y="750" width="1920" height="330" fill="#1a1a1a" opacity="0.8"/>
+  
+  <!-- LED dance floor tiles -->
+  <rect x="100" y="800" width="150" height="150" fill="#ff00ff" opacity="0.6"/>
+  <rect x="400" y="800" width="150" height="150" fill="#00ffff" opacity="0.6"/>
+  <rect x="700" y="800" width="150" height="150" fill="#ffff00" opacity="0.6"/>
+  <rect x="250" y="950" width="150" height="150" fill="#00ff00" opacity="0.6"/>
+  <rect x="550" y="950" width="150" height="150" fill="#ff00ff" opacity="0.6"/>
+  
+  <!-- Neon "PARTY" sign -->
+  <g transform="translate(960, 250)">
+    <text x="-180" y="0" font-family="Impact" font-size="120" fill="#ff00ff" font-weight="bold" opacity="0.9">PARTY</text>
+    <text x="-180" y="0" font-family="Impact" font-size="120" fill="#00ffff" font-weight="bold" opacity="0.4">PARTY</text>
+    <text x="-180" y="0" font-family="Impact" font-size="120" fill="#ffff00" font-weight="bold" opacity="0.2">PARTY</text>
+    
+    <!-- Neon tube effect -->
+    <rect x="-200" y="-90" width="400" height="110" fill="none" stroke="#ff00ff" stroke-width="5" opacity="0.7" rx="15"/>
+    <rect x="-195" y="-85" width="390" height="100" fill="none" stroke="#00ffff" stroke-width="3" opacity="0.5" rx="12"/>
+  </g>
+  
+  <!-- DJ booth (minimalist) -->
+  <g transform="translate(1600, 850)">
+    <rect x="-150" y="-100" width="300" height="150" fill="#2C3E50"/>
+    <rect x="-145" y="-95" width="290" height="140" fill="#34495E"/>
+    
+    <!-- Turntables -->
+    <circle cx="-60" cy="-40" r="40" fill="#1a1a1a"/>
+    <circle cx="-60" cy="-40" r="35" fill="#2C3E50"/>
+    <circle cx="-60" cy="-40" r="10" fill="#ff00ff" opacity="0.8"/>
+    
+    <circle cx="60" cy="-40" r="40" fill="#1a1a1a"/>
+    <circle cx="60" cy="-40" r="35" fill="#2C3E50"/>
+    <circle cx="60" cy="-40" r="10" fill="#00ffff" opacity="0.8"/>
+    
+    <!-- Mixer -->
+    <rect x="-30" y="20" width="60" height="25" fill="#1a1a1a"/>
+    <circle cx="-15" cy="32" r="4" fill="#00ff00" opacity="0.9"/>
+    <circle cx="0" cy="32" r="4" fill="#ffff00" opacity="0.9"/>
+    <circle cx="15" cy="32" r="4" fill="#ff0000" opacity="0.9"/>
+    
+    <!-- Laptop -->
+    <rect x="-80" y="15" width="60" height="35" rx="3" fill="#2C3E50"/>
+    <rect x="-75" y="20" width="50" height="25" fill="#667eea" opacity="0.5"/>
+  </g>
+  
+  <!-- Disco ball -->
+  <g transform="translate(960, 150)">
+    <circle cx="0" cy="0" r="60" fill="#C0C0C0"/>
+    
+    <!-- Mirror tiles -->
+    <rect x="-50" y="-50" width="20" height="20" fill="#E8E8E8"/>
+    <rect x="-25" y="-50" width="20" height="20" fill="#F5F5F5"/>
+    <rect x="0" y="-50" width="20" height="20" fill="#E8E8E8"/>
+    <rect x="25" y="-50" width="20" height="20" fill="#F5F5F5"/>
+    
+    <rect x="-50" y="-25" width="20" height="20" fill="#F5F5F5"/>
+    <rect x="-25" y="-25" width="20" height="20" fill="#E8E8E8"/>
+    <rect x="0" y="-25" width="20" height="20" fill="#F5F5F5"/>
+    <rect x="25" y="-25" width="20" height="20" fill="#E8E8E8"/>
+    
+    <!-- Light reflections -->
+    <circle cx="-30" cy="-30" r="15" fill="#ff00ff" opacity="0.5"/>
+    <circle cx="30" cy="20" r="12" fill="#00ffff" opacity="0.5"/>
+    
+    <!-- Chain -->
+    <line x1="0" y1="-60" x2="0" y2="-100" stroke="#C0C0C0" stroke-width="4"/>
+  </g>
+  
+  <!-- Light beams -->
+  <polygon points="960,150 800,700 1120,700" fill="#ff00ff" opacity="0.1"/>
+  <polygon points="960,150 600,700 900,700" fill="#00ffff" opacity="0.1"/>
+  <polygon points="960,150 1020,700 1320,700" fill="#ffff00" opacity="0.1"/>
+  
+  <!-- Modern bar -->
+  <g transform="translate(300, 900)">
+    <rect x="-120" y="-80" width="240" height="120" fill="#2C3E50"/>
+    <rect x="-115" y="-78" width="230" height="8" fill="#ff00ff" opacity="0.6"/>
+    
+    <!-- Bottles (minimalist) -->
+    <rect x="-90" y="-120" width="15" height="40" rx="2" fill="#00ffff" opacity="0.7"/>
+    <rect x="-60" y="-130" width="15" height="50" rx="2" fill="#ff00ff" opacity="0.7"/>
+    <rect x="-30" y="-125" width="15" height="45" rx="2" fill="#ffff00" opacity="0.7"/>
+    <rect x="0" y="-135" width="15" height="55" rx="2" fill="#00ff00" opacity="0.7"/>
+    
+    <!-- LED strip -->
+    <rect x="-120" y="35" width="240" height="5" fill="#00ffff" opacity="0.8"/>
+  </g>
+  
+  <!-- Cocktails (Instagram-worthy) -->
+  <g transform="translate(350, 950)">
+    <path d="M -25 -60 L -30 0 L 30 0 L 25 -60 Z" fill="#ff00ff" opacity="0.7"/>
+    <ellipse cx="0" cy="-60" rx="26" ry="8" fill="#ff66ff" opacity="0.6"/>
+    
+    <!-- Umbrella -->
+    <line x1="15" y1="-65" x2="15" y2="-40" stroke="#ffff00" stroke-width="2"/>
+    <path d="M 5 -65 Q 15 -75 25 -65" stroke="#ff00ff" stroke-width="3" fill="none"/>
+    
+    <!-- Straw -->
+    <rect x="20" y="-70" width="4" height="40" fill="#00ffff"/>
+    
+    <!-- Glow effect -->
+    <ellipse cx="0" cy="-30" rx="35" ry="50" fill="#ff00ff" opacity="0.2"/>
+  </g>
+  
+  <!-- Geometric balloons -->
+  <g transform="translate(200, 500)">
+    <!-- Hexagon balloon -->
+    <polygon points="0,-60 -35,-30 -35,30 0,60 35,30 35,-30" fill="#00ffff" opacity="0.8"/>
+    <polygon points="-10,-50 -30,-30 -30,20 -10,35 10,35 30,20 30,-30 10,-50" fill="#FFFFFF" opacity="0.4"/>
+    <line x1="0" y1="60" x2="10" y2="150" stroke="#00ffff" stroke-width="2"/>
+  </g>
+  
+  <g transform="translate(1720, 550)">
+    <!-- Diamond balloon -->
+    <polygon points="0,-70 -40,0 0,70 40,0" fill="#ff00ff" opacity="0.8"/>
+    <polygon points="0,-55 -25,0 0,55 25,0" fill="#FFFFFF" opacity="0.4"/>
+    <line x1="0" y1="70" x2="-10" y2="150" stroke="#ff00ff" stroke-width="2"/>
+  </g>
+  
+  <!-- Speaker system -->
+  <g transform="translate(100, 900)">
+    <rect x="-50" y="-120" width="100" height="180" rx="5" fill="#1a1a1a"/>
+    
+    <!-- Woofer -->
+    <circle cx="0" cy="-40" r="35" fill="#2C3E50"/>
+    <circle cx="0" cy="-40" r="30" fill="#34495E"/>
+    <circle cx="0" cy="-40" r="20" fill="#1a1a1a"/>
+    
+    <!-- Tweeter -->
+    <circle cx="0" cy="30" r="15" fill="#2C3E50"/>
+    <circle cx="0" cy="30" r="10" fill="#1a1a1a"/>
+    
+    <!-- LED indicator -->
+    <circle cx="-35" cy="-110" r="4" fill="#00ff00" opacity="0.9"/>
+  </g>
+  
+  <g transform="translate(1820, 900)">
+    <rect x="-50" y="-120" width="100" height="180" rx="5" fill="#1a1a1a"/>
+    <circle cx="0" cy="-40" r="35" fill="#2C3E50"/>
+    <circle cx="0" cy="-40" r="30" fill="#34495E"/>
+    <circle cx="0" cy="-40" r="20" fill="#1a1a1a"/>
+    <circle cx="0" cy="30" r="15" fill="#2C3E50"/>
+    <circle cx="0" cy="30" r="10" fill="#1a1a1a"/>
+    <circle cx="-35" cy="-110" r="4" fill="#00ff00" opacity="0.9"/>
+  </g>
+  
+  <!-- VIP section rope -->
+  <line x1="1200" y1="800" x2="1200" y2="950" stroke="#C0C0C0" stroke-width="8"/>
+  <line x1="1500" y1="800" x2="1500" y2="950" stroke="#C0C0C0" stroke-width="8"/>
+  <path d="M 1200 850 Q 1350 870 1500 850" stroke="#FFD700" stroke-width="10" fill="none"/>
+  <path d="M 1200 850 Q 1350 870 1500 850" stroke="#FFA500" stroke-width="6" fill="none"/>
+  
+  <!-- Confetti explosion -->
+  <circle cx="500" cy="350" r="12" fill="#ff00ff" opacity="0.8"/>
+  <rect x="700" y="300" width="15" height="15" fill="#00ffff" opacity="0.8" transform="rotate(45 707 307)"/>
+  <circle cx="900" cy="400" r="10" fill="#ffff00" opacity="0.8"/>
+  <polygon points="1100,350 1115,370 1085,370" fill="#00ff00" opacity="0.8"/>
+  <circle cx="1300" cy="380" r="11" fill="#ff00ff" opacity="0.8"/>
+  <rect x="1500" y="320" width="12" height="12" fill="#00ffff" opacity="0.8" transform="rotate(30 1506 326)"/>
+  <circle cx="600" cy="450" r="13" fill="#ffff00" opacity="0.8"/>
+  <rect x="1200" y="420" width="14" height="14" fill="#ff00ff" opacity="0.8" transform="rotate(60 1207 427)"/>
+  
+  <!-- Laser effects -->
+  <line x1="100" y1="600" x2="1820" y2="650" stroke="#00ff00" stroke-width="3" opacity="0.5"/>
+  <line x1="1820" y1="600" x2="100" y2="630" stroke="#ff00ff" stroke-width="3" opacity="0.5"/>
+  <line x1="960" y1="150" x2="400" y2="700" stroke="#00ffff" stroke-width="4" opacity="0.4"/>
+  <line x1="960" y1="150" x2="1520" y2="700" stroke="#ffff00" stroke-width="4" opacity="0.4"/>
+  
+  <!-- Glow sticks -->
+  <rect x="850" y="1000" width="15" height="80" rx="7" fill="#00ff00" opacity="0.9"/>
+  <rect x="850" y="1000" width="15" height="80" rx="7" fill="#00ff00" opacity="0.3" transform="scale(1.2) translate(-100 -100)"/>
+  
+  <rect x="1050" y="1000" width="15" height="80" rx="7" fill="#ff00ff" opacity="0.9"/>
+  <rect x="1050" y="1000" width="15" height="80" rx="7" fill="#ff00ff" opacity="0.3" transform="scale(1.2) translate(-130 -100)"/>
+  
+  <!-- Sparkle effects -->
+  <g transform="translate(450, 200)">
+    <line x1="0" y1="-20" x2="0" y2="20" stroke="#FFFFFF" stroke-width="3" opacity="0.9"/>
+    <line x1="-20" y1="0" x2="20" y2="0" stroke="#FFFFFF" stroke-width="3" opacity="0.9"/>
+  </g>
+  <g transform="translate(1450, 230)">
+    <line x1="0" y1="-18" x2="0" y2="18" stroke="#FFFFFF" stroke-width="3" opacity="0.8"/>
+    <line x1="-18" y1="0" x2="18" y2="0" stroke="#FFFFFF" stroke-width="3" opacity="0.8"/>
+  </g>
+  <g transform="translate(750, 180)">
+    <line x1="0" y1="-22" x2="0" y2="22" stroke="#FFFFFF" stroke-width="3" opacity="0.9"/>
+    <line x1="-22" y1="0" x2="22" y2="0" stroke="#FFFFFF" stroke-width="3" opacity="0.9"/>
+  </g>
+</svg>

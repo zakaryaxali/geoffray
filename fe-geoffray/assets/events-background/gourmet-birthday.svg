@@ -1,0 +1,124 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gourmetBirthdayGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFE5E5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFF0F5;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="plateGlow" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F0F0F0;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  
+  <rect width="1920" height="1080" fill="url(#gourmetBirthdayGradient)"/>
+  
+  <!-- Elegant table surface -->
+  <rect x="0" y="650" width="1920" height="430" fill="#8B7355" opacity="0.3"/>
+  
+  <!-- Birthday cake centerpiece -->
+  <g transform="translate(960, 500)">
+    <!-- Cake layers -->
+    <ellipse cx="0" cy="100" rx="150" ry="30" fill="#8B4513" opacity="0.3"/>
+    <rect x="-140" y="0" width="280" height="100" fill="#FFE4E1"/>
+    <rect x="-140" y="0" width="280" height="15" fill="#FFB6C1"/>
+    <ellipse cx="0" cy="0" rx="140" ry="28" fill="#FFE4E1"/>
+    
+    <rect x="-120" y="-80" width="240" height="80" fill="#FFDAB9"/>
+    <rect x="-120" y="-80" width="240" height="12" fill="#FF69B4"/>
+    <ellipse cx="0" cy="-80" rx="120" ry="24" fill="#FFDAB9"/>
+    
+    <rect x="-100" y="-150" width="200" height="70" fill="#FFF0F5"/>
+    <rect x="-100" y="-150" width="200" height="10" fill="#FF1493"/>
+    <ellipse cx="0" cy="-150" rx="100" ry="20" fill="#FFF0F5"/>
+    
+    <!-- Frosting drips -->
+    <path d="M -100 -80 Q -105 -75 -100 -70" fill="#FFFFFF" opacity="0.9"/>
+    <path d="M -60 -80 Q -65 -73 -60 -68" fill="#FFFFFF" opacity="0.9"/>
+    <path d="M -20 -80 Q -25 -74 -20 -69" fill="#FFFFFF" opacity="0.9"/>
+    <path d="M 20 -80 Q 15 -73 20 -68" fill="#FFFFFF" opacity="0.9"/>
+    <path d="M 60 -80 Q 55 -75 60 -70" fill="#FFFFFF" opacity="0.9"/>
+    <path d="M 100 -80 Q 95 -74 100 -69" fill="#FFFFFF" opacity="0.9"/>
+    
+    <!-- Candles with flames -->
+    <g transform="translate(-60, -150)">
+      <rect x="-3" y="-40" width="6" height="40" fill="#FFD700"/>
+      <ellipse cx="0" cy="-42" rx="6" ry="3" fill="#FFA500"/>
+      <path d="M 0 -45 Q -3 -52 0 -58 Q 3 -52 0 -45" fill="#FF4500" opacity="0.9"/>
+      <path d="M 0 -47 Q -2 -52 0 -56 Q 2 -52 0 -47" fill="#FFA500" opacity="0.9"/>
+      <ellipse cx="0" cy="-50" rx="5" ry="8" fill="#FFD700" opacity="0.3"/>
+    </g>
+    <g transform="translate(0, -150)">
+      <rect x="-3" y="-40" width="6" height="40" fill="#FFD700"/>
+      <ellipse cx="0" cy="-42" rx="6" ry="3" fill="#FFA500"/>
+      <path d="M 0 -45 Q -3 -52 0 -58 Q 3 -52 0 -45" fill="#FF4500" opacity="0.9"/>
+      <path d="M 0 -47 Q -2 -52 0 -56 Q 2 -52 0 -47" fill="#FFA500" opacity="0.9"/>
+      <ellipse cx="0" cy="-50" rx="5" ry="8" fill="#FFD700" opacity="0.3"/>
+    </g>
+    <g transform="translate(60, -150)">
+      <rect x="-3" y="-40" width="6" height="40" fill="#FFD700"/>
+      <ellipse cx="0" cy="-42" rx="6" ry="3" fill="#FFA500"/>
+      <path d="M 0 -45 Q -3 -52 0 -58 Q 3 -52 0 -45" fill="#FF4500" opacity="0.9"/>
+      <path d="M 0 -47 Q -2 -52 0 -56 Q 2 -52 0 -47" fill="#FFA500" opacity="0.9"/>
+      <ellipse cx="0" cy="-50" rx="5" ry="8" fill="#FFD700" opacity="0.3"/>
+    </g>
+    
+    <!-- Decorative elements -->
+    <circle cx="-80" cy="-100" r="8" fill="#FF1493"/>
+    <circle cx="-50" cy="-110" r="6" fill="#FF69B4"/>
+    <circle cx="-20" cy="-105" r="7" fill="#FFB6C1"/>
+    <circle cx="20" cy="-105" r="7" fill="#FF1493"/>
+    <circle cx="50" cy="-110" r="6" fill="#FF69B4"/>
+    <circle cx="80" cy="-100" r="8" fill="#FFB6C1"/>
+  </g>
+  
+  <!-- Wine glasses -->
+  <g transform="translate(450, 700)">
+    <path d="M -20 -80 L -25 0 L 25 0 L 20 -80 Z" fill="#E8F4F8" opacity="0.7" stroke="#B0C4DE" stroke-width="2"/>
+    <ellipse cx="0" cy="-80" rx="22" ry="8" fill="#FFE4E1" opacity="0.6"/>
+    <rect x="-4" y="0" width="8" height="40" fill="#D3D3D3"/>
+    <ellipse cx="0" cy="40" rx="25" ry="8" fill="#D3D3D3"/>
+  </g>
+  
+  <g transform="translate(1470, 700)">
+    <path d="M -20 -80 L -25 0 L 25 0 L 20 -80 Z" fill="#E8F4F8" opacity="0.7" stroke="#B0C4DE" stroke-width="2"/>
+    <ellipse cx="0" cy="-80" rx="22" ry="8" fill="#FFE4E1" opacity="0.6"/>
+    <rect x="-4" y="0" width="8" height="40" fill="#D3D3D3"/>
+    <ellipse cx="0" cy="40" rx="25" ry="8" fill="#D3D3D3"/>
+  </g>
+  
+  <!-- Plates with appetizers -->
+  <g transform="translate(300, 800)">
+    <ellipse cx="0" cy="0" rx="80" ry="15" fill="#E0E0E0" opacity="0.5"/>
+    <ellipse cx="0" cy="-5" rx="75" ry="12" fill="url(#plateGlow)"/>
+    <circle cx="-20" cy="-8" r="12" fill="#FF6B6B"/>
+    <circle cx="0" cy="-8" r="12" fill="#4ECDC4"/>
+    <circle cx="20" cy="-8" r="12" fill="#FFE66D"/>
+    <circle cx="-10" cy="-12" r="8" fill="#95E1D3"/>
+    <circle cx="10" cy="-12" r="8" fill="#FFB4B4"/>
+  </g>
+  
+  <g transform="translate(1620, 800)">
+    <ellipse cx="0" cy="0" rx="80" ry="15" fill="#E0E0E0" opacity="0.5"/>
+    <ellipse cx="0" cy="-5" rx="75" ry="12" fill="url(#plateGlow)"/>
+    <circle cx="-20" cy="-8" r="12" fill="#FFB4B4"/>
+    <circle cx="0" cy="-8" r="12" fill="#95E1D3"/>
+    <circle cx="20" cy="-8" r="12" fill="#FF6B6B"/>
+    <circle cx="-10" cy="-12" r="8" fill="#FFE66D"/>
+    <circle cx="10" cy="-12" r="8" fill="#4ECDC4"/>
+  </g>
+  
+  <!-- Confetti -->
+  <circle cx="600" cy="300" r="6" fill="#FF69B4" opacity="0.7"/>
+  <rect x="800" y="250" width="8" height="12" fill="#FFD700" opacity="0.7" transform="rotate(25 804 256)"/>
+  <circle cx="1000" cy="320" r="5" fill="#4ECDC4" opacity="0.7"/>
+  <rect x="1200" y="280" width="7" height="11" fill="#FF69B4" opacity="0.7" transform="rotate(-30 1203 285)"/>
+  <circle cx="1400" cy="350" r="6" fill="#FFE66D" opacity="0.7"/>
+  
+  <!-- Champagne bubbles -->
+  <circle cx="430" cy="620" r="3" fill="#FFFFFF" opacity="0.6"/>
+  <circle cx="445" cy="600" r="2.5" fill="#FFFFFF" opacity="0.6"/>
+  <circle cx="460" cy="640" r="2" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="1450" cy="620" r="3" fill="#FFFFFF" opacity="0.6"/>
+  <circle cx="1465" cy="600" r="2.5" fill="#FFFFFF" opacity="0.6"/>
+  <circle cx="1480" cy="640" r="2" fill="#FFFFFF" opacity="0.5"/>
+</svg>

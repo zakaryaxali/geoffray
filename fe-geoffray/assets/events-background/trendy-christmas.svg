@@ -1,0 +1,195 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="trendyXmasGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2C3E50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#34495E;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="1920" height="1080" fill="url(#trendyXmasGradient)"/>
+  
+  <!-- Minimalist snowflakes -->
+  <g transform="translate(250, 200)">
+    <circle cx="0" cy="0" r="25" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.6"/>
+    <line x1="-25" y1="0" x2="25" y2="0" stroke="#FFFFFF" stroke-width="2" opacity="0.6"/>
+    <line x1="0" y1="-25" x2="0" y2="25" stroke="#FFFFFF" stroke-width="2" opacity="0.6"/>
+  </g>
+  
+  <g transform="translate(1650, 250)">
+    <polygon points="0,-20 -7,-7 -20,-5 -10,5 -12,20 0,13 12,20 10,5 20,-5 7,-7" 
+             fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.5"/>
+  </g>
+  
+  <!-- Modern loft floor -->
+  <rect x="0" y="750" width="1920" height="330" fill="#1a1a1a" opacity="0.8"/>
+  
+  <!-- Minimalist Christmas tree (geometric) -->
+  <g transform="translate(500, 650)">
+    <!-- Trunk -->
+    <rect x="-20" y="100" width="40" height="60" fill="#8B4513"/>
+    
+    <!-- Geometric tree shape -->
+    <polygon points="0,-250 -120,-120 120,-120" fill="none" stroke="#228B22" stroke-width="8" opacity="0.8"/>
+    <polygon points="0,-170 -150,-40 150,-40" fill="none" stroke="#228B22" stroke-width="8" opacity="0.8"/>
+    <polygon points="0,-90 -180,40 180,40" fill="none" stroke="#228B22" stroke-width="8" opacity="0.8"/>
+    <polygon points="0,-10 -210,100 210,100" fill="none" stroke="#228B22" stroke-width="8" opacity="0.8"/>
+    
+    <!-- LED lights (minimal) -->
+    <circle cx="-80" cy="-180" r="8" fill="#FFD700" opacity="0.9"/>
+    <circle cx="60" cy="-150" r="8" fill="#FFFFFF" opacity="0.9"/>
+    <circle cx="-100" cy="-90" r="8" fill="#00ffff" opacity="0.9"/>
+    <circle cx="90" cy="-70" r="8" fill="#ff00ff" opacity="0.9"/>
+    <circle cx="-130" cy="-10" r="8" fill="#FFD700" opacity="0.9"/>
+    <circle cx="120" cy="10" r="8" fill="#FFFFFF" opacity="0.9"/>
+    <circle cx="-160" cy="60" r="8" fill="#00ffff" opacity="0.9"/>
+    <circle cx="150" cy="70" r="8" fill="#ff00ff" opacity="0.9"/>
+    
+    <!-- Modern star topper -->
+    <polygon points="0,-280 -15,-255 -40,-250 -20,-230 -25,-205 0,-218 25,-205 20,-230 40,-250 15,-255" 
+             fill="#FFD700" opacity="0.9"/>
+  </g>
+  
+  <!-- Designer gift boxes -->
+  <g transform="translate(450, 950)">
+    <!-- Box 1 - matte black with gold ribbon -->
+    <rect x="0" y="-80" width="100" height="100" fill="#1a1a1a"/>
+    <rect x="45" y="-80" width="10" height="100" fill="#FFD700"/>
+    <rect x="0" y="-35" width="100" height="10" fill="#FFD700"/>
+    <rect x="40" y="-95" width="20" height="15" rx="3" fill="#FFD700"/>
+  </g>
+  
+  <g transform="translate(600, 970)">
+    <!-- Box 2 - white with black ribbon -->
+    <rect x="0" y="-70" width="90" height="90" fill="#FFFFFF"/>
+    <rect x="40" y="-70" width="10" height="90" fill="#1a1a1a"/>
+    <rect x="0" y="-30" width="90" height="10" fill="#1a1a1a"/>
+    <rect x="35" y="-85" width="20" height="15" rx="3" fill="#1a1a1a"/>
+  </g>
+  
+  <!-- Minimalist fireplace -->
+  <g transform="translate(1400, 750)">
+    <!-- Modern surround -->
+    <rect x="-220" y="-150" width="440" height="300" fill="#2C3E50" opacity="0.8"/>
+    <rect x="-200" y="-130" width="400" height="260" fill="#1a1a1a"/>
+    
+    <!-- Fire (abstract) -->
+    <path d="M -100 80 Q -80 40 -60 20 Q -40 40 -20 20 Q 0 40 20 20 Q 40 40 60 20 Q 80 40 100 80" 
+          fill="#FF4500" opacity="0.7"/>
+    <path d="M -80 80 Q -60 50 -40 30 Q -20 50 0 30 Q 20 50 40 30 Q 60 50 80 80" 
+          fill="#FFA500" opacity="0.6"/>
+    <path d="M -60 80 Q -40 60 -20 45 Q 0 60 20 45 Q 40 60 60 80" 
+          fill="#FFD700" opacity="0.5"/>
+    
+    <!-- Modern grate -->
+    <line x1="-180" y1="100" x2="180" y2="100" stroke="#C0C0C0" stroke-width="3"/>
+  </g>
+  
+  <!-- Stockings (minimalist design) -->
+  <g transform="translate(1250, 650)">
+    <rect x="0" y="0" width="50" height="70" rx="5" fill="#2C3E50"/>
+    <rect x="2" y="2" width="46" height="10" fill="#FFFFFF"/>
+    <ellipse cx="25" cy="70" rx="30" ry="18" fill="#2C3E50"/>
+    <ellipse cx="25" cy="70" rx="28" ry="16" fill="#34495E"/>
+  </g>
+  
+  <g transform="translate(1320, 650)">
+    <rect x="0" y="0" width="50" height="70" rx="5" fill="#FFFFFF"/>
+    <rect x="2" y="2" width="46" height="10" fill="#2C3E50"/>
+    <ellipse cx="25" cy="70" rx="30" ry="18" fill="#FFFFFF"/>
+    <ellipse cx="25" cy="70" rx="28" ry="16" fill="#F5F5F5"/>
+  </g>
+  
+  <g transform="translate(1390, 650)">
+    <rect x="0" y="0" width="50" height="70" rx="5" fill="#FFD700"/>
+    <rect x="2" y="2" width="46" height="10" fill="#FFFFFF"/>
+    <ellipse cx="25" cy="70" rx="30" ry="18" fill="#FFD700"/>
+    <ellipse cx="25" cy="70" rx="28" ry="16" fill="#FFA500"/>
+  </g>
+  
+  <!-- Modern ornaments (geometric) -->
+  <g transform="translate(800, 350)">
+    <line x1="0" y1="0" x2="0" y2="60" stroke="#C0C0C0" stroke-width="2"/>
+    <circle cx="0" cy="80" r="40" fill="none" stroke="#00ffff" stroke-width="5" opacity="0.8"/>
+    <circle cx="0" cy="80" r="30" fill="#2C3E50" opacity="0.6"/>
+  </g>
+  
+  <g transform="translate(1100, 300)">
+    <line x1="0" y1="0" x2="0" y2="70" stroke="#C0C0C0" stroke-width="2"/>
+    <polygon points="0,90 -35,125 0,160 35,125" fill="none" stroke="#ff00ff" stroke-width="5" opacity="0.8"/>
+    <polygon points="0,100 -25,125 0,150 25,125" fill="#2C3E50" opacity="0.6"/>
+  </g>
+  
+  <!-- Neon "MERRY XMAS" sign -->
+  <g transform="translate(960, 200)">
+    <text x="-220" y="0" font-family="Arial" font-size="70" fill="#00ffff" font-weight="bold" opacity="0.9">MERRY XMAS</text>
+    <text x="-220" y="0" font-family="Arial" font-size="70" fill="#ff00ff" font-weight="bold" opacity="0.3">MERRY XMAS</text>
+    
+    <rect x="-240" y="-55" width="480" height="75" fill="none" stroke="#00ffff" stroke-width="3" opacity="0.5" rx="10"/>
+  </g>
+  
+  <!-- Designer hot chocolate -->
+  <g transform="translate(300, 980)">
+    <rect x="-35" y="-70" width="70" height="80" rx="8" fill="#8B4513" opacity="0.8"/>
+    <ellipse cx="0" cy="-70" rx="35" ry="12" fill="#654321"/>
+    <ellipse cx="0" cy="-65" rx="30" ry="10" fill="#3E2723"/>
+    
+    <!-- Whipped cream (minimal) -->
+    <ellipse cx="0" cy="-75" rx="25" ry="12" fill="#FFFFFF" opacity="0.9"/>
+    <ellipse cx="-10" cy="-82" rx="15" ry="10" fill="#FFFFFF" opacity="0.8"/>
+    <ellipse cx="10" cy="-82" rx="15" ry="10" fill="#FFFFFF" opacity="0.8"/>
+    
+    <!-- Cinnamon stick -->
+    <rect x="20" y="-80" width="4" height="30" fill="#8B4513"/>
+  </g>
+  
+  <!-- Modern candles -->
+  <g transform="translate(1600, 950)">
+    <rect x="-15" y="-80" width="30" height="90" rx="3" fill="#2C3E50"/>
+    <ellipse cx="0" cy="-80" rx="15" ry="5" fill="#34495E"/>
+    <circle cx="0" cy="-83" r="6" fill="#FFD700" opacity="0.9"/>
+    <ellipse cx="0" cy="-90" rx="10" ry="15" fill="#FFD700" opacity="0.3"/>
+  </g>
+  
+  <g transform="translate(1700, 970)">
+    <rect x="-15" y="-60" width="30" height="70" rx="3" fill="#FFFFFF"/>
+    <ellipse cx="0" cy="-60" rx="15" ry="5" fill="#F5F5F5"/>
+    <circle cx="0" cy="-63" r="6" fill="#FFD700" opacity="0.9"/>
+    <ellipse cx="0" cy="-70" rx="10" ry="15" fill="#FFD700" opacity="0.3"/>
+  </g>
+  
+  <!-- Minimalist wreath on wall -->
+  <g transform="translate(250, 400)">
+    <circle cx="0" cy="0" r="70" fill="none" stroke="#228B22" stroke-width="15" opacity="0.8"/>
+    
+    <!-- Berries (minimal) -->
+    <circle cx="-50" cy="-50" r="6" fill="#DC143C"/>
+    <circle cx="50" cy="-50" r="6" fill="#DC143C"/>
+    <circle cx="-70" cy="0" r="6" fill="#DC143C"/>
+    <circle cx="70" cy="0" r="6" fill="#DC143C"/>
+    <circle cx="-50" cy="50" r="6" fill="#DC143C"/>
+    <circle cx="50" cy="50" r="6" fill="#DC143C"/>
+    
+    <!-- Bow (geometric) -->
+    <rect x="-25" y="-90" width="20" height="20" fill="#FFD700" transform="rotate(45 -15 -80)"/>
+    <rect x="5" y="-90" width="20" height="20" fill="#FFD700" transform="rotate(45 15 -80)"/>
+    <rect x="-10" y="-75" width="20" height="20" fill="#FFA500"/>
+  </g>
+  
+  <!-- Smart home device (playing music) -->
+  <g transform="translate(1700, 850)">
+    <circle cx="0" cy="0" r="40" fill="#2C3E50"/>
+    <circle cx="0" cy="0" r="35" fill="#34495E"/>
+    
+    <!-- LED ring -->
+    <circle cx="0" cy="0" r="38" fill="none" stroke="#00ffff" stroke-width="3" opacity="0.7"/>
+    
+    <!-- Sound waves -->
+    <path d="M -50 -10 Q -45 0 -50 10" stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.5"/>
+    <path d="M 50 -10 Q 45 0 50 10" stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.5"/>
+  </g>
+  
+  <!-- Geometric snow -->
+  <rect x="300" y="150" width="12" height="12" fill="#FFFFFF" opacity="0.7" transform="rotate(45 306 156)"/>
+  <rect x="1600" y="200" width="10" height="10" fill="#FFFFFF" opacity="0.6" transform="rotate(45 1605 205)"/>
+  <rect x="900" y="120" width="14" height="14" fill="#FFFFFF" opacity="0.7" transform="rotate(45 907 127)"/>
+</svg>

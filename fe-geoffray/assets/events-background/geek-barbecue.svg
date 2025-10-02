@@ -1,0 +1,176 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="geekBBQGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f3460;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="ledGlow" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#ff00ff;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#ff00aa;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#aa0066;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <rect width="1920" height="1080" fill="url(#geekBBQGradient)"/>
+  
+  <!-- Stars/pixels in sky -->
+  <rect x="150" y="120" width="8" height="8" fill="#00ff88"/>
+  <rect x="450" y="180" width="8" height="8" fill="#00ccff"/>
+  <rect x="750" y="140" width="8" height="8" fill="#ffcc00"/>
+  <rect x="1050" y="160" width="8" height="8" fill="#ff6b6b"/>
+  <rect x="1350" y="130" width="8" height="8" fill="#00ff88"/>
+  <rect x="1650" y="170" width="8" height="8" fill="#ff00ff"/>
+  
+  <!-- Ground -->
+  <rect x="0" y="700" width="1920" height="380" fill="#0a3a2a" opacity="0.7"/>
+  
+  <!-- Smart BBQ Grill with LED display -->
+  <g transform="translate(960, 750)">
+    <!-- Grill body -->
+    <ellipse cx="0" cy="40" rx="160" ry="35" fill="#1a1a2e" opacity="0.5"/>
+    <rect x="-150" y="-100" width="300" height="140" rx="15" fill="#2a2a3a"/>
+    <ellipse cx="0" cy="-100" rx="150" ry="28" fill="#1a1a2e"/>
+    
+    <!-- Digital display panel -->
+    <rect x="-100" y="-130" width="200" height="50" rx="5" fill="#000000" stroke="#00ff88" stroke-width="2"/>
+    <text x="-85" y="-105" font-family="monospace" font-size="16" fill="#00ff88">TEMP: 225°C</text>
+    <text x="-85" y="-85" font-family="monospace" font-size="16" fill="#00ccff">TIME: 00:45:32</text>
+    
+    <!-- RGB LED strip around grill -->
+    <rect x="-150" y="-105" width="300" height="5" fill="#ff00ff" opacity="0.8"/>
+    <rect x="-150" y="35" width="300" height="5" fill="#00ff88" opacity="0.8"/>
+    <ellipse cx="0" cy="0" rx="160" ry="120" fill="url(#ledGlow)" opacity="0.4"/>
+    
+    <!-- Control buttons with LED indicators -->
+    <circle cx="-120" cy="-155" r="8" fill="#ff0000" opacity="0.9"/>
+    <circle cx="-90" cy="-155" r="8" fill="#00ff00" opacity="0.9"/>
+    <circle cx="-60" cy="-155" r="8" fill="#0000ff" opacity="0.9"/>
+    
+    <!-- WiFi/Bluetooth indicators -->
+    <g transform="translate(80, -155)">
+      <path d="M -15 0 Q -15 -10 0 -15 Q 15 -10 15 0" stroke="#00ff88" stroke-width="2" fill="none"/>
+      <path d="M -10 -2 Q -10 -7 0 -10 Q 10 -7 10 -2" stroke="#00ff88" stroke-width="2" fill="none"/>
+      <circle cx="0" cy="0" r="3" fill="#00ff88"/>
+    </g>
+    
+    <!-- USB charging port -->
+    <rect x="120" y="-25" width="20" height="10" rx="2" fill="#00ccff" opacity="0.8"/>
+    <text x="105" y="-30" font-family="monospace" font-size="10" fill="#ffffff">USB</text>
+    
+    <!-- Grill grates visible -->
+    <rect x="-130" y="-80" width="260" height="70" fill="#0a0a0a" opacity="0.7"/>
+    <line x1="-120" y1="-75" x2="-120" y2="-15" stroke="#4a4a5a" stroke-width="4"/>
+    <line x1="-85" y1="-75" x2="-85" y2="-15" stroke="#4a4a5a" stroke-width="4"/>
+    <line x1="-50" y1="-75" x2="-50" y2="-15" stroke="#4a4a5a" stroke-width="4"/>
+    <line x1="-15" y1="-75" x2="-15" y2="-15" stroke="#4a4a5a" stroke-width="4"/>
+    <line x1="20" y1="-75" x2="20" y2="-15" stroke="#4a4a5a" stroke-width="4"/>
+    <line x1="55" y1="-75" x2="55" y2="-15" stroke="#4a4a5a" stroke-width="4"/>
+    <line x1="90" y1="-75" x2="90" y2="-15" stroke="#4a4a5a" stroke-width="4"/>
+    <line x1="125" y1="-75" x2="125" y2="-15" stroke="#4a4a5a" stroke-width="4"/>
+    
+    <!-- Pixelated food items -->
+    <rect x="-80" y="-55" width="30" height="30" fill="#8b4513" opacity="0.9"/>
+    <rect x="-30" y="-55" width="30" height="30" fill="#a0522d" opacity="0.9"/>
+    <rect x="20" y="-55" width="30" height="30" fill="#8b4513" opacity="0.9"/>
+    <rect x="70" y="-55" width="30" height="30" fill="#a0522d" opacity="0.9"/>
+    
+    <!-- Legs with RGB lights -->
+    <g>
+      <rect x="-130" y="40" width="15" height="100" fill="#2a2a3a"/>
+      <rect x="-130" y="100" width="15" height="5" fill="#ff00ff" opacity="0.8"/>
+      
+      <rect x="115" y="40" width="15" height="100" fill="#2a2a3a"/>
+      <rect x="115" y="100" width="15" height="5" fill="#00ff88" opacity="0.8"/>
+    </g>
+  </g>
+  
+  <!-- Gaming setup nearby -->
+  <g transform="translate(400, 850)">
+    <!-- Portable monitor -->
+    <rect x="-100" y="-100" width="200" height="120" rx="5" fill="#1a1a2e" stroke="#00ff88" stroke-width="2"/>
+    <rect x="-90" y="-90" width="180" height="100" fill="#0a0a15"/>
+    
+    <!-- Game on screen -->
+    <text x="-75" y="-60" font-family="monospace" font-size="14" fill="#00ff88">LEVEL: BBQ MASTER</text>
+    <text x="-75" y="-35" font-family="monospace" font-size="14" fill="#ffcc00">SCORE: 9999</text>
+    <rect x="-60" y="-15" width="20" height="20" fill="#ff6b6b"/>
+    <rect x="-35" y="-15" width="20" height="20" fill="#00ff88"/>
+    <rect x="-10" y="-15" width="20" height="20" fill="#00ccff"/>
+    <rect x="15" y="-15" width="20" height="20" fill="#ffcc00"/>
+    
+    <!-- Stand -->
+    <rect x="-10" y="20" width="20" height="40" fill="#2a2a3a"/>
+  </g>
+  
+  <!-- Cooler with tech branding -->
+  <g transform="translate(1500, 900)">
+    <rect x="-80" y="-60" width="160" height="80" rx="5" fill="#1a4d7a"/>
+    <rect x="-75" y="-55" width="150" height="10" fill="#0d3a5f"/>
+    
+    <!-- Tech logo sticker -->
+    <rect x="-50" y="-35" width="100" height="40" rx="3" fill="#00ff88" opacity="0.8"/>
+    <text x="-42" y="-8" font-family="monospace" font-size="16" fill="#000000">POWERED</text>
+    <text x="-38" y="8" font-family="monospace" font-size="16" fill="#000000">BY CODE</text>
+  </g>
+  
+  <!-- Folding table with laptop -->
+  <g transform="translate(600, 950)">
+    <rect x="-100" y="-15" width="200" height="5" fill="#3a3a4a"/>
+    <rect x="-95" y="-10" width="190" height="3" fill="#4a4a5a"/>
+    
+    <!-- Laptop -->
+    <rect x="-60" y="-50" width="120" height="80" rx="3" fill="#2a2a3a"/>
+    <rect x="-55" y="-45" width="110" height="70" fill="#1a1a2e"/>
+    
+    <!-- Screen content -->
+    <text x="-50" y="-20" font-family="monospace" font-size="10" fill="#00ff88">$ streaming BBQ</text>
+    <text x="-50" y="-5" font-family="monospace" font-size="10" fill="#00ccff">Viewers: 42</text>
+    <rect x="-40" y="5" width="15" height="15" fill="#ff0000"/>
+    <circle cx="-32" cy="12" r="3" fill="#ffffff"/>
+  </g>
+  
+  <!-- LED string lights -->
+  <g>
+    <line x1="100" y1="600" x2="1820" y2="600" stroke="#2a2a3a" stroke-width="3"/>
+    <circle cx="300" cy="600" r="12" fill="#ff00ff" opacity="0.9"/>
+    <circle cx="500" cy="600" r="12" fill="#00ff88" opacity="0.9"/>
+    <circle cx="700" cy="600" r="12" fill="#00ccff" opacity="0.9"/>
+    <circle cx="900" cy="600" r="12" fill="#ffcc00" opacity="0.9"/>
+    <circle cx="1100" cy="600" r="12" fill="#ff6b6b" opacity="0.9"/>
+    <circle cx="1300" cy="600" r="12" fill="#ff00ff" opacity="0.9"/>
+    <circle cx="1500" cy="600" r="12" fill="#00ff88" opacity="0.9"/>
+    <circle cx="1700" cy="600" r="12" fill="#00ccff" opacity="0.9"/>
+    
+    <!-- Glow effect -->
+    <circle cx="300" cy="600" r="20" fill="#ff00ff" opacity="0.3"/>
+    <circle cx="500" cy="600" r="20" fill="#00ff88" opacity="0.3"/>
+    <circle cx="700" cy="600" r="20" fill="#00ccff" opacity="0.3"/>
+    <circle cx="900" cy="600" r="20" fill="#ffcc00" opacity="0.3"/>
+    <circle cx="1100" cy="600" r="20" fill="#ff6b6b" opacity="0.3"/>
+    <circle cx="1300" cy="600" r="20" fill="#ff00ff" opacity="0.3"/>
+    <circle cx="1500" cy="600" r="20" fill="#00ff88" opacity="0.3"/>
+    <circle cx="1700" cy="600" r="20" fill="#00ccff" opacity="0.3"/>
+  </g>
+  
+  <!-- Drone hovering with camera -->
+  <g transform="translate(1300, 400)">
+    <rect x="-40" y="-10" width="80" height="20" rx="5" fill="#2a2a3a"/>
+    <circle cx="-35" cy="-20" r="15" fill="#1a1a2e"/>
+    <circle cx="35" cy="-20" r="15" fill="#1a1a2e"/>
+    <circle cx="-35" cy="30" r="15" fill="#1a1a2e"/>
+    <circle cx="35" cy="30" r="15" fill="#1a1a2e"/>
+    <circle cx="0" cy="0" r="8" fill="#ff0000" opacity="0.8"/>
+  </g>
+  
+  <!-- QR code for WiFi -->
+  <g transform="translate(200, 750)">
+    <rect x="0" y="0" width="80" height="80" fill="#ffffff" rx="3"/>
+    <rect x="5" y="5" width="15" height="15" fill="#000000"/>
+    <rect x="60" y="5" width="15" height="15" fill="#000000"/>
+    <rect x="5" y="60" width="15" height="15" fill="#000000"/>
+    <rect x="30" y="30" width="20" height="20" fill="#000000"/>
+    <rect x="25" y="10" width="5" height="5" fill="#000000"/>
+    <rect x="35" y="10" width="5" height="5" fill="#000000"/>
+    <text x="5" y="95" font-family="monospace" font-size="10" fill="#ffffff">WiFi: BBQ_5G</text>
+  </g>
+</svg>

@@ -1,0 +1,97 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="beachSkyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#B0E0E6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E0F6FF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="oceanGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A90A4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#63B8D1;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="1920" height="1080" fill="url(#beachSkyGradient)"/>
+  
+  <!-- Sun -->
+  <circle cx="1600" cy="200" r="90" fill="#FFD700" opacity="0.9"/>
+  <circle cx="1600" cy="200" r="100" fill="#FFA500" opacity="0.3"/>
+  
+  <!-- Ocean -->
+  <rect x="0" y="650" width="1920" height="430" fill="url(#oceanGradient)"/>
+  
+  <!-- Waves -->
+  <path d="M 0 680 Q 240 670 480 680 Q 720 690 960 680 Q 1200 670 1440 680 Q 1680 690 1920 680 L 1920 1080 L 0 1080 Z" 
+        fill="#5AA5BD" opacity="0.6"/>
+  <path d="M 0 720 Q 200 710 400 720 Q 600 730 800 720 Q 1000 710 1200 720 Q 1400 730 1600 720 Q 1800 710 1920 720" 
+        stroke="#FFFFFF" stroke-width="3" fill="none" opacity="0.7"/>
+  <path d="M 0 750 Q 180 742 360 750 Q 540 758 720 750 Q 900 742 1080 750 Q 1260 758 1440 750 Q 1620 742 1920 750" 
+        stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.5"/>
+  
+  <!-- Island in distance -->
+  <ellipse cx="400" cy="600" rx="180" ry="60" fill="#2D5016" opacity="0.8"/>
+  <g transform="translate(400, 570)">
+    <polygon points="0,-50 -30,10 30,10" fill="#3D6B25"/>
+    <polygon points="-40,-40 -60,10 -20,10" fill="#2D5016"/>
+    <polygon points="35,-35 20,10 50,10" fill="#2D5016"/>
+  </g>
+  
+  <!-- Beach -->
+  <path d="M 0 850 Q 480 830 960 850 Q 1440 870 1920 850 L 1920 1080 L 0 1080 Z" 
+        fill="#F4E7D7"/>
+  
+  <!-- Wedding arch on beach -->
+  <g transform="translate(960, 800)">
+    <!-- Arch posts -->
+    <rect x="-120" y="-100" width="15" height="150" fill="#8B4513"/>
+    <rect x="105" y="-100" width="15" height="150" fill="#8B4513"/>
+    
+    <!-- Arch top -->
+    <path d="M -120 -100 Q -60 -140 0 -145 Q 60 -140 120 -100" 
+          stroke="#8B4513" stroke-width="15" fill="none"/>
+    
+    <!-- Fabric draping -->
+    <path d="M -120 -100 Q -100 -90 -80 -95 Q -60 -100 -40 -95 Q -20 -90 0 -95 Q 20 -90 40 -95 Q 60 -100 80 -95 Q 100 -90 120 -100" 
+          fill="#FFFFFF" opacity="0.9"/>
+    <path d="M -120 -100 L -120 50" stroke="#FFFFFF" stroke-width="25" opacity="0.8"/>
+    <path d="M 120 -100 L 120 50" stroke="#FFFFFF" stroke-width="25" opacity="0.8"/>
+    
+    <!-- Flowers on arch -->
+    <circle cx="-120" cy="-100" r="12" fill="#FF69B4"/>
+    <circle cx="-115" cy="-105" r="10" fill="#FFB6C1"/>
+    <circle cx="120" cy="-100" r="12" fill="#FF69B4"/>
+    <circle cx="115" cy="-105" r="10" fill="#FFB6C1"/>
+    <circle cx="0" cy="-145" r="14" fill="#FF1493"/>
+    <circle cx="-5" cy="-150" r="11" fill="#FF69B4"/>
+    <circle cx="5" cy="-150" r="11" fill="#FFB6C1"/>
+    
+    <!-- More flowers along arch -->
+    <circle cx="-60" cy="-120" r="10" fill="#FF69B4" opacity="0.9"/>
+    <circle cx="-30" cy="-130" r="9" fill="#FFB6C1" opacity="0.9"/>
+    <circle cx="30" cy="-130" r="9" fill="#FF69B4" opacity="0.9"/>
+    <circle cx="60" cy="-120" r="10" fill="#FFB6C1" opacity="0.9"/>
+  </g>
+  
+  <!-- Seashells on beach -->
+  <g transform="translate(300, 950)">
+    <ellipse cx="0" cy="0" rx="15" ry="12" fill="#FFE4C4" opacity="0.8"/>
+    <line x1="-10" y1="-8" x2="10" y2="8" stroke="#DEB887" stroke-width="1.5"/>
+    <line x1="-10" y1="8" x2="10" y2="-8" stroke="#DEB887" stroke-width="1.5"/>
+  </g>
+  <g transform="translate(1600, 970)">
+    <ellipse cx="0" cy="0" rx="18" ry="14" fill="#FFE4E1" opacity="0.8"/>
+    <path d="M 0 -10 Q -5 0 0 10 Q 5 0 0 -10" fill="#FFB6C1" opacity="0.6"/>
+  </g>
+  
+  <!-- Footprints in sand -->
+  <g transform="translate(600, 900)">
+    <ellipse cx="0" cy="0" rx="12" ry="18" fill="#D2B48C" opacity="0.4" transform="rotate(20)"/>
+    <ellipse cx="35" cy="25" rx="12" ry="18" fill="#D2B48C" opacity="0.4" transform="rotate(-15)"/>
+    <ellipse cx="70" cy="40" rx="12" ry="18" fill="#D2B48C" opacity="0.4" transform="rotate(20)"/>
+  </g>
+  
+  <!-- Seagulls -->
+  <path d="M 500 300 Q 515 290 530 300" stroke="#FFFFFF" stroke-width="3" fill="none"/>
+  <path d="M 540 300 Q 555 290 570 300" stroke="#FFFFFF" stroke-width="3" fill="none"/>
+  <path d="M 1200 250 Q 1215 240 1230 250" stroke="#FFFFFF" stroke-width="3" fill="none"/>
+</svg>

@@ -1,0 +1,176 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="parentRetirementGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B0E0E6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="1920" height="1080" fill="url(#parentRetirementGradient)"/>
+  
+  <!-- Sun -->
+  <circle cx="1650" cy="200" r="90" fill="#FFD700" opacity="0.9"/>
+  <circle cx="1650" cy="200" r="100" fill="#FFA500" opacity="0.3"/>
+  
+  <!-- Clouds -->
+  <ellipse cx="300" cy="180" rx="80" ry="40" fill="#FFFFFF" opacity="0.8"/>
+  <ellipse cx="250" cy="190" rx="60" ry="35" fill="#FFFFFF" opacity="0.8"/>
+  <ellipse cx="350" cy="195" rx="70" ry="38" fill="#FFFFFF" opacity="0.8"/>
+  
+  <ellipse cx="1200" cy="220" rx="90" ry="45" fill="#FFFFFF" opacity="0.7"/>
+  <ellipse cx="1150" cy="235" rx="65" ry="38" fill="#FFFFFF" opacity="0.7"/>
+  <ellipse cx="1250" cy="240" rx="75" ry="40" fill="#FFFFFF" opacity="0.7"/>
+  
+  <!-- Porch/deck -->
+  <rect x="0" y="650" width="1920" height="430" fill="#D2691E" opacity="0.6"/>
+  <rect x="0" y="650" width="1920" height="20" fill="#8B4513" opacity="0.5"/>
+  
+  <!-- Wooden planks texture -->
+  <line x1="0" y1="700" x2="1920" y2="700" stroke="#8B4513" stroke-width="2" opacity="0.3"/>
+  <line x1="0" y1="750" x2="1920" y2="750" stroke="#8B4513" stroke-width="2" opacity="0.3"/>
+  <line x1="0" y1="800" x2="1920" y2="800" stroke="#8B4513" stroke-width="2" opacity="0.3"/>
+  
+  <!-- Rocking chair -->
+  <g transform="translate(600, 850)">
+    <!-- Rockers -->
+    <path d="M -80 50 Q -40 70 0 70 Q 40 70 80 50" stroke="#654321" stroke-width="10" fill="none"/>
+    <path d="M -80 50 Q -40 70 0 70 Q 40 70 80 50" stroke="#8B4513" stroke-width="6" fill="none"/>
+    
+    <!-- Legs -->
+    <rect x="-70" y="-50" width="12" height="100" fill="#654321"/>
+    <rect x="58" y="-50" width="12" height="100" fill="#654321"/>
+    
+    <!-- Seat -->
+    <rect x="-80" y="-50" width="160" height="15" rx="3" fill="#8B4513"/>
+    <rect x="-75" y="-35" width="150" height="10" fill="#A0522D"/>
+    
+    <!-- Backrest -->
+    <rect x="-80" y="-150" width="15" height="115" fill="#654321"/>
+    <rect x="-50" y="-150" width="10" height="115" fill="#654321"/>
+    <rect x="-25" y="-150" width="10" height="115" fill="#654321"/>
+    <rect x="0" y="-150" width="10" height="115" fill="#654321"/>
+    <rect x="25" y="-150" width="10" height="115" fill="#654321"/>
+    <rect x="50" y="-150" width="10" height="115" fill="#654321"/>
+    
+    <!-- Top rail -->
+    <rect x="-85" y="-165" width="155" height="15" rx="7" fill="#8B4513"/>
+    
+    <!-- Book on armrest -->
+    <rect x="60" y="-45" width="45" height="30" fill="#8B0000" transform="rotate(-5 82 -30)"/>
+    <rect x="62" y="-43" width="41" height="26" fill="#A52A2A" transform="rotate(-5 82 -30)"/>
+  </g>
+  
+  <!-- Small side table with lemonade -->
+  <g transform="translate(850, 900)">
+    <ellipse cx="0" cy="0" rx="50" ry="12" fill="#8B4513" opacity="0.5"/>
+    <rect x="-45" y="-60" width="90" height="10" fill="#A0522D"/>
+    <ellipse cx="0" cy="-60" rx="45" ry="10" fill="#8B4513"/>
+    <rect x="-8" y="-10" width="16" height="10" fill="#654321"/>
+    
+    <!-- Lemonade pitcher -->
+    <ellipse cx="0" cy="-50" rx="20" ry="6" fill="#FFA500" opacity="0.3"/>
+    <rect x="-18" y="-80" width="36" height="30" rx="3" fill="#FFD700" opacity="0.7"/>
+    <ellipse cx="0" cy="-80" rx="18" ry="6" fill="#FFA500" opacity="0.6"/>
+    <path d="M 18 -70 Q 30 -70 30 -55 Q 30 -50 18 -50" stroke="#FFD700" stroke-width="4" fill="none"/>
+    
+    <!-- Lemon slices in pitcher -->
+    <circle cx="-5" cy="-65" r="5" fill="#FFFF00" opacity="0.8"/>
+    <circle cx="5" cy="-60" r="5" fill="#FFFF00" opacity="0.8"/>
+    
+    <!-- Glass -->
+    <g transform="translate(-30, -50)">
+      <rect x="-10" y="-25" width="20" height="30" rx="2" fill="#E0F7FA" opacity="0.7"/>
+      <ellipse cx="0" cy="-25" rx="10" ry="4" fill="#B3E5FC" opacity="0.6"/>
+      <ellipse cx="0" cy="5" rx="10" ry="4" fill="#FFA500" opacity="0.3"/>
+    </g>
+  </g>
+  
+  <!-- Garden in background -->
+  <ellipse cx="300" cy="600" rx="150" ry="60" fill="#228B22" opacity="0.7"/>
+  <ellipse cx="1620" cy="620" rx="180" ry="70" fill="#228B22" opacity="0.7"/>
+  
+  <!-- Flowers in garden -->
+  <g transform="translate(300, 580)">
+    <circle cx="-40" cy="0" r="12" fill="#FF69B4"/>
+    <circle cx="-20" cy="-5" r="12" fill="#FFD700"/>
+    <circle cx="0" cy="5" r="12" fill="#FF69B4"/>
+    <circle cx="20" cy="0" r="12" fill="#DDA0DD"/>
+    <circle cx="40" cy="-3" r="12" fill="#FFD700"/>
+    <line x1="-40" y1="12" x2="-40" y2="30" stroke="#228B22" stroke-width="3"/>
+    <line x1="-20" y1="7" x2="-20" y2="30" stroke="#228B22" stroke-width="3"/>
+    <line x1="0" y1="17" x2="0" y2="30" stroke="#228B22" stroke-width="3"/>
+    <line x1="20" y1="12" x2="20" y2="30" stroke="#228B22" stroke-width="3"/>
+    <line x1="40" y1="9" x2="40" y2="30" stroke="#228B22" stroke-width="3"/>
+  </g>
+  
+  <g transform="translate(1620, 600)">
+    <circle cx="-50" cy="0" r="12" fill="#DDA0DD"/>
+    <circle cx="-25" cy="-5" r="12" fill="#FF69B4"/>
+    <circle cx="0" cy="5" r="12" fill="#FFD700"/>
+    <circle cx="25" cy="0" r="12" fill="#DDA0DD"/>
+    <circle cx="50" cy="-3" r="12" fill="#FF69B4"/>
+    <line x1="-50" y1="12" x2="-50" y2="30" stroke="#228B22" stroke-width="3"/>
+    <line x1="-25" y1="7" x2="-25" y2="30" stroke="#228B22" stroke-width="3"/>
+    <line x1="0" y1="17" x2="0" y2="30" stroke="#228B22" stroke-width="3"/>
+    <line x1="25" y1="12" x2="25" y2="30" stroke="#228B22" stroke-width="3"/>
+    <line x1="50" y1="9" x2="50" y2="30" stroke="#228B22" stroke-width="3"/>
+  </g>
+  
+  <!-- Grandchildren's toys scattered -->
+  <g transform="translate(1300, 950)">
+    <!-- Toy car -->
+    <rect x="0" y="-10" width="60" height="35" rx="5" fill="#FF6B6B"/>
+    <rect x="5" y="-5" width="50" height="15" rx="3" fill="#87CEEB"/>
+    <circle cx="15" cy="25" r="12" fill="#2C3E50"/>
+    <circle cx="15" cy="25" r="8" fill="#95A5A6"/>
+    <circle cx="45" cy="25" r="12" fill="#2C3E50"/>
+    <circle cx="45" cy="25" r="8" fill="#95A5A6"/>
+  </g>
+  
+  <g transform="translate(1450, 980)">
+    <!-- Building blocks -->
+    <rect x="0" y="-30" width="35" height="35" fill="#FFD93D"/>
+    <text x="8" y="-3" font-family="Arial" font-size="24" fill="#FFFFFF" font-weight="bold">A</text>
+    <rect x="40" y="-30" width="35" height="35" fill="#4ECDC4"/>
+    <text x="48" y="-3" font-family="Arial" font-size="24" fill="#FFFFFF" font-weight="bold">B</text>
+  </g>
+  
+  <!-- Picture frames on wall (family photos) -->
+  <g transform="translate(960, 350)">
+    <rect x="-100" y="0" width="80" height="100" fill="#8B4513" stroke="#654321" stroke-width="4"/>
+    <rect x="-95" y="5" width="70" height="90" fill="#F0E68C"/>
+    <!-- Simple family silhouettes -->
+    <circle cx="-75" cy="40" r="8" fill="#000000" opacity="0.3"/>
+    <circle cx="-55" cy="40" r="8" fill="#000000" opacity="0.3"/>
+    <circle cx="-65" cy="60" r="6" fill="#000000" opacity="0.3"/>
+    
+    <rect x="20" y="0" width="80" height="100" fill="#8B4513" stroke="#654321" stroke-width="4"/>
+    <rect x="25" y="5" width="70" height="90" fill="#F0E68C"/>
+    <circle cx="45" cy="40" r="8" fill="#000000" opacity="0.3"/>
+    <circle cx="65" cy="40" r="8" fill="#000000" opacity="0.3"/>
+    <circle cx="40" cy="60" r="6" fill="#000000" opacity="0.3"/>
+    <circle cx="70" cy="60" r="6" fill="#000000" opacity="0.3"/>
+  </g>
+  
+  <!-- "Well Deserved" banner -->
+  <g transform="translate(960, 150)">
+    <rect x="-200" y="0" width="400" height="60" rx="10" fill="#FFFFFF" opacity="0.9" stroke="#FFD700" stroke-width="3"/>
+    <text x="-180" y="42" font-family="Georgia" font-size="36" fill="#4682B4" font-weight="bold">Well Deserved!</text>
+  </g>
+  
+  <!-- Bird -->
+  <path d="M 400 300 Q 415 290 430 300" stroke="#8B4513" stroke-width="3" fill="none" opacity="0.6"/>
+  <path d="M 440 300 Q 455 290 470 300" stroke="#8B4513" stroke-width="3" fill="none" opacity="0.6"/>
+  
+  <!-- Knitting basket -->
+  <g transform="translate(350, 950)">
+    <ellipse cx="0" cy="10" rx="50" ry="15" fill="#8B6F47" opacity="0.5"/>
+    <path d="M -45 -20 Q -48 10 -40 15 L 40 15 Q 48 10 45 -20 Z" fill="#A0826D" opacity="0.8"/>
+    <path d="M -45 -20 L 45 -20" stroke="#654321" stroke-width="3"/>
+    
+    <!-- Yarn balls -->
+    <circle cx="-15" cy="-5" r="15" fill="#FF69B4" opacity="0.9"/>
+    <circle cx="15" cy="-8" r="15" fill="#87CEEB" opacity="0.9"/>
+    <circle cx="0" cy="5" r="12" fill="#FFD700" opacity="0.9"/>
+  </g>
+</svg>

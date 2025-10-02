@@ -1,0 +1,180 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="artistFunGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4ECDC4;stop-opacity:1" />
+      <stop offset="25%" style="stop-color:#FF6B9D;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFD93D;stop-opacity:1" />
+      <stop offset="75%" style="stop-color:#95E1D3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#C44569;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="1920" height="1080" fill="url(#artistFunGradient)"/>
+  
+  <!-- Paint splatters everywhere -->
+  <circle cx="200" cy="180" r="60" fill="#FFD93D" opacity="0.6"/>
+  <circle cx="210" cy="175" r="40" fill="#FFE66D" opacity="0.5"/>
+  <circle cx="185" cy="195" r="30" fill="#FFA500" opacity="0.7"/>
+  
+  <circle cx="1700" cy="220" r="80" fill="#FF6B9D" opacity="0.5"/>
+  <circle cx="1720" cy="210" r="55" fill="#FFB6C1" opacity="0.6"/>
+  <circle cx="1680" cy="240" r="45" fill="#FF1493" opacity="0.5"/>
+  
+  <circle cx="900" cy="150" r="70" fill="#4ECDC4" opacity="0.6"/>
+  <circle cx="920" cy="160" r="50" fill="#95E1D3" opacity="0.5"/>
+  
+  <circle cx="1400" cy="300" r="65" fill="#C44569" opacity="0.6"/>
+  <circle cx="500" cy="350" r="55" fill="#95E1D3" opacity="0.6"/>
+  
+  <!-- Paint drips -->
+  <path d="M 250 240 Q 250 280 245 320 L 255 320 Q 250 280 250 240" fill="#FFD93D" opacity="0.5"/>
+  <path d="M 1750 300 Q 1750 350 1745 400 L 1755 400 Q 1750 350 1750 300" fill="#FF6B9D" opacity="0.5"/>
+  <path d="M 950 220 Q 950 270 945 320 L 955 320 Q 950 270 950 220" fill="#4ECDC4" opacity="0.5"/>
+  
+  <!-- Studio floor covered in paint -->
+  <rect x="0" y="700" width="1920" height="380" fill="#8B7355" opacity="0.6"/>
+  
+  <!-- Random paint splatters on floor -->
+  <circle cx="300" cy="850" r="35" fill="#FF6B9D" opacity="0.7"/>
+  <circle cx="600" cy="920" r="40" fill="#4ECDC4" opacity="0.7"/>
+  <circle cx="900" cy="880" r="30" fill="#FFD93D" opacity="0.7"/>
+  <circle cx="1200" cy="950" r="45" fill="#95E1D3" opacity="0.7"/>
+  <circle cx="1500" cy="890" r="38" fill="#C44569" opacity="0.7"/>
+  <circle cx="1700" cy="940" r="35" fill="#FF6B9D" opacity="0.7"/>
+  <circle cx="450" cy="980" r="32" fill="#FFE66D" opacity="0.7"/>
+  <circle cx="1050" cy="1010" r="40" fill="#FF1493" opacity="0.7"/>
+  
+  <!-- Giant canvas with abstract art -->
+  <g transform="translate(960, 450)">
+    <rect x="-400" y="-250" width="800" height="500" fill="#FFFFFF" stroke="#8B4513" stroke-width="15"/>
+    
+    <!-- Wild abstract painting -->
+    <circle cx="-200" cy="-100" r="80" fill="#FF6B9D" opacity="0.7"/>
+    <circle cx="-180" cy="-110" r="60" fill="#FFD93D" opacity="0.6"/>
+    
+    <rect x="50" y="-200" width="200" height="150" fill="#4ECDC4" opacity="0.6" transform="rotate(25 150 -125)"/>
+    
+    <circle cx="200" cy="50" r="100" fill="#C44569" opacity="0.7"/>
+    <circle cx="190" cy="40" r="70" fill="#95E1D3" opacity="0.6"/>
+    
+    <polygon points="-300,-50 -200,100 -100,-80" fill="#FFD93D" opacity="0.6"/>
+    
+    <rect x="-150" y="80" width="250" height="120" fill="#FF6B9D" opacity="0.5" transform="rotate(-15 -25 140)"/>
+    
+    <circle cx="-50" cy="-150" r="60" fill="#95E1D3" opacity="0.7"/>
+    
+    <polygon points="100,150 200,200 150,100" fill="#4ECDC4" opacity="0.6"/>
+    
+    <!-- Brushstrokes -->
+    <path d="M -350 0 Q -300 -50 -250 -20" stroke="#FF1493" stroke-width="15" fill="none" opacity="0.7"/>
+    <path d="M 250 -150 Q 300 -100 280 -50" stroke="#FFD93D" stroke-width="18" fill="none" opacity="0.7"/>
+    <path d="M -100 200 Q 0 180 100 200" stroke="#4ECDC4" stroke-width="20" fill="none" opacity="0.7"/>
+  </g>
+  
+  <!-- Multiple palettes scattered -->
+  <g transform="translate(350, 900)">
+    <ellipse cx="0" cy="0" rx="100" ry="70" fill="#8B4513"/>
+    <ellipse cx="70" cy="-25" rx="25" ry="18" fill="#654321"/>
+    
+    <circle cx="-50" cy="-15" r="18" fill="#FF6B9D"/>
+    <circle cx="-20" cy="8" r="18" fill="#4ECDC4"/>
+    <circle cx="10" cy="-10" r="18" fill="#FFD93D"/>
+    <circle cx="40" cy="12" r="18" fill="#95E1D3"/>
+    <circle cx="-35" cy="20" r="16" fill="#C44569"/>
+    <circle cx="25" cy="28" r="16" fill="#FF1493"/>
+  </g>
+  
+  <g transform="translate(1570, 950)">
+    <ellipse cx="0" cy="0" rx="90" ry="65" fill="#8B4513"/>
+    <ellipse cx="65" cy="-22" rx="23" ry="16" fill="#654321"/>
+    
+    <circle cx="-45" cy="-12" r="16" fill="#FFE66D"/>
+    <circle cx="-18" cy="7" r="16" fill="#87CEEB"/>
+    <circle cx="9" cy="-9" r="16" fill="#FF8B9D"/>
+    <circle cx="36" cy="11" r="16" fill="#90EE90"/>
+  </g>
+  
+  <!-- Paintbrushes scattered everywhere -->
+  <g transform="translate(200, 750)">
+    <rect x="0" y="-80" width="10" height="100" fill="#D2691E" transform="rotate(-30 5 -30)"/>
+    <path d="M 5 -80 L 0 -75 L 10 -75 Z" fill="#FF6B9D" transform="rotate(-30 5 -75)"/>
+  </g>
+  
+  <g transform="translate(1700, 800)">
+    <rect x="0" y="-90" width="10" height="110" fill="#D2691E" transform="rotate(45 5 -35)"/>
+    <path d="M 5 -90 L 0 -85 L 10 -85 Z" fill="#4ECDC4" transform="rotate(45 5 -85)"/>
+  </g>
+  
+  <g transform="translate(800, 1020)">
+    <rect x="0" y="-70" width="10" height="80" fill="#D2691E" transform="rotate(15 5 -30)"/>
+    <path d="M 5 -70 L 0 -65 L 10 -65 Z" fill="#FFD93D" transform="rotate(15 5 -65)"/>
+  </g>
+  
+  <!-- Paint tubes squeezed and messy -->
+  <g transform="translate(600, 1000)">
+    <rect x="0" y="-50" width="35" height="60" rx="3" fill="#FF6B9D" transform="rotate(-20 17 -20)"/>
+    <rect x="2" y="-48" width="31" height="20" fill="#FFFFFF" opacity="0.8" transform="rotate(-20 17 -20)"/>
+    
+    <!-- Paint oozing out -->
+    <circle cx="17" cy="-55" r="8" fill="#FF6B9D"/>
+    <ellipse cx="17" cy="-65" rx="10" ry="15" fill="#FF6B9D" opacity="0.7"/>
+  </g>
+  
+  <g transform="translate(1300, 1020)">
+    <rect x="0" y="-50" width="35" height="60" rx="3" fill="#4ECDC4" transform="rotate(25 17 -20)"/>
+    <rect x="2" y="-48" width="31" height="20" fill="#FFFFFF" opacity="0.8" transform="rotate(25 17 -20)"/>
+    
+    <circle cx="17" cy="-55" r="8" fill="#4ECDC4"/>
+    <ellipse cx="17" cy="-65" rx="10" ry="15" fill="#4ECDC4" opacity="0.7"/>
+  </g>
+  
+  <!-- Spray paint cans -->
+  <g transform="translate(1100, 950)">
+    <rect x="-15" y="-80" width="30" height="90" rx="5" fill="#FFD93D"/>
+    <ellipse cx="0" cy="-80" rx="15" ry="6" fill="#FFA500"/>
+    <rect x="-8" y="-95" width="16" height="15" fill="#2C3E50"/>
+    <circle cx="0" cy="-87" r="4" fill="#FF6B9D"/>
+  </g>
+  
+  <!-- Easel with crazy colorful canvas -->
+  <g transform="translate(1500, 700)">
+    <line x1="-100" y1="280" x2="-40" y2="-100" stroke="#654321" stroke-width="10"/>
+    <line x1="100" y1="280" x2="40" y2="-100" stroke="#654321" stroke-width="10"/>
+    <line x1="0" y1="300" x2="0" y2="-130" stroke="#654321" stroke-width="10"/>
+    
+    <rect x="-100" y="-140" width="200" height="160" fill="#FFFFFF" stroke="#8B4513" stroke-width="8"/>
+    
+    <!-- Wild pattern -->
+    <circle cx="-40" cy="-60" r="35" fill="#FF6B9D" opacity="0.8"/>
+    <rect x="10" y="-100" width="60" height="60" fill="#4ECDC4" opacity="0.7" transform="rotate(30 40 -70)"/>
+    <polygon points="-70,0 -40,-50 -10,0" fill="#FFD93D" opacity="0.7"/>
+    <circle cx="50" cy="0" r="30" fill="#95E1D3" opacity="0.8"/>
+    
+    <!-- Splatter marks -->
+    <circle cx="-80" cy="-100" r="8" fill="#C44569"/>
+    <circle cx="80" cy="-120" r="10" fill="#FF1493"/>
+    <circle cx="0" cy="15" r="12" fill="#FFE66D"/>
+  </g>
+  
+  <!-- Footprints in paint -->
+  <g transform="translate(400, 750)">
+    <ellipse cx="0" cy="0" rx="25" ry="40" fill="#4ECDC4" opacity="0.5" transform="rotate(15)"/>
+    <ellipse cx="60" cy="80" rx="25" ry="40" fill="#FF6B9D" opacity="0.5" transform="rotate(-10)"/>
+    <ellipse cx="120" cy="150" rx="25" ry="40" fill="#FFD93D" opacity="0.5" transform="rotate(20)"/>
+  </g>
+  
+  <!-- Color wheel -->
+  <g transform="translate(250, 450)">
+    <circle cx="0" cy="0" r="70" fill="#FF0000" opacity="0.6"/>
+    <path d="M 0 0 L 60 -35 A 70 70 0 0 1 60 35 Z" fill="#FFFF00" opacity="0.6"/>
+    <path d="M 0 0 L 60 35 A 70 70 0 0 1 0 70 Z" fill="#00FF00" opacity="0.6"/>
+    <path d="M 0 0 L 0 70 A 70 70 0 0 1 -60 35 Z" fill="#00FFFF" opacity="0.6"/>
+    <path d="M 0 0 L -60 35 A 70 70 0 0 1 -60 -35 Z" fill="#0000FF" opacity="0.6"/>
+    <path d="M 0 0 L -60 -35 A 70 70 0 0 1 0 -70 Z" fill="#FF00FF" opacity="0.6"/>
+    <path d="M 0 0 L 0 -70 A 70 70 0 0 1 60 -35 Z" fill="#FF8800" opacity="0.6"/>
+    <circle cx="0" cy="0" r="25" fill="#FFFFFF"/>
+  </g>
+  
+  <!-- "CREATE" text made of paint -->
+  <text x="750" y="200" font-family="Impact" font-size="80" fill="#FF6B9D" opacity="0.7">CREATE!</text>
+</svg>

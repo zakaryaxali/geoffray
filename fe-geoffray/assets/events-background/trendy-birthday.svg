@@ -1,0 +1,184 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="trendyBirthdayGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="neonGlow" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#ff00ff;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#00ffff;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#ff00ff;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <rect width="1920" height="1080" fill="url(#trendyBirthdayGradient)"/>
+  
+  <!-- Neon glow effects -->
+  <ellipse cx="960" cy="400" rx="500" ry="400" fill="url(#neonGlow)" opacity="0.5"/>
+  
+  <!-- Modern venue floor -->
+  <rect x="0" y="750" width="1920" height="330" fill="#2C3E50" opacity="0.8"/>
+  
+  <!-- Geometric pattern floor -->
+  <rect x="0" y="750" width="100" height="100" fill="#34495E" opacity="0.5"/>
+  <rect x="200" y="750" width="100" height="100" fill="#34495E" opacity="0.5"/>
+  <rect x="400" y="750" width="100" height="100" fill="#34495E" opacity="0.5"/>
+  <rect x="100" y="850" width="100" height="100" fill="#34495E" opacity="0.5"/>
+  <rect x="300" y="850" width="100" height="100" fill="#34495E" opacity="0.5"/>
+  
+  <!-- Neon "BIRTHDAY" sign -->
+  <g transform="translate(960, 250)">
+    <text x="-280" y="0" font-family="Arial" font-size="100" fill="#ff00ff" font-weight="bold" opacity="0.9">BIRTHDAY</text>
+    <text x="-280" y="0" font-family="Arial" font-size="100" fill="#00ffff" font-weight="bold" opacity="0.3">BIRTHDAY</text>
+    
+    <!-- Neon glow effect -->
+    <rect x="-300" y="-80" width="600" height="100" fill="#ff00ff" opacity="0.1" rx="10"/>
+    <rect x="-295" y="-75" width="590" height="90" fill="none" stroke="#00ffff" stroke-width="3" opacity="0.5" rx="10"/>
+  </g>
+  
+  <!-- Modern geometric cake -->
+  <g transform="translate(960, 600)">
+    <!-- Shadow -->
+    <ellipse cx="0" cy="150" rx="150" ry="30" fill="#000000" opacity="0.3"/>
+    
+    <!-- Bottom tier - hexagon -->
+    <polygon points="-140,50 -70,-10 70,-10 140,50 70,110 -70,110" fill="#667eea"/>
+    <polygon points="-130,55 -65,-5 65,-5 130,55 65,105 -65,105" fill="#764ba2" opacity="0.7"/>
+    
+    <!-- Middle tier - octagon -->
+    <polygon points="-90,-30 -30,-70 30,-70 90,-30 90,30 30,70 -30,70 -90,30" fill="#ff00ff" opacity="0.8"/>
+    <polygon points="-80,-25 -25,-65 25,-65 80,-25 80,25 25,65 -25,65 -80,25" fill="#00ffff" opacity="0.3"/>
+    
+    <!-- Top tier - triangle -->
+    <polygon points="0,-130 -60,-80 60,-80" fill="#00ffff" opacity="0.9"/>
+    <polygon points="0,-125 -50,-85 50,-85" fill="#ff00ff" opacity="0.4"/>
+    
+    <!-- LED candles -->
+    <g transform="translate(-40, -130)">
+      <rect x="-4" y="-30" width="8" height="30" fill="#FFFFFF" opacity="0.9"/>
+      <circle cx="0" cy="-32" r="6" fill="#ff00ff" opacity="0.9"/>
+      <circle cx="0" cy="-32" r="10" fill="#ff00ff" opacity="0.3"/>
+    </g>
+    <g transform="translate(0, -130)">
+      <rect x="-4" y="-35" width="8" height="35" fill="#FFFFFF" opacity="0.9"/>
+      <circle cx="0" cy="-37" r="6" fill="#00ffff" opacity="0.9"/>
+      <circle cx="0" cy="-37" r="10" fill="#00ffff" opacity="0.3"/>
+    </g>
+    <g transform="translate(40, -130)">
+      <rect x="-4" y="-32" width="8" height="32" fill="#FFFFFF" opacity="0.9"/>
+      <circle cx="0" cy="-34" r="6" fill="#ff00ff" opacity="0.9"/>
+      <circle cx="0" cy="-34" r="10" fill="#ff00ff" opacity="0.3"/>
+    </g>
+    
+    <!-- Geometric decorations -->
+    <circle cx="-100" cy="0" r="15" fill="#00ffff" opacity="0.8"/>
+    <rect x="85" y="-15" width="20" height="20" fill="#ff00ff" opacity="0.8" transform="rotate(45 95 -5)"/>
+    <polygon points="-50,80 -40,100 -60,100" fill="#00ffff" opacity="0.8"/>
+    <polygon points="50,80 60,100 40,100" fill="#ff00ff" opacity="0.8"/>
+  </g>
+  
+  <!-- Balloon installation (modern) -->
+  <g transform="translate(350, 400)">
+    <!-- Chrome balloons -->
+    <ellipse cx="0" cy="0" rx="50" ry="65" fill="#C0C0C0" opacity="0.9"/>
+    <ellipse cx="-15" cy="-10" rx="25" ry="35" fill="#E8E8E8" opacity="0.7"/>
+    <path d="M 0 65 L 10 150" stroke="#E8E8E8" stroke-width="2"/>
+    
+    <ellipse cx="80" cy="-30" rx="55" ry="70" fill="#FFD700" opacity="0.9"/>
+    <ellipse cx="65" cy="-40" rx="28" ry="37" fill="#FFED4E" opacity="0.7"/>
+    <path d="M 80 40 L 90 150" stroke="#FFD700" stroke-width="2"/>
+    
+    <ellipse cx="-80" cy="-20" rx="52" ry="67" fill="#ff00ff" opacity="0.8"/>
+    <ellipse cx="-95" cy="-30" rx="26" ry="36" fill="#ff66ff" opacity="0.6"/>
+    <path d="M -80 47 L -70 150" stroke="#ff00ff" stroke-width="2"/>
+  </g>
+  
+  <g transform="translate(1570, 400)">
+    <ellipse cx="0" cy="0" rx="50" ry="65" fill="#00ffff" opacity="0.9"/>
+    <ellipse cx="-15" cy="-10" rx="25" ry="35" fill="#66ffff" opacity="0.7"/>
+    <path d="M 0 65 L 10 150" stroke="#00ffff" stroke-width="2"/>
+    
+    <ellipse cx="80" cy="-30" rx="55" ry="70" fill="#C0C0C0" opacity="0.9"/>
+    <ellipse cx="65" cy="-40" rx="28" ry="37" fill="#E8E8E8" opacity="0.7"/>
+    <path d="M 80 40 L 90 150" stroke="#C0C0C0" stroke-width="2"/>
+    
+    <ellipse cx="-80" cy="-20" rx="52" ry="67" fill="#FFD700" opacity="0.9"/>
+    <ellipse cx="-95" cy="-30" rx="26" ry="36" fill="#FFED4E" opacity="0.7"/>
+    <path d="M -80 47 L -70 150" stroke="#FFD700" stroke-width="2"/>
+  </g>
+  
+  <!-- Modern photo booth frame -->
+  <g transform="translate(1600, 850)">
+    <rect x="-120" y="-120" width="240" height="180" fill="none" stroke="#ff00ff" stroke-width="8" rx="15"/>
+    <rect x="-115" y="-115" width="230" height="170" fill="none" stroke="#00ffff" stroke-width="4" rx="12"/>
+    
+    <text x="-100" y="-135" font-family="Arial" font-size="24" fill="#FFFFFF" font-weight="bold">#BIRTHDAY</text>
+    
+    <!-- Sparkle effects -->
+    <circle cx="-100" cy="-100" r="5" fill="#FFFFFF" opacity="0.8"/>
+    <circle cx="90" cy="-90" r="4" fill="#FFFFFF" opacity="0.8"/>
+    <circle cx="-95" cy="50" r="4" fill="#FFFFFF" opacity="0.8"/>
+    <circle cx="95" cy="40" r="5" fill="#FFFFFF" opacity="0.8"/>
+  </g>
+  
+  <!-- Instagram-worthy drinks -->
+  <g transform="translate(300, 950)">
+    <rect x="-30" y="-80" width="60" height="100" rx="8" fill="#ff00ff" opacity="0.7"/>
+    <ellipse cx="0" cy="-80" rx="30" ry="10" fill="#ff66ff" opacity="0.6"/>
+    <rect x="-25" y="-75" width="50" height="10" fill="#FFFFFF" opacity="0.3"/>
+    
+    <!-- Straw -->
+    <rect x="15" y="-100" width="6" height="50" fill="#00ffff" opacity="0.8"/>
+    
+    <!-- Garnish -->
+    <circle cx="0" cy="-85" r="8" fill="#FFD700"/>
+  </g>
+  
+  <g transform="translate(1620, 950)">
+    <rect x="-30" y="-80" width="60" height="100" rx="8" fill="#00ffff" opacity="0.7"/>
+    <ellipse cx="0" cy="-80" rx="30" ry="10" fill="#66ffff" opacity="0.6"/>
+    <rect x="-25" y="-75" width="50" height="10" fill="#FFFFFF" opacity="0.3"/>
+    
+    <rect x="15" y="-100" width="6" height="50" fill="#ff00ff" opacity="0.8"/>
+    <circle cx="0" cy="-85" r="8" fill="#FFD700"/>
+  </g>
+  
+  <!-- LED strip lights -->
+  <g>
+    <rect x="0" y="700" width="1920" height="10" fill="#ff00ff" opacity="0.6"/>
+    <rect x="0" y="700" width="1920" height="5" fill="#00ffff" opacity="0.4"/>
+    
+    <!-- Light points -->
+    <circle cx="200" cy="705" r="8" fill="#ff00ff" opacity="0.9"/>
+    <circle cx="400" cy="705" r="8" fill="#00ffff" opacity="0.9"/>
+    <circle cx="600" cy="705" r="8" fill="#ff00ff" opacity="0.9"/>
+    <circle cx="800" cy="705" r="8" fill="#00ffff" opacity="0.9"/>
+    <circle cx="1000" cy="705" r="8" fill="#ff00ff" opacity="0.9"/>
+    <circle cx="1200" cy="705" r="8" fill="#00ffff" opacity="0.9"/>
+    <circle cx="1400" cy="705" r="8" fill="#ff00ff" opacity="0.9"/>
+    <circle cx="1600" cy="705" r="8" fill="#00ffff" opacity="0.9"/>
+    <circle cx="1800" cy="705" r="8" fill="#ff00ff" opacity="0.9"/>
+  </g>
+  
+  <!-- Minimalist confetti -->
+  <circle cx="500" cy="350" r="10" fill="#FFD700" opacity="0.8"/>
+  <rect x="750" y="300" width="15" height="15" fill="#ff00ff" opacity="0.8" transform="rotate(45 757 307)"/>
+  <circle cx="1000" cy="380" r="12" fill="#00ffff" opacity="0.8"/>
+  <polygon points="1250,320 1265,340 1235,340" fill="#C0C0C0" opacity="0.8"/>
+  <circle cx="1450" cy="360" r="10" fill="#ff00ff" opacity="0.8"/>
+  <rect x="700" y="420" width="12" height="12" fill="#FFD700" opacity="0.8" transform="rotate(30 706 426)"/>
+  
+  <!-- Sparkle effects -->
+  <g transform="translate(400, 200)">
+    <line x1="0" y1="-20" x2="0" y2="20" stroke="#FFFFFF" stroke-width="3" opacity="0.8"/>
+    <line x1="-20" y1="0" x2="20" y2="0" stroke="#FFFFFF" stroke-width="3" opacity="0.8"/>
+  </g>
+  <g transform="translate(1500, 250)">
+    <line x1="0" y1="-15" x2="0" y2="15" stroke="#FFFFFF" stroke-width="2" opacity="0.7"/>
+    <line x1="-15" y1="0" x2="15" y2="0" stroke="#FFFFFF" stroke-width="2" opacity="0.7"/>
+  </g>
+  <g transform="translate(800, 180)">
+    <line x1="0" y1="-18" x2="0" y2="18" stroke="#FFFFFF" stroke-width="3" opacity="0.8"/>
+    <line x1="-18" y1="0" x2="18" y2="0" stroke="#FFFFFF" stroke-width="3" opacity="0.8"/>
+  </g>
+</svg>

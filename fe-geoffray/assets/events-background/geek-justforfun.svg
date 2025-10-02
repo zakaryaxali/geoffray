@@ -1,0 +1,221 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="arcadeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="arcadeGlow" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#ff00ff;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#ff00aa;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#aa0066;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <rect width="1920" height="1080" fill="url(#arcadeGradient)"/>
+  
+  <!-- Pixel art background elements -->
+  <rect x="100" y="120" width="15" height="15" fill="#ff00ff" opacity="0.6"/>
+  <rect x="300" y="180" width="15" height="15" fill="#00ff88" opacity="0.6"/>
+  <rect x="500" y="150" width="15" height="15" fill="#ffcc00" opacity="0.6"/>
+  <rect x="1400" y="140" width="15" height="15" fill="#00ccff" opacity="0.6"/>
+  <rect x="1600" y="190" width="15" height="15" fill="#ff6b6b" opacity="0.6"/>
+  
+  <!-- Arcade cabinet -->
+  <g transform="translate(960, 500)">
+    <ellipse cx="0" cy="250" rx="300" ry="400" fill="url(#arcadeGlow)" opacity="0.5"/>
+    
+    <!-- Cabinet body -->
+    <path d="M -200 -200 L -180 250 L 180 250 L 200 -200 Z" fill="#2a2a3a"/>
+    <path d="M -200 -200 L -160 -250 L 160 -250 L 200 -200 Z" fill="#1a1a2e"/>
+    
+    <!-- Screen -->
+    <rect x="-160" y="-180" width="320" height="240" rx="10" fill="#0a0a15" stroke="#00ff88" stroke-width="3"/>
+    <rect x="-150" y="-170" width="300" height="220" fill="#1a1a2e"/>
+    
+    <!-- Game display - retro game -->
+    <text x="-130" y="-130" font-family="monospace" font-size="24" fill="#00ff88">★ HIGH SCORE ★</text>
+    <text x="-80" y="-90" font-family="monospace" font-size="36" fill="#ffcc00">999999</text>
+    
+    <!-- Pixel art game character -->
+    <g transform="translate(0, -30)">
+      <rect x="-30" y="-20" width="60" height="60" fill="#ff6b6b"/>
+      <rect x="-20" y="-30" width="40" height="10" fill="#ff6b6b"/>
+      <rect x="-15" y="-15" width="10" height="10" fill="#000000"/>
+      <rect x="5" y="-15" width="10" height="10" fill="#000000"/>
+      <rect x="-10" y="5" width="20" height="5" fill="#000000"/>
+      <rect x="-40" y="0" width="20" height="40" fill="#ff6b6b"/>
+      <rect x="20" y="0" width="20" height="40" fill="#ff6b6b"/>
+    </g>
+    
+    <!-- Control panel -->
+    <rect x="-180" y="60" width="360" height="80" fill="#3a3a4a"/>
+    <ellipse cx="0" cy="60" rx="180" ry="20" fill="#2a2a3a"/>
+    
+    <!-- Joystick -->
+    <g transform="translate(-80, 100)">
+      <circle cx="0" cy="20" r="30" fill="#1a1a2e"/>
+      <circle cx="0" cy="0" r="25" fill="#ff0000" opacity="0.9"/>
+      <circle cx="-5" cy="-5" r="8" fill="#ff6b6b"/>
+    </g>
+    
+    <!-- Buttons -->
+    <circle cx="40" cy="90" r="18" fill="#00ff00" opacity="0.9"/>
+    <circle cx="80" cy="95" r="18" fill="#ffff00" opacity="0.9"/>
+    <circle cx="120" cy="100" r="18" fill="#0000ff" opacity="0.9"/>
+    <circle cx="40" cy="120" r="18" fill="#ff00ff" opacity="0.9"/>
+    <circle cx="80" cy="125" r="18" fill="#00ffff" opacity="0.9"/>
+    
+    <!-- Button labels -->
+    <text x="35" y="95" font-family="monospace" font-size="14" fill="#000000">A</text>
+    <text x="75" y="100" font-family="monospace" font-size="14" fill="#000000">B</text>
+    <text x="115" y="105" font-family="monospace" font-size="14" fill="#ffffff">X</text>
+    <text x="35" y="125" font-family="monospace" font-size="14" fill="#000000">Y</text>
+    <text x="75" y="130" font-family="monospace" font-size="14" fill="#000000">Z</text>
+    
+    <!-- Coin slot -->
+    <rect x="-150" y="150" width="60" height="8" rx="2" fill="#1a1a2e"/>
+    <text x="-180" y="145" font-family="monospace" font-size="12" fill="#ffcc00">INSERT COIN</text>
+    
+    <!-- Speaker grills -->
+    <g transform="translate(-140, 200)">
+      <circle cx="0" cy="0" r="3" fill="#1a1a2e"/>
+      <circle cx="15" cy="0" r="3" fill="#1a1a2e"/>
+      <circle cx="30" cy="0" r="3" fill="#1a1a2e"/>
+      <circle cx="0" cy="15" r="3" fill="#1a1a2e"/>
+      <circle cx="15" cy="15" r="3" fill="#1a1a2e"/>
+      <circle cx="30" cy="15" r="3" fill="#1a1a2e"/>
+    </g>
+    
+    <g transform="translate(110, 200)">
+      <circle cx="0" cy="0" r="3" fill="#1a1a2e"/>
+      <circle cx="15" cy="0" r="3" fill="#1a1a2e"/>
+      <circle cx="30" cy="0" r="3" fill="#1a1a2e"/>
+      <circle cx="0" cy="15" r="3" fill="#1a1a2e"/>
+      <circle cx="15" cy="15" r="3" fill="#1a1a2e"/>
+      <circle cx="30" cy="15" r="3" fill="#1a1a2e"/>
+    </g>
+    
+    <!-- Marquee with LED lights -->
+    <rect x="-180" y="-280" width="360" height="30" rx="5" fill="#ff00ff" opacity="0.8"/>
+    <text x="-120" y="-257" font-family="Impact" font-size="24" fill="#ffff00">★ GAME ON! ★</text>
+  </g>
+  
+  <!-- Floor/desk -->
+  <rect x="0" y="850" width="1920" height="230" fill="#2a2a3a" opacity="0.7"/>
+  
+  <!-- Gaming PC setup on side -->
+  <g transform="translate(350, 950)">
+    <!-- PC case with RGB -->
+    <rect x="-60" y="-100" width="120" height="150" rx="5" fill="#1a1a2e" stroke="#00ff88" stroke-width="2"/>
+    
+    <!-- RGB fans visible through window -->
+    <circle cx="0" cy="-50" r="25" fill="#ff00ff" opacity="0.7"/>
+    <circle cx="0" cy="-50" r="20" fill="#00ff88" opacity="0.6"/>
+    <circle cx="0" cy="-50" r="15" fill="#00ccff" opacity="0.7"/>
+    
+    <circle cx="0" cy="10" r="25" fill="#00ff88" opacity="0.7"/>
+    <circle cx="0" cy="10" r="20" fill="#ff00ff" opacity="0.6"/>
+    <circle cx="0" cy="10" r="15" fill="#ffcc00" opacity="0.7"/>
+    
+    <!-- Power LED -->
+    <circle cx="-40" cy="-90" r="4" fill="#00ff00" opacity="0.9"/>
+  </g>
+  
+  <!-- Retro controllers on desk -->
+  <g transform="translate(1550, 950)">
+    <!-- Controller 1 -->
+    <ellipse cx="-100" cy="0" rx="60" ry="40" fill="#3a3a4a"/>
+    <circle cx="-120" cy="-5" r="15" fill="#2a2a3a"/>
+    <circle cx="-80" cy="-8" r="8" fill="#ff0000"/>
+    <circle cx="-70" cy="-12" r="8" fill="#00ff00"/>
+    <circle cx="-70" cy="-4" r="8" fill="#0000ff"/>
+    <circle cx="-80" cy="0" r="8" fill="#ffff00"/>
+    
+    <!-- Controller 2 -->
+    <ellipse cx="100" cy="0" rx="60" ry="40" fill="#4a3a5a"/>
+    <circle cx="120" cy="-5" r="15" fill="#2a2a3a"/>
+    <circle cx="80" cy="-8" r="8" fill="#ff00ff"/>
+    <circle cx="70" cy="-12" r="8" fill="#00ffff"/>
+    <circle cx="70" cy="-4" r="8" fill="#ff6b6b"/>
+    <circle cx="80" cy="0" r="8" fill="#00ff88"/>
+  </g>
+  
+  <!-- Snacks and drinks -->
+  <g transform="translate(200, 950)">
+    <!-- Pizza box (pixel art style) -->
+    <rect x="0" y="-20" width="80" height="80" fill="#ff6b6b" opacity="0.9"/>
+    <rect x="10" y="-10" width="60" height="60" fill="#ffcc00" opacity="0.8"/>
+    <circle cx="25" cy="10" r="8" fill="#ff0000"/>
+    <circle cx="45" cy="15" r="8" fill="#ff0000"/>
+    <circle cx="35" cy="30" r="8" fill="#ff0000"/>
+    <circle cx="55" cy="25" r="8" fill="#ff0000"/>
+  </g>
+  
+  <g transform="translate(1750, 970)">
+    <!-- Energy drink -->
+    <rect x="-20" y="-60" width="40" height="80" rx="5" fill="#00ff88" opacity="0.9"/>
+    <rect x="-18" y="-55" width="36" height="20" fill="#ffff00" opacity="0.8"/>
+    <text x="-12" y="-38" font-family="Impact" font-size="16" fill="#000000">XP</text>
+  </g>
+  
+  <!-- LED strip lights -->
+  <g>
+    <line x1="100" y1="800" x2="1820" y2="800" stroke="#2a2a3a" stroke-width="4"/>
+    <circle cx="200" cy="800" r="15" fill="#ff00ff" opacity="0.9"/>
+    <circle cx="400" cy="800" r="15" fill="#00ff88" opacity="0.9"/>
+    <circle cx="600" cy="800" r="15" fill="#00ccff" opacity="0.9"/>
+    <circle cx="800" cy="800" r="15" fill="#ffcc00" opacity="0.9"/>
+    <circle cx="1000" cy="800" r="15" fill="#ff6b6b" opacity="0.9"/>
+    <circle cx="1200" cy="800" r="15" fill="#ff00ff" opacity="0.9"/>
+    <circle cx="1400" cy="800" r="15" fill="#00ff88" opacity="0.9"/>
+    <circle cx="1600" cy="800" r="15" fill="#00ccff" opacity="0.9"/>
+    <circle cx="1800" cy="800" r="15" fill="#ffcc00" opacity="0.9"/>
+    
+    <!-- Glow effects -->
+    <circle cx="200" cy="800" r="25" fill="#ff00ff" opacity="0.4"/>
+    <circle cx="400" cy="800" r="25" fill="#00ff88" opacity="0.4"/>
+    <circle cx="600" cy="800" r="25" fill="#00ccff" opacity="0.4"/>
+    <circle cx="800" cy="800" r="25" fill="#ffcc00" opacity="0.4"/>
+    <circle cx="1000" cy="800" r="25" fill="#ff6b6b" opacity="0.4"/>
+    <circle cx="1200" cy="800" r="25" fill="#ff00ff" opacity="0.4"/>
+    <circle cx="1400" cy="800" r="25" fill="#00ff88" opacity="0.4"/>
+    <circle cx="1600" cy="800" r="25" fill="#00ccff" opacity="0.4"/>
+    <circle cx="1800" cy="800" r="25" fill="#ffcc00" opacity="0.4"/>
+  </g>
+  
+  <!-- Pixel art decorations floating -->
+  <g transform="translate(250, 350)">
+    <!-- Pixel heart -->
+    <rect x="0" y="10" width="10" height="10" fill="#ff1493"/>
+    <rect x="20" y="10" width="10" height="10" fill="#ff1493"/>
+    <rect x="-10" y="20" width="10" height="10" fill="#ff1493"/>
+    <rect x="0" y="20" width="10" height="10" fill="#ff1493"/>
+    <rect x="10" y="20" width="10" height="10" fill="#ff1493"/>
+    <rect x="20" y="20" width="10" height="10" fill="#ff1493"/>
+    <rect x="30" y="20" width="10" height="10" fill="#ff1493"/>
+    <rect x="0" y="30" width="10" height="10" fill="#ff1493"/>
+    <rect x="10" y="30" width="10" height="10" fill="#ff1493"/>
+    <rect x="20" y="30" width="10" height="10" fill="#ff1493"/>
+    <rect x="10" y="40" width="10" height="10" fill="#ff1493"/>
+  </g>
+  
+  <g transform="translate(1650, 380)">
+    <!-- Pixel star -->
+    <rect x="10" y="0" width="10" height="10" fill="#ffcc00"/>
+    <rect x="0" y="10" width="30" height="10" fill="#ffcc00"/>
+    <rect x="10" y="20" width="10" height="10" fill="#ffcc00"/>
+    <rect x="-5" y="15" width="10" height="10" fill="#ffcc00"/>
+    <rect x="25" y="15" width="10" height="10" fill="#ffcc00"/>
+  </g>
+  
+  <!-- Achievement notifications -->
+  <g transform="translate(150, 250)">
+    <rect x="0" y="0" width="300" height="60" rx="5" fill="#2a2a3a" opacity="0.9" stroke="#00ff88" stroke-width="2"/>
+    <text x="15" y="25" font-family="monospace" font-size="14" fill="#ffcc00">🏆 ACHIEVEMENT UNLOCKED</text>
+    <text x="15" y="45" font-family="monospace" font-size="12" fill="#00ff88">"Having Fun" +100 XP</text>
+  </g>
+  
+  <!-- Score counter -->
+  <text x="1600" y="180" font-family="monospace" font-size="24" fill="#00ff88">LEVEL: ∞</text>
+  <text x="1600" y="220" font-family="monospace" font-size="24" fill="#ffcc00">FUN: MAX</text>
+</svg>

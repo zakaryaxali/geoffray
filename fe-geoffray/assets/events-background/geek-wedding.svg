@@ -1,0 +1,183 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="geekWeddingGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2d3561;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="heartGlow" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#ff1493;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#ff69b4;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#ff00aa;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <rect width="1920" height="1080" fill="url(#geekWeddingGradient)"/>
+  
+  <!-- Binary code forming hearts -->
+  <text x="150" y="150" font-family="monospace" font-size="20" fill="#ff69b4" opacity="0.3">01001100 01101111 01110110 01100101</text>
+  <text x="1400" y="200" font-family="monospace" font-size="20" fill="#ff69b4" opacity="0.3">01010100 01110010 01110101 01100101</text>
+  
+  <!-- Large code window with wedding vows -->
+  <g transform="translate(960, 400)">
+    <ellipse cx="0" cy="0" rx="500" ry="350" fill="url(#heartGlow)" opacity="0.4"/>
+    
+    <rect x="-450" y="-250" width="900" height="500" rx="15" fill="#1a1a2e" stroke="#ff69b4" stroke-width="4"/>
+    
+    <!-- Terminal header -->
+    <rect x="-450" y="-250" width="900" height="40" rx="15" fill="#2a2a3a"/>
+    <circle cx="-410" cy="-230" r="10" fill="#ff5f56"/>
+    <circle cx="-380" cy="-230" r="10" fill="#ffbd2e"/>
+    <circle cx="-350" cy="-230" r="10" fill="#27c93f"/>
+    <text x="-50" y="-223" font-family="monospace" font-size="16" fill="#ffffff">marriage.js</text>
+    
+    <!-- Code content -->
+    <text x="-420" y="-180" font-family="monospace" font-size="18" fill="#ff69b4">class Marriage {</text>
+    <text x="-400" y="-150" font-family="monospace" font-size="18" fill="#00ff88">  constructor(person1, person2) {</text>
+    <text x="-380" y="-120" font-family="monospace" font-size="18" fill="#00ccff">    this.partner1 = person1;</text>
+    <text x="-380" y="-90" font-family="monospace" font-size="18" fill="#00ccff">    this.partner2 = person2;</text>
+    <text x="-380" y="-60" font-family="monospace" font-size="18" fill="#00ccff">    this.love = Infinity;</text>
+    <text x="-380" y="-30" font-family="monospace" font-size="18" fill="#00ccff">    this.commitment = true;</text>
+    <text x="-400" y="0" font-family="monospace" font-size="18" fill="#00ff88">  }</text>
+    <text x="-400" y="40" font-family="monospace" font-size="18" fill="#ffcc00">  async celebrate() {</text>
+    <text x="-380" y="70" font-family="monospace" font-size="18" fill="#ffffff">    await this.exchangeRings();</text>
+    <text x="-380" y="100" font-family="monospace" font-size="18" fill="#ffffff">    return "I do! 💍";</text>
+    <text x="-400" y="130" font-family="monospace" font-size="18" fill="#ffcc00">  }</text>
+    <text x="-420" y="160" font-family="monospace" font-size="18" fill="#ff69b4">}</text>
+    <text x="-420" y="200" font-family="monospace" font-size="18" fill="#00ff88">const wedding = new Marriage();</text>
+    
+    <!-- Cursor -->
+    <rect x="-100" y="185" width="12" height="22" fill="#00ff88" opacity="0.8"/>
+  </g>
+  
+  <!-- Desk/table surface -->
+  <rect x="0" y="800" width="1920" height="280" fill="#2a2a3a" opacity="0.7"/>
+  
+  <!-- Two laptops side by side -->
+  <g transform="translate(600, 950)">
+    <!-- Laptop 1 -->
+    <rect x="-120" y="-80" width="240" height="15" rx="5" fill="#2a2a3a"/>
+    <rect x="-110" y="-180" width="220" height="100" rx="5" fill="#1a1a2e" stroke="#00ff88" stroke-width="2"/>
+    <rect x="-100" y="-170" width="200" height="80" fill="#0a0a15"/>
+    
+    <text x="-90" y="-140" font-family="monospace" font-size="14" fill="#ff69b4">Player 1</text>
+    <text x="-90" y="-115" font-family="monospace" font-size="14" fill="#00ff88">Status: Married</text>
+    <text x="-90" y="-90" font-family="monospace" font-size="14" fill="#00ccff">Level: ∞</text>
+  </g>
+  
+  <g transform="translate(1320, 950)">
+    <!-- Laptop 2 -->
+    <rect x="-120" y="-80" width="240" height="15" rx="5" fill="#2a2a3a"/>
+    <rect x="-110" y="-180" width="220" height="100" rx="5" fill="#1a1a2e" stroke="#ff69b4" stroke-width="2"/>
+    <rect x="-100" y="-170" width="200" height="80" fill="#0a0a15"/>
+    
+    <text x="-90" y="-140" font-family="monospace" font-size="14" fill="#ff69b4">Player 2</text>
+    <text x="-90" y="-115" font-family="monospace" font-size="14" fill="#00ff88">Status: Married</text>
+    <text x="-90" y="-90" font-family="monospace" font-size="14" fill="#00ccff">Level: ∞</text>
+  </g>
+  
+  <!-- Wedding rings as pixels -->
+  <g transform="translate(960, 950)">
+    <!-- Ring 1 -->
+    <circle cx="-60" cy="0" r="30" fill="none" stroke="#ffd700" stroke-width="8"/>
+    <circle cx="-60" cy="0" r="35" fill="#ffed4e" opacity="0.3"/>
+    <circle cx="-60" cy="-5" r="8" fill="#ff1493"/>
+    
+    <!-- Ring 2 -->
+    <circle cx="60" cy="0" r="30" fill="none" stroke="#ffd700" stroke-width="8"/>
+    <circle cx="60" cy="0" r="35" fill="#ffed4e" opacity="0.3"/>
+    <circle cx="60" cy="-5" r="8" fill="#ff1493"/>
+    
+    <!-- Connection line -->
+    <line x1="-30" y1="0" x2="30" y2="0" stroke="#ff69b4" stroke-width="3" stroke-dasharray="5,5"/>
+  </g>
+  
+  <!-- Mechanical keyboards with wedding colors -->
+  <g transform="translate(600, 1010)">
+    <rect x="-150" y="0" width="300" height="50" rx="5" fill="#2a2a3a"/>
+    <rect x="-140" y="10" width="280" height="30" fill="#1a1a2e"/>
+    
+    <!-- Keys with RGB -->
+    <rect x="-130" y="15" width="20" height="20" rx="2" fill="#ff69b4" opacity="0.8"/>
+    <rect x="-105" y="15" width="20" height="20" rx="2" fill="#ffffff" opacity="0.8"/>
+    <rect x="-80" y="15" width="20" height="20" rx="2" fill="#ff69b4" opacity="0.8"/>
+    <rect x="-55" y="15" width="20" height="20" rx="2" fill="#ffffff" opacity="0.8"/>
+    <rect x="-30" y="15" width="20" height="20" rx="2" fill="#ff69b4" opacity="0.8"/>
+    <rect x="-5" y="15" width="20" height="20" rx="2" fill="#ffffff" opacity="0.8"/>
+    <rect x="20" y="15" width="20" height="20" rx="2" fill="#ff69b4" opacity="0.8"/>
+    <rect x="45" y="15" width="20" height="20" rx="2" fill="#ffffff" opacity="0.8"/>
+    <rect x="70" y="15" width="20" height="20" rx="2" fill="#ff69b4" opacity="0.8"/>
+    <rect x="95" y="15" width="20" height="20" rx="2" fill="#ffffff" opacity="0.8"/>
+    <rect x="120" y="15" width="20" height="20" rx="2" fill="#ff69b4" opacity="0.8"/>
+  </g>
+  
+  <g transform="translate(1320, 1010)">
+    <rect x="-150" y="0" width="300" height="50" rx="5" fill="#2a2a3a"/>
+    <rect x="-140" y="10" width="280" height="30" fill="#1a1a2e"/>
+    
+    <!-- Keys with RGB -->
+    <rect x="-130" y="15" width="20" height="20" rx="2" fill="#ffffff" opacity="0.8"/>
+    <rect x="-105" y="15" width="20" height="20" rx="2" fill="#ff69b4" opacity="0.8"/>
+    <rect x="-80" y="15" width="20" height="20" rx="2" fill="#ffffff" opacity="0.8"/>
+    <rect x="-55" y="15" width="20" height="20" rx="2" fill="#ff69b4" opacity="0.8"/>
+    <rect x="-30" y="15" width="20" height="20" rx="2" fill="#ffffff" opacity="0.8"/>
+    <rect x="-5" y="15" width="20" height="20" rx="2" fill="#ff69b4" opacity="0.8"/>
+    <rect x="20" y="15" width="20" height="20" rx="2" fill="#ffffff" opacity="0.8"/>
+    <rect x="45" y="15" width="20" height="20" rx="2" fill="#ff69b4" opacity="0.8"/>
+    <rect x="70" y="15" width="20" height="20" rx="2" fill="#ffffff" opacity="0.8"/>
+    <rect x="95" y="15" width="20" height="20" rx="2" fill="#ff69b4" opacity="0.8"/>
+    <rect x="120" y="15" width="20" height="20" rx="2" fill="#ffffff" opacity="0.8"/>
+  </g>
+  
+  <!-- Coffee mugs -->
+  <g transform="translate(300, 980)">
+    <ellipse cx="0" cy="20" rx="35" ry="10" fill="#3e2723" opacity="0.5"/>
+    <rect x="-30" y="-25" width="60" height="45" rx="5" fill="#654321"/>
+    <ellipse cx="0" cy="-25" rx="30" ry="8" fill="#4e342e"/>
+    <path d="M 30 -10 Q 50 -10 50 10 Q 50 20 30 20" stroke="#654321" stroke-width="6" fill="none"/>
+    <text x="-15" y="0" font-family="monospace" font-size="14" fill="#ff69b4">♥</text>
+  </g>
+  
+  <g transform="translate(1620, 980)">
+    <ellipse cx="0" cy="20" rx="35" ry="10" fill="#3e2723" opacity="0.5"/>
+    <rect x="-30" y="-25" width="60" height="45" rx="5" fill="#654321"/>
+    <ellipse cx="0" cy="-25" rx="30" ry="8" fill="#4e342e"/>
+    <path d="M 30 -10 Q 50 -10 50 10 Q 50 20 30 20" stroke="#654321" stroke-width="6" fill="none"/>
+    <text x="-15" y="0" font-family="monospace" font-size="14" fill="#ff69b4">♥</text>
+  </g>
+  
+  <!-- Pixel heart decorations -->
+  <g transform="translate(200, 300)">
+    <rect x="0" y="10" width="15" height="15" fill="#ff1493"/>
+    <rect x="30" y="10" width="15" height="15" fill="#ff1493"/>
+    <rect x="-15" y="25" width="15" height="15" fill="#ff1493"/>
+    <rect x="0" y="25" width="15" height="15" fill="#ff1493"/>
+    <rect x="15" y="25" width="15" height="15" fill="#ff1493"/>
+    <rect x="30" y="25" width="15" height="15" fill="#ff1493"/>
+    <rect x="45" y="25" width="15" height="15" fill="#ff1493"/>
+    <rect x="0" y="40" width="15" height="15" fill="#ff1493"/>
+    <rect x="15" y="40" width="15" height="15" fill="#ff1493"/>
+    <rect x="30" y="40" width="15" height="15" fill="#ff1493"/>
+    <rect x="15" y="55" width="15" height="15" fill="#ff1493"/>
+  </g>
+  
+  <g transform="translate(1700, 330)">
+    <rect x="0" y="10" width="15" height="15" fill="#ff69b4"/>
+    <rect x="30" y="10" width="15" height="15" fill="#ff69b4"/>
+    <rect x="-15" y="25" width="15" height="15" fill="#ff69b4"/>
+    <rect x="0" y="25" width="15" height="15" fill="#ff69b4"/>
+    <rect x="15" y="25" width="15" height="15" fill="#ff69b4"/>
+    <rect x="30" y="25" width="15" height="15" fill="#ff69b4"/>
+    <rect x="45" y="25" width="15" height="15" fill="#ff69b4"/>
+    <rect x="0" y="40" width="15" height="15" fill="#ff69b4"/>
+    <rect x="15" y="40" width="15" height="15" fill="#ff69b4"/>
+    <rect x="30" y="40" width="15" height="15" fill="#ff69b4"/>
+    <rect x="15" y="55" width="15" height="15" fill="#ff69b4"/>
+  </g>
+  
+  <!-- Achievement notification -->
+  <g transform="translate(150, 200)">
+    <rect x="0" y="0" width="350" height="70" rx="5" fill="#2a2a3a" opacity="0.95" stroke="#ffd700" stroke-width="3"/>
+    <text x="20" y="30" font-family="monospace" font-size="16" fill="#ffd700">🏆 LEGENDARY ACHIEVEMENT</text>
+    <text x="20" y="55" font-family="monospace" font-size="14" fill="#ff69b4">"Co-op Mode: Activated Forever"</text>
+  </g>
+</svg>
