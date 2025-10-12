@@ -77,4 +77,123 @@
           fill="#FF1493" opacity="0.6"/>
     
     <path d="M 100 0 Q 50 -50 50 -80 Q 50 -110 100 -110 Q 125 -110 150 -90 Q 175 -110 200 -110 Q 250 -110 250 -80 Q 250 -50 200 0 L 150 40 Z" 
-          fill="#FF69B
+          fill="#FF69B4" opacity="0.6"/>
+    
+    <!-- Abstract elements -->
+    <circle cx="0" cy="-50" r="60" fill="#FFD93D" opacity="0.5"/>
+    <rect x="-80" y="50" width="160" height="80" fill="#4ECDC4" opacity="0.4" transform="rotate(15 0 90)"/>
+  </g>
+  
+  <!-- Artist's palette as guest book table -->
+  <g transform="translate(400, 900)">
+    <ellipse cx="0" cy="0" rx="150" ry="100" fill="#8B4513"/>
+    <ellipse cx="100" cy="-35" rx="40" ry="25" fill="#654321"/>
+    
+    <!-- Guest book -->
+    <rect x="-60" y="-40" width="120" height="80" fill="#FFFAF0" stroke="#8B4513" stroke-width="3"/>
+    <text x="-45" y="-5" font-family="cursive" font-size="20" fill="#8B4513">Guest Book</text>
+    
+    <!-- Decorative paint blobs -->
+    <circle cx="-100" cy="-30" r="15" fill="#FF69B4" opacity="0.8"/>
+    <circle cx="-70" cy="40" r="15" fill="#4ECDC4" opacity="0.8"/>
+    <circle cx="70" cy="30" r="15" fill="#FFD93D" opacity="0.8"/>
+  </g>
+  
+  <!-- Easel with "LOVE" painting -->
+  <g transform="translate(1500, 750)">
+    <line x1="-100" y1="250" x2="-40" y2="-80" stroke="#654321" stroke-width="10"/>
+    <line x1="100" y1="250" x2="40" y2="-80" stroke="#654321" stroke-width="10"/>
+    <line x1="0" y1="270" x2="0" y2="-110" stroke="#654321" stroke-width="10"/>
+    
+    <rect x="-100" y="-120" width="200" height="150" fill="#FFFFFF" stroke="#8B4513" stroke-width="8"/>
+    
+    <!-- "LOVE" in artistic letters -->
+    <text x="-80" y="-30" font-family="Arial" font-size="60" fill="#FF1493" font-weight="bold">LOVE</text>
+    
+    <!-- Paint splashes -->
+    <circle cx="-70" cy="10" r="12" fill="#4ECDC4" opacity="0.7"/>
+    <circle cx="60" cy="-80" r="15" fill="#FFD93D" opacity="0.7"/>
+    <circle cx="75" cy="15" r="10" fill="#FF69B4" opacity="0.7"/>
+  </g>
+  
+  <!-- Watercolor bouquets -->
+  <g transform="translate(250, 850)">
+    <circle cx="0" cy="0" r="30" fill="#FF1493" opacity="0.6"/>
+    <circle cx="-20" cy="-10" r="25" fill="#FF69B4" opacity="0.6"/>
+    <circle cx="20" cy="-10" r="25" fill="#FFB6C1" opacity="0.6"/>
+    <circle cx="-15" cy="15" r="22" fill="#FF69B4" opacity="0.6"/>
+    <circle cx="15" cy="15" r="22" fill="#FF1493" opacity="0.6"/>
+    <circle cx="0" cy="-25" r="20" fill="#FFB6C1" opacity="0.6"/>
+    
+    <rect x="-15" y="30" width="30" height="80" fill="#228B22" opacity="0.6"/>
+  </g>
+  
+  <g transform="translate(1670, 850)">
+    <circle cx="0" cy="0" r="30" fill="#FFD93D" opacity="0.6"/>
+    <circle cx="-20" cy="-10" r="25" fill="#FFE66D" opacity="0.6"/>
+    <circle cx="20" cy="-10" r="25" fill="#FFA500" opacity="0.6"/>
+    <circle cx="-15" cy="15" r="22" fill="#FFD93D" opacity="0.6"/>
+    <circle cx="15" cy="15" r="22" fill="#FFE66D" opacity="0.6"/>
+    
+    <rect x="-15" y="30" width="30" height="80" fill="#228B22" opacity="0.6"/>
+  </g>
+  
+  <!-- Abstract confetti -->
+  <circle cx="600" cy="400" r="15" fill="#FF69B4" opacity="0.7"/>
+  <circle cx="800" cy="350" r="12" fill="#4ECDC4" opacity="0.7"/>
+  <rect x="1000" y="380" width="20" height="20" fill="#FFD93D" opacity="0.7" transform="rotate(45 1010 390)"/>
+  <circle cx="1200" cy="420" r="14" fill="#FF1493" opacity="0.7"/>
+  <rect x="1400" y="360" width="18" height="18" fill="#95E1D3" opacity="0.7" transform="rotate(30 1409 369)"/>
+  
+  <!-- Painted wedding rings -->
+  <g transform="translate(960, 250)">
+    <circle cx="-50" cy="0" r="40" fill="none" stroke="#FFD700" stroke-width="10" opacity="0.9"/>
+    <circle cx="-50" cy="0" r="45" fill="#FFED4E" opacity="0.2"/>
+    
+    <circle cx="50" cy="0" r="40" fill="none" stroke="#FFD700" stroke-width="10" opacity="0.9"/>
+    <circle cx="50" cy="0" r="45" fill="#FFED4E" opacity="0.2"/>
+    
+    <!-- Intertwined effect -->
+    <path d="M -10 -20 Q 0 -40 10 -20" stroke="#FFD700" stroke-width="10" fill="none" opacity="0.9"/>
+  </g>
+  
+  <!-- Paintbrushes as decoration -->
+  <g transform="translate(700, 1000)">
+    <rect x="0" y="-80" width="10" height="80" fill="#D2691E"/>
+    <path d="M 5 -85 L 0 -80 L 10 -80 Z" fill="#FF69B4"/>
+    
+    <rect x="20" y="-80" width="10" height="80" fill="#D2691E"/>
+    <path d="M 25 -85 L 20 -80 L 30 -80 Z" fill="#4ECDC4"/>
+    
+    <rect x="40" y="-80" width="10" height="80" fill="#D2691E"/>
+    <path d="M 45 -85 L 40 -80 L 50 -80 Z" fill="#FFD93D"/>
+  </g>
+  
+  <!-- Paint tubes as favors -->
+  <g transform="translate(1200, 1000)">
+    <rect x="0" y="-50" width="30" height="60" rx="3" fill="#FF69B4"/>
+    <rect x="2" y="-48" width="26" height="18" fill="#FFFFFF" opacity="0.8"/>
+    <text x="5" y="-33" font-family="Arial" font-size="10" fill="#FF1493">♥</text>
+    
+    <rect x="40" y="-50" width="30" height="60" rx="3" fill="#4ECDC4"/>
+    <rect x="42" y="-48" width="26" height="18" fill="#FFFFFF" opacity="0.8"/>
+    <text x="45" y="-33" font-family="Arial" font-size="10" fill="#2C8C99">♥</text>
+  </g>
+  
+  <!-- Artistic cake -->
+  <g transform="translate(300, 950)">
+    <ellipse cx="0" cy="50" rx="90" ry="18" fill="#E0E0E0" opacity="0.5"/>
+    <rect x="-80" y="-20" width="160" height="70" fill="#FFFAF0"/>
+    <ellipse cx="0" cy="-20" rx="80" ry="16" fill="#FFF8DC"/>
+    
+    <!-- Abstract decorations on cake -->
+    <circle cx="-40" cy="10" r="15" fill="#FF69B4" opacity="0.7"/>
+    <circle cx="0" cy="15" r="15" fill="#4ECDC4" opacity="0.7"/>
+    <circle cx="40" cy="10" r="15" fill="#FFD93D" opacity="0.7"/>
+    
+    <!-- Paint splash topper -->
+    <circle cx="0" cy="-35" r="20" fill="#FF1493" opacity="0.8"/>
+    <circle cx="-10" cy="-40" r="12" fill="#FF69B4" opacity="0.7"/>
+    <circle cx="10" cy="-40" r="12" fill="#FFB6C1" opacity="0.7"/>
+  </g>
+</svg>

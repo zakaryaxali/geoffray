@@ -8,6 +8,7 @@ import {ThemedText} from './ThemedText';
 import {IconSymbol} from '@/src/components/ui/IconSymbol';
 import {Colors} from '@/src/constants/Colors';
 import {useTheme} from '@/src/contexts/ThemeContext';
+import {useEventBackground} from '@/src/hooks/useEventBackground';
 
 export type Participant = {
   id: string;
@@ -23,7 +24,10 @@ export type Event = {
   isActive: boolean;
   participantsCount: number;
   participants?: Participant[];
-  backgroundImage: any;
+  backgroundImage?: any;
+  persona?: string;
+  occasion?: string;
+  customBanner?: string;
   location?: string;
 };
 
@@ -37,6 +41,11 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const themeColors = theme === 'dark' ? Colors.dark : Colors.light;
   const { t } = useTranslation();
   const { language } = useLocalization();
+  const { backgroundSource, isComponent } = useEventBackground({ 
+    persona: event.persona, 
+    occasion: event.occasion, 
+    customBanner: event.customBanner 
+  });
 
   // Constants for text truncation
   const EVENT_NAME_MAX_LENGTH = 40;
@@ -95,7 +104,17 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
       ]}
       onPress={handlePress}
     >
-      <Image source={event.backgroundImage} style={styles.backgroundImage} />
+      {isComponent ? (
+        <View style={styles.backgroundImage}>
+          {React.createElement(backgroundSource, {
+            width: '100%',
+            height: '100%',
+            preserveAspectRatio: 'xMidYMid slice'
+          })}
+        </View>
+      ) : (
+        <Image source={{ uri: backgroundSource }} style={styles.backgroundImage} />
+      )}
       <View style={styles.overlay}>
         <View style={styles.contentContainer}>
           <ThemedText type="subtitle" style={styles.name} numberOfLines={2} ellipsizeMode="tail">

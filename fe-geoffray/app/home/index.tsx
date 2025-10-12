@@ -9,21 +9,6 @@ import {Event, EventCard} from '@/src/components/EventCard';
 import {EventsFilter, FilterType} from '@/src/components/EventsFilter';
 import {eventApi, EventResponse} from '@/src/api/eventApi';
 
-// Array of random event banner images
-const randomEventBanners = [
-  { uri: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80' },
-  { uri: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80' },
-  { uri: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80' },
-  { uri: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80' },
-  { uri: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80' },
-  { uri: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80' },
-];
-
-// Function to get a random banner image
-const getRandomBanner = () => {
-  const randomIndex = Math.floor(Math.random() * randomEventBanners.length);
-  return randomEventBanners[randomIndex];
-};
 
 // Convert API event format to component event format
 const mapApiEventToComponentEvent = (apiEvent: EventResponse): Event => {
@@ -34,7 +19,9 @@ const mapApiEventToComponentEvent = (apiEvent: EventResponse): Event => {
     endDate: apiEvent.end_date,
     isActive: apiEvent.active,
     participantsCount: apiEvent.participants_count || 0,
-    backgroundImage: apiEvent.banner ? { uri: apiEvent.banner } : getRandomBanner(),
+    persona: apiEvent.giftee_persona,
+    occasion: apiEvent.event_occasion,
+    customBanner: apiEvent.banner,
     location: apiEvent.location,
   };
 };

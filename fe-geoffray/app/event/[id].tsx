@@ -93,7 +93,9 @@ export default function EventScreen() {
       {(activeTab === 'details' || showBanner) && (
         <EventBanner 
           title={event!.title} 
-          bannerUrl={event!.banner} 
+          bannerUrl={event!.banner}
+          persona={event!.giftee_persona}
+          occasion={event!.event_occasion}
           isCreator={isCreator}
           onEditPress={() => {
             setActiveTab('details'); // Switch to details tab if not already there

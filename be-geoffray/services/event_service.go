@@ -104,9 +104,9 @@ type Participant struct {
 
 // GetEventByID retrieves an event by its ID along with its participants
 func (s *EventService) GetEventByID(eventID string, userID string) (*models.Event, []Participant, error) {
-	// Query to get the event by ID
+	// Query to get the event by ID including persona and occasion fields
 	query := `
-		SELECT e.id, e.creator_id, e.title, e.description, e.start_date, e.end_date, e.banner, e.location, e.active, e.created_at, e.updated_at
+		SELECT e.id, e.creator_id, e.title, e.description, e.start_date, e.end_date, e.banner, e.location, e.active, e.created_at, e.updated_at, e.giftee_persona, e.event_occasion
 		FROM events e
 		WHERE e.id = $1
 	`
@@ -115,7 +115,7 @@ func (s *EventService) GetEventByID(eventID string, userID string) (*models.Even
 	err := db.DB.QueryRow(query, eventID).Scan(
 		&event.ID, &event.CreatorID, &event.Title, &event.Description,
 		&event.StartDate, &event.EndDate, &event.Banner, &event.Location, &event.Active,
-		&event.CreatedAt, &event.UpdatedAt,
+		&event.CreatedAt, &event.UpdatedAt, &event.GifteePersona, &event.EventOccasion,
 	)
 
 	if err != nil {
@@ -188,7 +188,7 @@ func (s *EventService) GetEventByID(eventID string, userID string) (*models.Even
 func (s *EventService) GetUserEvents(userID string) ([]models.Event, error) {
 	// Query to get all events where the user is either the creator or a participant
 	query := `
-		SELECT DISTINCT e.id, e.creator_id, e.title, e.description, e.start_date, e.end_date, e.banner, e.location, e.active, e.created_at, e.updated_at, e.participants_count
+		SELECT DISTINCT e.id, e.creator_id, e.title, e.description, e.start_date, e.end_date, e.banner, e.location, e.active, e.created_at, e.updated_at, e.participants_count, e.giftee_persona, e.event_occasion
 		FROM events e
 		LEFT JOIN event_participants ep ON e.id = ep.event_id
 		WHERE e.creator_id = $1 OR ep.user_id = $1
@@ -210,6 +210,7 @@ func (s *EventService) GetUserEvents(userID string) ([]models.Event, error) {
 			&event.ID, &event.CreatorID, &event.Title, &event.Description,
 			&event.StartDate, &event.EndDate, &event.Banner, &event.Location, &event.Active,
 			&event.CreatedAt, &event.UpdatedAt, &event.ParticipantsCount,
+			&event.GifteePersona, &event.EventOccasion,
 		)
 		if err != nil {
 			log.Println("Error scanning event:", err)

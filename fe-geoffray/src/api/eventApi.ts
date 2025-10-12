@@ -37,6 +37,8 @@ export interface EventResponse {
   created_at: string;
   updated_at: string;
   participants_count: number;
+  giftee_persona?: string;
+  event_occasion?: string;
 }
 
 export interface ParticipantInviteRequest {
