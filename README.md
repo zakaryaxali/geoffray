@@ -3,7 +3,12 @@ Et si j'offrais...
 
 
 ## TODOS
-- add background image per recommandation combinations
+
+Active development tasks and improvements are tracked in the [todos](./todos) directory:
+
+- [Authentication & Route Protection](./todos/auth-route-protection.md) - **HIGH PRIORITY** - Fix unauthorized access to protected routes
+
+### Other TODOs
 - add invitation mail 
 - add confirmation mail for login 
 - add when receiving an invite link to be redirected to signup but then have access to the invite
