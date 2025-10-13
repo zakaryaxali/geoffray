@@ -42,6 +42,21 @@ type GiftSuggestion struct {
 	GeneratedAt   time.Time `json:"generated_at"`   // When this suggestion was generated
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
+
+	// Vote-related fields (populated when fetching suggestions)
+	UpvoteCount   int     `json:"upvote_count"`
+	DownvoteCount int     `json:"downvote_count"`
+	UserVote      *string `json:"user_vote,omitempty"` // "upvote", "downvote", or null
+}
+
+// GiftSuggestionVote represents a user's vote on a gift suggestion
+type GiftSuggestionVote struct {
+	ID           string    `json:"id"`
+	SuggestionID string    `json:"suggestion_id"`
+	UserID       string    `json:"user_id"`
+	VoteType     string    `json:"vote_type"` // "upvote" or "downvote"
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 // GiftSelection represents a user's selection of persona and occasion (updated)

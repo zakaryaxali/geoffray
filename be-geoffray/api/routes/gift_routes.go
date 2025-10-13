@@ -44,4 +44,15 @@ func SetupGiftRoutes(router *gin.Engine, db *sql.DB) {
 		// Regenerate gift suggestions for an event
 		protectedEventGiftRoutes.POST("/:id/regenerate-gift-suggestions", giftEventController.RegenerateEventGiftSuggestions)
 	}
+
+	// Protected gift suggestion voting routes
+	protectedVoteRoutes := router.Group("/api/gift-suggestions")
+	protectedVoteRoutes.Use(middlewares.JWTAuthMiddleware())
+	{
+		// Vote on a gift suggestion (POST to create/update vote)
+		protectedVoteRoutes.POST("/:id/vote", giftEventController.VoteOnSuggestion)
+
+		// Remove vote from a gift suggestion
+		protectedVoteRoutes.DELETE("/:id/vote", giftEventController.RemoveVote)
+	}
 }

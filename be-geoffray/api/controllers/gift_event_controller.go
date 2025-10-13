@@ -177,7 +177,7 @@ func (gec *GiftEventController) generateGiftSuggestionsForEvent(event models.Eve
 	fmt.Printf("Generated and stored %d gift suggestions for event %s\n", len(suggestions), event.ID)
 }
 
-// GetEventGiftSuggestions retrieves gift suggestions for a specific event
+// GetEventGiftSuggestions retrieves gift suggestions for a specific event with vote data
 func (gec *GiftEventController) GetEventGiftSuggestions(c *gin.Context) {
 	eventID := c.Param("id")
 	if eventID == "" {
@@ -185,17 +185,42 @@ func (gec *GiftEventController) GetEventGiftSuggestions(c *gin.Context) {
 		return
 	}
 
+	// Get user ID if authenticated (optional for viewing)
+	userID, hasUser := c.Get("user_id")
+	var userIDStr string
+	if hasUser {
+		userIDStr = userID.(string)
+	}
+
 	query := `
-		SELECT id, event_id, name_en, name_fr, description_en, description_fr,
-			   price_range, category, url, generated_at, created_at, updated_at
-		FROM gift_suggestions
-		WHERE event_id = $1
-		ORDER BY created_at DESC
+		SELECT 
+			gs.id, gs.event_id, gs.name_en, gs.name_fr, gs.description_en, gs.description_fr,
+			gs.price_range, gs.category, gs.url, gs.generated_at, gs.created_at, gs.updated_at,
+			COALESCE(upvotes.count, 0) as upvote_count,
+			COALESCE(downvotes.count, 0) as downvote_count,
+			user_vote.vote_type as user_vote
+		FROM gift_suggestions gs
+		LEFT JOIN (
+			SELECT suggestion_id, COUNT(*) as count
+			FROM gift_suggestion_votes
+			WHERE vote_type = 'upvote'
+			GROUP BY suggestion_id
+		) upvotes ON gs.id = upvotes.suggestion_id
+		LEFT JOIN (
+			SELECT suggestion_id, COUNT(*) as count
+			FROM gift_suggestion_votes
+			WHERE vote_type = 'downvote'
+			GROUP BY suggestion_id
+		) downvotes ON gs.id = downvotes.suggestion_id
+		LEFT JOIN gift_suggestion_votes user_vote ON gs.id = user_vote.suggestion_id 
+			AND user_vote.user_id = $2
+		WHERE gs.event_id = $1
+		ORDER BY gs.created_at DESC
 	`
 
-	rows, err := gec.DB.Query(query, eventID)
+	rows, err := gec.DB.Query(query, eventID, userIDStr)
 	if err != nil {
-		fmt.Printf("Error querying gift suggestions: %v\n", err)
+		fmt.Printf("Error querying gift suggestions with votes: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve gift suggestions"})
 		return
 	}
@@ -204,16 +229,24 @@ func (gec *GiftEventController) GetEventGiftSuggestions(c *gin.Context) {
 	var suggestions []models.GiftSuggestion
 	for rows.Next() {
 		var suggestion models.GiftSuggestion
+		var userVote sql.NullString
+
 		err := rows.Scan(
 			&suggestion.ID, &suggestion.EventID, &suggestion.NameEN, &suggestion.NameFR,
 			&suggestion.DescriptionEN, &suggestion.DescriptionFR, &suggestion.PriceRange,
 			&suggestion.Category, &suggestion.URL, &suggestion.GeneratedAt,
 			&suggestion.CreatedAt, &suggestion.UpdatedAt,
+			&suggestion.UpvoteCount, &suggestion.DownvoteCount, &userVote,
 		)
 		if err != nil {
 			fmt.Printf("Error scanning gift suggestion: %v\n", err)
 			continue
 		}
+
+		if userVote.Valid {
+			suggestion.UserVote = &userVote.String
+		}
+
 		suggestions = append(suggestions, suggestion)
 	}
 
@@ -278,4 +311,125 @@ func (gec *GiftEventController) RegenerateEventGiftSuggestions(c *gin.Context) {
 	go gec.generateGiftSuggestionsForEvent(event)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Generating new gift suggestions"})
+}
+
+// VoteOnSuggestion handles voting on a gift suggestion
+func (gec *GiftEventController) VoteOnSuggestion(c *gin.Context) {
+	suggestionID := c.Param("id")
+	if suggestionID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Suggestion ID is required"})
+		return
+	}
+
+	// Get user ID from context
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	var req struct {
+		VoteType string `json:"vote_type" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body: " + err.Error()})
+		return
+	}
+
+	// Validate vote type
+	if req.VoteType != "upvote" && req.VoteType != "downvote" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid vote type. Must be 'upvote' or 'downvote'"})
+		return
+	}
+
+	userIDStr := userID.(string)
+
+	// Check if user already has a vote on this suggestion
+	var existingVoteID string
+	var existingVoteType string
+	checkQuery := `SELECT id, vote_type FROM gift_suggestion_votes WHERE suggestion_id = $1 AND user_id = $2`
+	err := gec.DB.QueryRow(checkQuery, suggestionID, userIDStr).Scan(&existingVoteID, &existingVoteType)
+
+	if err != nil && err != sql.ErrNoRows {
+		fmt.Printf("Error checking existing vote: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process vote"})
+		return
+	}
+
+	// If vote exists and is the same type, remove it (toggle off)
+	if err == nil && existingVoteType == req.VoteType {
+		deleteQuery := `DELETE FROM gift_suggestion_votes WHERE id = $1`
+		_, err = gec.DB.Exec(deleteQuery, existingVoteID)
+		if err != nil {
+			fmt.Printf("Error deleting vote: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to remove vote"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Vote removed"})
+		return
+	}
+
+	// If vote exists but different type, update it
+	if err == nil && existingVoteType != req.VoteType {
+		updateQuery := `UPDATE gift_suggestion_votes SET vote_type = $1, updated_at = NOW() WHERE id = $2`
+		_, err = gec.DB.Exec(updateQuery, req.VoteType, existingVoteID)
+		if err != nil {
+			fmt.Printf("Error updating vote: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update vote"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Vote updated", "vote_type": req.VoteType})
+		return
+	}
+
+	// No existing vote, create new one
+	voteID := uuid.NewString()
+	insertQuery := `
+		INSERT INTO gift_suggestion_votes (id, suggestion_id, user_id, vote_type, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, NOW(), NOW())
+	`
+	_, err = gec.DB.Exec(insertQuery, voteID, suggestionID, userIDStr, req.VoteType)
+	if err != nil {
+		fmt.Printf("Error inserting vote: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to record vote"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Vote recorded", "vote_type": req.VoteType})
+}
+
+// RemoveVote removes a user's vote from a gift suggestion
+func (gec *GiftEventController) RemoveVote(c *gin.Context) {
+	suggestionID := c.Param("id")
+	if suggestionID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Suggestion ID is required"})
+		return
+	}
+
+	// Get user ID from context
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	userIDStr := userID.(string)
+
+	// Delete the vote
+	deleteQuery := `DELETE FROM gift_suggestion_votes WHERE suggestion_id = $1 AND user_id = $2`
+	result, err := gec.DB.Exec(deleteQuery, suggestionID, userIDStr)
+	if err != nil {
+		fmt.Printf("Error removing vote: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to remove vote"})
+		return
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No vote found to remove"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Vote removed"})
 }
