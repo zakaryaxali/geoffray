@@ -8,6 +8,7 @@ import (
 
 	"be-geoffray/models"
 	"be-geoffray/services"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -154,16 +155,17 @@ func (gec *GiftEventController) generateGiftSuggestionsForEvent(event models.Eve
 	for _, suggestion := range suggestions {
 		suggestion.ID = uuid.NewString()
 		suggestion.EventID = event.ID
+		suggestion.OwnerID = event.CreatorID // Set owner to event creator
 
 		query := `
 			INSERT INTO gift_suggestions (
-				id, event_id, name_en, name_fr, description_en, description_fr,
+				id, event_id, owner_id, name_en, name_fr, description_en, description_fr,
 				price_range, category, url, generated_at, created_at, updated_at
-			) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+			) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
 		`
 
 		_, err := gec.DB.Exec(query,
-			suggestion.ID, suggestion.EventID, suggestion.NameEN, suggestion.NameFR,
+			suggestion.ID, suggestion.EventID, suggestion.OwnerID, suggestion.NameEN, suggestion.NameFR,
 			suggestion.DescriptionEN, suggestion.DescriptionFR, suggestion.PriceRange,
 			suggestion.Category, suggestion.URL, suggestion.GeneratedAt,
 			suggestion.CreatedAt, suggestion.UpdatedAt,
@@ -194,7 +196,7 @@ func (gec *GiftEventController) GetEventGiftSuggestions(c *gin.Context) {
 
 	query := `
 		SELECT 
-			gs.id, gs.event_id, gs.name_en, gs.name_fr, gs.description_en, gs.description_fr,
+			gs.id, gs.event_id, gs.owner_id, gs.name_en, gs.name_fr, gs.description_en, gs.description_fr,
 			gs.price_range, gs.category, gs.url, gs.generated_at, gs.created_at, gs.updated_at,
 			COALESCE(upvotes.count, 0) as upvote_count,
 			COALESCE(downvotes.count, 0) as downvote_count,
@@ -215,7 +217,7 @@ func (gec *GiftEventController) GetEventGiftSuggestions(c *gin.Context) {
 		LEFT JOIN gift_suggestion_votes user_vote ON gs.id = user_vote.suggestion_id 
 			AND user_vote.user_id = $2
 		WHERE gs.event_id = $1
-		ORDER BY gs.created_at DESC
+		ORDER BY (COALESCE(upvotes.count, 0) - COALESCE(downvotes.count, 0)) DESC, gs.created_at DESC
 	`
 
 	rows, err := gec.DB.Query(query, eventID, userIDStr)
@@ -232,7 +234,7 @@ func (gec *GiftEventController) GetEventGiftSuggestions(c *gin.Context) {
 		var userVote sql.NullString
 
 		err := rows.Scan(
-			&suggestion.ID, &suggestion.EventID, &suggestion.NameEN, &suggestion.NameFR,
+			&suggestion.ID, &suggestion.EventID, &suggestion.OwnerID, &suggestion.NameEN, &suggestion.NameFR,
 			&suggestion.DescriptionEN, &suggestion.DescriptionFR, &suggestion.PriceRange,
 			&suggestion.Category, &suggestion.URL, &suggestion.GeneratedAt,
 			&suggestion.CreatedAt, &suggestion.UpdatedAt,
@@ -432,4 +434,60 @@ func (gec *GiftEventController) RemoveVote(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Vote removed"})
+}
+
+// DeleteGiftSuggestion deletes a gift suggestion if the user is the owner
+func (gec *GiftEventController) DeleteGiftSuggestion(c *gin.Context) {
+	suggestionID := c.Param("id")
+	if suggestionID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Suggestion ID is required"})
+		return
+	}
+
+	// Get user ID from context
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	userIDStr := userID.(string)
+
+	// Check if the suggestion exists and if the user is the owner
+	var ownerID string
+	checkQuery := `SELECT owner_id FROM gift_suggestions WHERE id = $1`
+	err := gec.DB.QueryRow(checkQuery, suggestionID).Scan(&ownerID)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Gift suggestion not found"})
+			return
+		}
+		fmt.Printf("Error checking gift suggestion ownership: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to verify ownership"})
+		return
+	}
+
+	// Verify user is the owner
+	if ownerID != userIDStr {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Only the suggestion owner can delete this suggestion"})
+		return
+	}
+
+	// Delete the suggestion (votes will be deleted automatically due to CASCADE)
+	deleteQuery := `DELETE FROM gift_suggestions WHERE id = $1`
+	result, err := gec.DB.Exec(deleteQuery, suggestionID)
+	if err != nil {
+		fmt.Printf("Error deleting gift suggestion: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete suggestion"})
+		return
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Gift suggestion not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Gift suggestion deleted successfully"})
 }

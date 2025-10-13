@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, TouchableOpacity, ActivityIndicator, Alert, Linking } from 'react-native';
+import { ScrollView, View, TouchableOpacity, ActivityIndicator, Alert, Linking, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/src/components/ThemedText';
 import { useTheme } from '@/src/contexts/ThemeContext';
+import { useAuth } from '@/src/contexts/AuthContext';
 import { Colors, BrandColors } from '@/src/constants/Colors';
 import { eventStyles } from './EventStyles';
 import { apiClient } from '@/src/api/apiClient';
@@ -11,6 +12,7 @@ import { apiClient } from '@/src/api/apiClient';
 interface GiftSuggestion {
   id: string;
   event_id: string;
+  owner_id: string;
   name_en: string;
   name_fr: string;
   description_en: string;
@@ -34,6 +36,7 @@ interface EventGiftsProps {
 export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) => {
   const { t, i18n } = useTranslation();
   const { theme } = useTheme();
+  const { user } = useAuth();
   const themeColors = theme === 'dark' ? Colors.dark : Colors.light;
   
   const [suggestions, setSuggestions] = useState<GiftSuggestion[]>([]);
@@ -41,6 +44,7 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
   const [regenerating, setRegenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [votingStates, setVotingStates] = useState<Record<string, boolean>>({});
+  const [deletingStates, setDeletingStates] = useState<Record<string, boolean>>({});
   
   const isEnglish = i18n.language === 'en';
 
@@ -182,6 +186,60 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
     }
   };
 
+  // Handle deleting a suggestion
+  const handleDeleteSuggestion = async (suggestionId: string) => {
+    if (deletingStates[suggestionId]) return; // Prevent double-clicking
+    
+    console.log('Delete button clicked for suggestion:', suggestionId);
+    
+    // Cross-platform confirmation
+    const performDeletion = async () => {
+      setDeletingStates(prev => ({ ...prev, [suggestionId]: true }));
+      
+      try {
+        await apiClient.delete(`/api/gift-suggestions/${suggestionId}`, true);
+        
+        // Remove suggestion from local state
+        setSuggestions(prev => prev.filter(s => s.id !== suggestionId));
+        
+      } catch (error) {
+        console.error('Error deleting suggestion:', error);
+        const errorMessage = t('giftEvent.deleteError');
+        
+        if (Platform.OS === 'web') {
+          alert(errorMessage);
+        } else {
+          Alert.alert('Error', errorMessage);
+        }
+      } finally {
+        setDeletingStates(prev => ({ ...prev, [suggestionId]: false }));
+      }
+    };
+
+    // Show confirmation dialog based on platform
+    if (Platform.OS === 'web') {
+      // Use browser confirm on web
+      const confirmed = confirm(t('giftEvent.deleteConfirm'));
+      if (confirmed) {
+        await performDeletion();
+      }
+    } else {
+      // Use native Alert.alert on mobile
+      Alert.alert(
+        t('common.confirm'),
+        t('giftEvent.deleteConfirm'),
+        [
+          { text: t('common.cancel'), style: 'cancel' },
+          {
+            text: t('common.delete'),
+            style: 'destructive',
+            onPress: performDeletion
+          }
+        ]
+      );
+    }
+  };
+
   useEffect(() => {
     if (eventId) {
       fetchGiftSuggestions();
@@ -206,42 +264,10 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
     >
       <View style={{ padding: 20 }}>
         {/* Header */}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <View style={{ marginBottom: 20 }}>
           <ThemedText style={{ fontSize: 24, fontWeight: 'bold', color: themeColors.text }}>
             {t('event.gifts.title')}
           </ThemedText>
-          
-          {isCreator && (
-            <TouchableOpacity
-              onPress={handleRegenerateGifts}
-              disabled={regenerating}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                backgroundColor: BrandColors.peach,
-                paddingHorizontal: 12,
-                paddingVertical: 8,
-                borderRadius: 8,
-                opacity: regenerating ? 0.7 : 1,
-              }}
-            >
-              {regenerating ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
-              ) : (
-                <Ionicons 
-                  name={suggestions && suggestions.length > 0 ? "refresh" : "sparkles"} 
-                  size={16} 
-                  color="#FFFFFF" 
-                />
-              )}
-              <ThemedText style={{ color: '#FFFFFF', marginLeft: 6, fontSize: 14, fontWeight: '600' }}>
-                {suggestions && suggestions.length > 0 
-                  ? t('event.gifts.regenerate') 
-                  : t('event.gifts.generate')
-                }
-              </ThemedText>
-            </TouchableOpacity>
-          )}
         </View>
 
         {/* Error State */}
@@ -299,18 +325,47 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
               borderColor: themeColors.border,
             }}
           >
-            {/* Gift Name */}
-            <ThemedText style={{
-              fontSize: 18,
-              fontWeight: '600',
-              color: themeColors.text,
+            {/* Header with Gift Name and Delete Button */}
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
               marginBottom: 8,
             }}>
-              {isEnglish ? suggestion.name_en : suggestion.name_fr}
-            </ThemedText>
+              <ThemedText style={{
+                fontSize: 18,
+                fontWeight: '600',
+                color: themeColors.text,
+                flex: 1,
+                marginRight: 8,
+              }}>
+                {isEnglish ? suggestion.name_en : suggestion.name_fr}
+              </ThemedText>
+              
+              {/* Delete Button - only show if user is the owner */}
+              {user && user.id === suggestion.owner_id && (
+                <TouchableOpacity
+                  onPress={() => handleDeleteSuggestion(suggestion.id)}
+                  disabled={deletingStates[suggestion.id]}
+                  style={{
+                    backgroundColor: '#ff6b6b',
+                    paddingVertical: 6,
+                    paddingHorizontal: 8,
+                    borderRadius: 6,
+                    opacity: deletingStates[suggestion.id] ? 0.7 : 1,
+                  }}
+                >
+                  {deletingStates[suggestion.id] ? (
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                  ) : (
+                    <Ionicons name="trash-outline" size={16} color="#FFFFFF" />
+                  )}
+                </TouchableOpacity>
+              )}
+            </View>
 
-            {/* Category and Price */}
-            <View style={{ flexDirection: 'row', marginBottom: 12 }}>
+            {/* Category, Price, and View Link Button */}
+            <View style={{ flexDirection: 'row', marginBottom: 12, alignItems: 'center' }}>
               <View style={{
                 backgroundColor: BrandColors.peach,
                 paddingHorizontal: 8,
@@ -335,6 +390,7 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
                   borderRadius: 4,
                   borderWidth: 1,
                   borderColor: themeColors.border,
+                  marginRight: 8,
                 }}>
                   <ThemedText style={{
                     color: themeColors.textSecondary,
@@ -344,6 +400,23 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
                     {suggestion.price_range}
                   </ThemedText>
                 </View>
+              )}
+              
+              {/* View Gift Icon Button - only show if URL exists */}
+              {suggestion.url && (
+                <TouchableOpacity
+                  onPress={() => handleOpenGift(suggestion.url!)}
+                  style={{
+                    backgroundColor: themeColors.primary,
+                    paddingVertical: 4,
+                    paddingHorizontal: 8,
+                    borderRadius: 4,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Ionicons name="open-outline" size={14} color="#FFFFFF" />
+                </TouchableOpacity>
               )}
             </View>
 
@@ -438,33 +511,40 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
               </View>
             </View>
 
-            {/* Action Button */}
-            {suggestion.url && (
-              <TouchableOpacity
-                onPress={() => handleOpenGift(suggestion.url!)}
-                style={{
-                  backgroundColor: themeColors.primary,
-                  paddingVertical: 12,
-                  paddingHorizontal: 16,
-                  borderRadius: 8,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Ionicons name="open-outline" size={16} color="#FFFFFF" />
-                <ThemedText style={{
-                  color: '#FFFFFF',
-                  fontSize: 14,
-                  fontWeight: '600',
-                  marginLeft: 8,
-                }}>
-                  {t('event.gifts.viewGift')}
-                </ThemedText>
-              </TouchableOpacity>
-            )}
           </View>
         ))}
+
+        {/* Nouvelles Suggestions Button - centered below suggestions */}
+        {isCreator && suggestions && suggestions.length > 0 && (
+          <View style={{ alignItems: 'center', marginTop: 20, marginBottom: 20 }}>
+            <TouchableOpacity
+              onPress={handleRegenerateGifts}
+              disabled={regenerating}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: BrandColors.peach,
+                paddingHorizontal: 24,
+                paddingVertical: 12,
+                borderRadius: 8,
+                opacity: regenerating ? 0.7 : 1,
+              }}
+            >
+              {regenerating ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Ionicons 
+                  name="add" 
+                  size={16} 
+                  color="#FFFFFF" 
+                />
+              )}
+              <ThemedText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: '600' }}>
+                {t('event.gifts.addSuggestion')}
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Regenerating State */}
         {regenerating && (

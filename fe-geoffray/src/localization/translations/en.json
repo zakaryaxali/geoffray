@@ -234,6 +234,7 @@
   "event.gifts.generateTitle": "Generate Gift Suggestions",
   "event.gifts.generateMessage": "Generate personalized gift suggestions for this event?",
   "event.gifts.regenerate": "New Suggestions",
+  "event.gifts.addSuggestion": "New Suggestion",
   "event.gifts.regenerateTitle": "Generate New Suggestions",
   "event.gifts.regenerateMessage": "This will replace all current gift suggestions with new ones. Continue?",
   "event.gifts.regenerateError": "Failed to generate new suggestions",
@@ -266,5 +267,7 @@
   "giftEvent.occasions.justForFun": "Just for fun",
   "giftEvent.suggestions": "Gift suggestions",
   "giftEvent.regenerate": "Generate new suggestions",
-  "giftEvent.createEvent": "Create Event with Gifts"
+  "giftEvent.createEvent": "Create Event with Gifts",
+  "giftEvent.deleteConfirm": "Are you sure you want to delete this gift suggestion?",
+  "giftEvent.deleteError": "Failed to delete gift suggestion. Please try again."
 }

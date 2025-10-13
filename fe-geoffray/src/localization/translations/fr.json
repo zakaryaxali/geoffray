@@ -233,6 +233,7 @@
   "event.gifts.generateTitle": "Générer des Suggestions de Cadeaux",
   "event.gifts.generateMessage": "Générer des suggestions de cadeaux personnalisées pour cet événement ?",
   "event.gifts.regenerate": "Nouvelles Suggestions",
+  "event.gifts.addSuggestion": "Nouvelle Suggestion",
   "event.gifts.regenerateTitle": "Générer de Nouvelles Suggestions",
   "event.gifts.regenerateMessage": "Ceci remplacera toutes les suggestions actuelles par de nouvelles. Continuer ?",
   "event.gifts.regenerateError": "Erreur lors de la génération de nouvelles suggestions",
@@ -265,5 +266,7 @@
   "giftEvent.occasions.justForFun": "Juste par plaisir",
   "giftEvent.suggestions": "Suggestions de cadeaux",
   "giftEvent.regenerate": "Générer de nouvelles suggestions",
-  "giftEvent.createEvent": "Créer un événement avec cadeaux"
+  "giftEvent.createEvent": "Créer un événement avec cadeaux",
+  "giftEvent.deleteConfirm": "Êtes-vous sûr de vouloir supprimer cette suggestion de cadeau ?",
+  "giftEvent.deleteError": "Échec de la suppression de la suggestion de cadeau. Veuillez réessayer."
 }
