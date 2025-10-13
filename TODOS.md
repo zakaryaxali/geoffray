@@ -2,11 +2,8 @@
 Active development tasks and improvements are tracked in the [todos](./todos) directory
 
 ## Suggestions
-- thumbs up / down on each suggestion
-- filter suggestions by most popular / recent
-- seulement celui qui genere le cadeau peut le supprimer 
-- tout le monde peut ajouter suggestions
-- aussi ajouter possibilite de manuellement donner une suggestion (image ou lien ) ou chatbot pour generer idee
+- new suggestion interface
+  - aussi ajouter possibilite de manuellement donner une suggestion (image ou lien ) ou chatbot pour generer idee
 - fix scroll to bottom in gift suggestion page
 - bug lien cadeau
   - trouver un moyen de dire a l'IA de passer des liens valides (ou on n'en met pas)
