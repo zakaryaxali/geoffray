@@ -32,6 +32,7 @@ type OccasionType struct {
 type GiftSuggestion struct {
 	ID            string    `json:"id"`
 	EventID       string    `json:"event_id"`
+	OwnerID       string    `json:"owner_id"`       // User ID of who created/owns this suggestion
 	NameEN        string    `json:"name_en"`        // English name
 	NameFR        string    `json:"name_fr"`        // French name
 	DescriptionEN string    `json:"description_en"` // English description
