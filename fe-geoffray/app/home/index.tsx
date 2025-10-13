@@ -123,64 +123,76 @@ export default function HomeScreen() {
         onFilterChange={handleFilterChange} 
       />
       
-      {/* Gift Search Button - only show on "Events" tab */}
-      {activeFilter === 'next' && (
-        <TouchableOpacity 
-          style={styles.giftSearchButton}
-          onPress={() => {
-            router.push('/create-event-with-gifts');
-          }}
-        >
-          <ThemedText style={styles.giftSearchText}>
-            {t('home.giftSearch')}
-          </ThemedText>
-        </TouchableOpacity>
-      )}
-      
       {filteredEvents.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <ThemedText style={styles.emptyText}>
-            {activeFilter === 'next' 
-              ? t('home.noUpcomingEvents') 
-              : t('home.noPastEvents')}
-          </ThemedText>
+          {/* Gift Search Button - centered when no events */}
+          {activeFilter === 'next' ? (
+            <TouchableOpacity 
+              style={styles.giftSearchButtonCentered}
+              onPress={() => {
+                router.push('/create-event-with-gifts');
+              }}
+            >
+              <ThemedText style={styles.giftSearchTextCentered}>
+                {t('home.giftSearch')}
+              </ThemedText>
+            </TouchableOpacity>
+          ) : (
+            <ThemedText style={styles.emptyText}>
+              {t('home.noPastEvents')}
+            </ThemedText>
+          )}
         </View>
       ) : (
-        <FlatList
-          data={filteredEvents}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <EventCard event={item} />}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-          refreshing={loading}
-          onRefresh={() => {
-            setLoading(true);
-            eventApi.getUserEvents()
-              .then(apiEvents => {
-                const formattedEvents = apiEvents.map(mapApiEventToComponentEvent);
-                setEvents(formattedEvents);
-                // Apply current filter to the refreshed events
-                const currentDate = new Date();
-                if (activeFilter === 'next') {
-                  const upcomingEvents = formattedEvents.filter(event => new Date(event.startDate) >= currentDate);
-                  const sortedEvents = upcomingEvents.sort((a, b) => 
-                    new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-                  );
-                  setFilteredEvents(sortedEvents);
-                } else { // 'past'
-                  const pastEvents = formattedEvents.filter(event => new Date(event.startDate) < currentDate);
-                  const sortedEvents = pastEvents.sort((a, b) => 
-                    new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-                  );
-                  setFilteredEvents(sortedEvents);
-                }
-              })
-              .catch(err => {
-                console.error('Error refreshing events:', err);
-              })
-              .finally(() => setLoading(false));
-          }}
-        />
+        <>
+          <FlatList
+            data={filteredEvents}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => <EventCard event={item} />}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+            refreshing={loading}
+            onRefresh={() => {
+              setLoading(true);
+              eventApi.getUserEvents()
+                .then(apiEvents => {
+                  const formattedEvents = apiEvents.map(mapApiEventToComponentEvent);
+                  setEvents(formattedEvents);
+                  // Apply current filter to the refreshed events
+                  const currentDate = new Date();
+                  if (activeFilter === 'next') {
+                    const upcomingEvents = formattedEvents.filter(event => new Date(event.startDate) >= currentDate);
+                    const sortedEvents = upcomingEvents.sort((a, b) => 
+                      new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+                    );
+                    setFilteredEvents(sortedEvents);
+                  } else { // 'past'
+                    const pastEvents = formattedEvents.filter(event => new Date(event.startDate) < currentDate);
+                    const sortedEvents = pastEvents.sort((a, b) => 
+                      new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+                    );
+                    setFilteredEvents(sortedEvents);
+                  }
+                })
+                .catch(err => {
+                  console.error('Error refreshing events:', err);
+                })
+                .finally(() => setLoading(false));
+            }}
+          />
+          
+          {/* Gift Search FAB - floating when events exist */}
+          {activeFilter === 'next' && (
+            <TouchableOpacity 
+              style={styles.giftSearchFab}
+              onPress={() => {
+                router.push('/create-event-with-gifts');
+              }}
+            >
+              <ThemedText style={styles.giftSearchFabText}>+</ThemedText>
+            </TouchableOpacity>
+          )}
+        </>
       )}
     </SafeAreaView>
   );
@@ -222,15 +234,15 @@ const styles = StyleSheet.create({
   emptyText: {
     textAlign: 'center',
   },
-  giftSearchButton: {
-    backgroundColor: '#FFA726', // Orange/yellow color matching the wireframe
-    marginHorizontal: 16,
-    marginVertical: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
+  giftSearchButtonCentered: {
+    backgroundColor: '#FFA726',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+    maxWidth: 200,
+    alignSelf: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -240,9 +252,34 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  giftSearchText: {
-    fontSize: 16,
+  giftSearchTextCentered: {
+    fontSize: 18,
     fontWeight: '600',
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  giftSearchFab: {
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    backgroundColor: '#FFA726',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  giftSearchFabText: {
+    fontSize: 28,
+    fontWeight: '400',
     color: '#FFFFFF',
   },
 });
