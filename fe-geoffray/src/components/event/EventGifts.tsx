@@ -8,6 +8,7 @@ import { useAuth } from '@/src/contexts/AuthContext';
 import { Colors, BrandColors } from '@/src/constants/Colors';
 import { eventStyles } from './EventStyles';
 import { apiClient } from '@/src/api/apiClient';
+import { useRouter } from 'expo-router';
 
 interface GiftSuggestion {
   id: string;
@@ -37,6 +38,7 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
   const { t, i18n } = useTranslation();
   const { theme } = useTheme();
   const { user } = useAuth();
+  const router = useRouter();
   const themeColors = theme === 'dark' ? Colors.dark : Colors.light;
   
   const [suggestions, setSuggestions] = useState<GiftSuggestion[]>([]);
@@ -309,6 +311,31 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
             }}>
               {t('event.gifts.noSuggestionsDesc')}
             </ThemedText>
+            
+            {/* Add Suggestion Button for empty state */}
+            {isCreator && (
+              <TouchableOpacity
+                onPress={() => router.push(`/event/${eventId}/add-suggestion`)}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  backgroundColor: BrandColors.peach,
+                  paddingHorizontal: 24,
+                  paddingVertical: 12,
+                  borderRadius: 8,
+                  marginTop: 24,
+                }}
+              >
+                <Ionicons 
+                  name="add" 
+                  size={20} 
+                  color="#FFFFFF" 
+                />
+                <ThemedText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: '600' }}>
+                  {t('event.gifts.addFirstSuggestion')}
+                </ThemedText>
+              </TouchableOpacity>
+            )}
           </View>
         )}
 
@@ -514,12 +541,11 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
           </View>
         ))}
 
-        {/* Nouvelles Suggestions Button - centered below suggestions */}
+        {/* Add New Suggestion Button - centered below suggestions */}
         {isCreator && suggestions && suggestions.length > 0 && (
           <View style={{ alignItems: 'center', marginTop: 20, marginBottom: 20 }}>
             <TouchableOpacity
-              onPress={handleRegenerateGifts}
-              disabled={regenerating}
+              onPress={() => router.push(`/event/${eventId}/add-suggestion`)}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -527,18 +553,13 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
                 paddingHorizontal: 24,
                 paddingVertical: 12,
                 borderRadius: 8,
-                opacity: regenerating ? 0.7 : 1,
               }}
             >
-              {regenerating ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
-              ) : (
-                <Ionicons 
-                  name="add" 
-                  size={16} 
-                  color="#FFFFFF" 
-                />
-              )}
+              <Ionicons 
+                name="add" 
+                size={16} 
+                color="#FFFFFF" 
+              />
               <ThemedText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: '600' }}>
                 {t('event.gifts.addSuggestion')}
               </ThemedText>

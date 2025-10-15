@@ -436,6 +436,201 @@ func (gec *GiftEventController) RemoveVote(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Vote removed"})
 }
 
+// CreateGiftSuggestion creates a new gift suggestion (manual or AI-generated)
+func (gec *GiftEventController) CreateGiftSuggestion(c *gin.Context) {
+	// Get user ID from context
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	var req struct {
+		EventID       string `json:"event_id" binding:"required"`
+		Mode          string `json:"mode" binding:"required"` // "manual" or "ai"
+		NameEN        string `json:"name_en"`
+		NameFR        string `json:"name_fr"`
+		DescriptionEN string `json:"description_en"`
+		DescriptionFR string `json:"description_fr"`
+		PriceRange    string `json:"price_range"`
+		Category      string `json:"category"`
+		URL           string `json:"url"`
+		Prompt        string `json:"prompt"` // For AI mode
+		Language      string `json:"language"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body: " + err.Error()})
+		return
+	}
+
+	// Validate mode
+	if req.Mode != "manual" && req.Mode != "ai" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid mode. Must be 'manual' or 'ai'"})
+		return
+	}
+
+	// Verify event exists and user has access
+	var eventCreatorID string
+	checkQuery := `SELECT creator_id FROM events WHERE id = $1`
+	err := gec.DB.QueryRow(checkQuery, req.EventID).Scan(&eventCreatorID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+			return
+		}
+		fmt.Printf("Error checking event: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to verify event"})
+		return
+	}
+
+	// Check if user is a participant
+	userIDStr := userID.(string)
+	var participantCount int
+	participantQuery := `SELECT COUNT(*) FROM event_participants WHERE event_id = $1 AND user_id = $2`
+	gec.DB.QueryRow(participantQuery, req.EventID, userIDStr).Scan(&participantCount)
+
+	if participantCount == 0 && eventCreatorID != userIDStr {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You must be a participant of this event to add suggestions"})
+		return
+	}
+
+	var suggestion models.GiftSuggestion
+
+	if req.Mode == "manual" {
+		// Validate required fields for manual mode
+		if req.NameEN == "" && req.NameFR == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Name is required in at least one language"})
+			return
+		}
+		if req.PriceRange == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Price range is required"})
+			return
+		}
+
+		// Create manual suggestion
+		suggestion = models.GiftSuggestion{
+			ID:            uuid.NewString(),
+			EventID:       req.EventID,
+			OwnerID:       userIDStr,
+			NameEN:        req.NameEN,
+			NameFR:        req.NameFR,
+			DescriptionEN: req.DescriptionEN,
+			DescriptionFR: req.DescriptionFR,
+			PriceRange:    req.PriceRange,
+			Category:      req.Category,
+			URL:           req.URL,
+			GeneratedAt:   time.Now(),
+			CreatedAt:     time.Now(),
+			UpdatedAt:     time.Now(),
+		}
+
+		// If only one language provided, copy to the other
+		if suggestion.NameEN == "" {
+			suggestion.NameEN = suggestion.NameFR
+		}
+		if suggestion.NameFR == "" {
+			suggestion.NameFR = suggestion.NameEN
+		}
+		if suggestion.DescriptionEN == "" {
+			suggestion.DescriptionEN = suggestion.DescriptionFR
+		}
+		if suggestion.DescriptionFR == "" {
+			suggestion.DescriptionFR = suggestion.DescriptionEN
+		}
+	} else {
+		// AI mode
+		if req.Prompt == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Prompt is required for AI mode"})
+			return
+		}
+
+		// Get event details for context
+		var event models.Event
+		eventQuery := `
+			SELECT title, description, start_date, location, giftee_persona, event_occasion
+			FROM events
+			WHERE id = $1
+		`
+		err := gec.DB.QueryRow(eventQuery, req.EventID).Scan(
+			&event.Title, &event.Description, &event.StartDate,
+			&event.Location, &event.GifteePersona, &event.EventOccasion,
+		)
+		if err != nil {
+			fmt.Printf("Error fetching event details: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch event details"})
+			return
+		}
+
+		// Prepare request for AI service with user prompt
+		aiRequest := services.GiftSuggestionRequest{
+			GifteePersona:    event.GifteePersona,
+			EventOccasion:    event.EventOccasion,
+			EventTitle:       event.Title,
+			EventDate:        event.StartDate.Format("2006-01-02"),
+			Location:         event.Location,
+			Description:      event.Description,
+			UserPrompt:       req.Prompt,
+			Language:         req.Language,
+			SingleSuggestion: true,
+		}
+
+		if aiRequest.Language == "" {
+			aiRequest.Language = "en"
+		}
+
+		// Generate single suggestion using Mistral
+		suggestions, err := gec.GiftSuggestionService.GenerateGiftSuggestions(aiRequest)
+		if err != nil {
+			fmt.Printf("Error generating gift suggestion: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate gift suggestion"})
+			return
+		}
+
+		if len(suggestions) == 0 {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "No suggestions generated"})
+			return
+		}
+
+		// Take the first suggestion
+		suggestion = suggestions[0]
+		suggestion.ID = uuid.NewString()
+		suggestion.EventID = req.EventID
+		suggestion.OwnerID = userIDStr
+		suggestion.GeneratedAt = time.Now()
+		suggestion.CreatedAt = time.Now()
+		suggestion.UpdatedAt = time.Now()
+	}
+
+	// Insert suggestion into database
+	insertQuery := `
+		INSERT INTO gift_suggestions (
+			id, event_id, owner_id, name_en, name_fr, description_en, description_fr,
+			price_range, category, url, generated_at, created_at, updated_at
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+	`
+
+	_, err = gec.DB.Exec(insertQuery,
+		suggestion.ID, suggestion.EventID, suggestion.OwnerID,
+		suggestion.NameEN, suggestion.NameFR,
+		suggestion.DescriptionEN, suggestion.DescriptionFR,
+		suggestion.PriceRange, suggestion.Category, suggestion.URL,
+		suggestion.GeneratedAt, suggestion.CreatedAt, suggestion.UpdatedAt,
+	)
+
+	if err != nil {
+		fmt.Printf("Error inserting gift suggestion: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create gift suggestion"})
+		return
+	}
+
+	// Initialize vote counts for response
+	suggestion.UpvoteCount = 0
+	suggestion.DownvoteCount = 0
+
+	c.JSON(http.StatusCreated, suggestion)
+}
+
 // DeleteGiftSuggestion deletes a gift suggestion if the user is the owner
 func (gec *GiftEventController) DeleteGiftSuggestion(c *gin.Context) {
 	suggestionID := c.Param("id")

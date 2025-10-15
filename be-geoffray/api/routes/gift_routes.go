@@ -49,6 +49,9 @@ func SetupGiftRoutes(router *gin.Engine, db *sql.DB) {
 	protectedVoteRoutes := router.Group("/api/gift-suggestions")
 	protectedVoteRoutes.Use(middlewares.JWTAuthMiddleware())
 	{
+		// Create a new gift suggestion (manual or AI-generated)
+		protectedVoteRoutes.POST("", giftEventController.CreateGiftSuggestion)
+
 		// Vote on a gift suggestion (POST to create/update vote)
 		protectedVoteRoutes.POST("/:id/vote", giftEventController.VoteOnSuggestion)
 

@@ -15,13 +15,15 @@ import (
 
 // GiftSuggestionRequest represents the data needed to generate gift suggestions
 type GiftSuggestionRequest struct {
-	GifteePersona string `json:"giftee_persona"`
-	EventOccasion string `json:"event_occasion"`
-	EventTitle    string `json:"event_title"`
-	EventDate     string `json:"event_date"`
-	Location      string `json:"location,omitempty"`
-	Description   string `json:"description,omitempty"`
-	Language      string `json:"language"` // "en" or "fr"
+	GifteePersona    string `json:"giftee_persona"`
+	EventOccasion    string `json:"event_occasion"`
+	EventTitle       string `json:"event_title"`
+	EventDate        string `json:"event_date"`
+	Location         string `json:"location,omitempty"`
+	Description      string `json:"description,omitempty"`
+	Language         string `json:"language"`              // "en" or "fr"
+	UserPrompt       string `json:"user_prompt,omitempty"` // Optional user-provided prompt
+	SingleSuggestion bool   `json:"single_suggestion"`     // Generate only one suggestion
 }
 
 // MistralGiftSuggestion represents a single gift suggestion from Mistral
@@ -209,7 +211,20 @@ func (g *GiftSuggestionService) GenerateGiftSuggestions(request GiftSuggestionRe
 func (g *GiftSuggestionService) buildGiftSuggestionPrompt(request GiftSuggestionRequest) string {
 	var prompt strings.Builder
 
-	prompt.WriteString(fmt.Sprintf("Generate 5-7 gift suggestions for %s for %s.\n\n", request.GifteePersona, request.EventOccasion))
+	// Determine the number of suggestions to generate
+	numSuggestions := "2-3"
+	if request.SingleSuggestion {
+		numSuggestions = "1"
+	}
+
+	// Handle user-provided prompt
+	if request.UserPrompt != "" {
+		prompt.WriteString(fmt.Sprintf("Generate %s gift suggestion(s) based on this user request:\n", numSuggestions))
+		prompt.WriteString(fmt.Sprintf("User Request: %s\n\n", request.UserPrompt))
+		prompt.WriteString(fmt.Sprintf("Context - Persona: %s, Occasion: %s\n\n", request.GifteePersona, request.EventOccasion))
+	} else {
+		prompt.WriteString(fmt.Sprintf("Generate %s gift suggestions for %s for %s.\n\n", numSuggestions, request.GifteePersona, request.EventOccasion))
+	}
 
 	prompt.WriteString("Event Details:\n")
 	prompt.WriteString(fmt.Sprintf("- Title: %s\n", request.EventTitle))
@@ -243,6 +258,9 @@ func (g *GiftSuggestionService) buildGiftSuggestionPrompt(request GiftSuggestion
 	prompt.WriteString("- Price ranges are realistic and in Euros\n")
 	prompt.WriteString("- Categories are specific (Books, Electronics, Fashion, Home, etc.)\n")
 	prompt.WriteString("- URLs are optional but preferred\n")
+	if request.UserPrompt != "" {
+		prompt.WriteString("- The suggestion closely matches the user's specific request\n")
+	}
 	prompt.WriteString("- Suggestions are thoughtful and appropriate for the persona and occasion\n")
 
 	return prompt.String()
