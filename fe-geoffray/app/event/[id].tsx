@@ -105,7 +105,13 @@ export default function EventScreen() {
       )}
       
       {/* Tabs */}
-      <EventTabs activeTab={activeTab} onTabChange={setActiveTab} />
+      <EventTabs activeTab={activeTab} onTabChange={(tab) => {
+        setActiveTab(tab);
+        // Reset banner visibility when switching tabs (always show banner except when scrolling in discussion)
+        if (tab !== 'discussion') {
+          setShowBanner(true);
+        }
+      }} />
       
       {/* Tab content */}
       <View style={eventStyles.contentContainer}>
