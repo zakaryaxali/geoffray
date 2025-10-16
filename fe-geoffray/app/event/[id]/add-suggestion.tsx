@@ -34,6 +34,7 @@ export default function AddGiftSuggestionScreen() {
   const [priceRange, setPriceRange] = useState('');
   const [category, setCategory] = useState('');
   const [url, setUrl] = useState('');
+  const [urlError, setUrlError] = useState('');
 
   // AI mode field
   const [prompt, setPrompt] = useState('');
@@ -211,16 +212,35 @@ export default function AddGiftSuggestionScreen() {
 
             {/* URL */}
             <View style={styles.fieldGroup}>
-              <Text style={styles.label}>{t('giftSuggestion.url')}</Text>
+              <Text style={styles.label}>
+                {t('giftSuggestion.url')} 
+                <Text style={styles.optionalLabel}> ({t('optional')})</Text>
+              </Text>
               <TextInput
-                style={[styles.input, { color: themeColors.text, borderColor: themeColors.border }]}
+                style={[
+                  styles.input, 
+                  { 
+                    color: themeColors.text, 
+                    borderColor: urlError ? '#FF3B30' : themeColors.border 
+                  }
+                ]}
                 value={url}
-                onChangeText={setUrl}
+                onChangeText={(text) => {
+                  setUrl(text);
+                  setUrlError(''); // Clear error on change
+                }}
                 placeholder={t('giftSuggestion.urlPlaceholder')}
                 placeholderTextColor={themeColors.tabIconDefault}
                 autoCapitalize="none"
                 keyboardType="url"
               />
+              {urlError ? (
+                <Text style={styles.errorText}>{urlError}</Text>
+              ) : (
+                <Text style={styles.helpText}>
+                  {t('giftSuggestion.urlHelp')}
+                </Text>
+              )}
             </View>
           </View>
         ) : (
@@ -374,5 +394,21 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.6,
+  },
+  optionalLabel: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    opacity: 0.7,
+  },
+  helpText: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 4,
+    fontStyle: 'italic',
+  },
+  errorText: {
+    fontSize: 12,
+    color: '#FF3B30',
+    marginTop: 4,
   },
 });

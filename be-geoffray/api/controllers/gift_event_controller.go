@@ -17,6 +17,7 @@ import (
 type GiftEventController struct {
 	DB                    *sql.DB
 	GiftSuggestionService *services.GiftSuggestionService
+	URLValidator          *services.URLValidator
 }
 
 // NewGiftEventController creates a new gift event controller
@@ -24,6 +25,7 @@ func NewGiftEventController(db *sql.DB) *GiftEventController {
 	return &GiftEventController{
 		DB:                    db,
 		GiftSuggestionService: services.NewGiftSuggestionService(),
+		URLValidator:          services.NewURLValidator(),
 	}
 }
 
@@ -232,17 +234,25 @@ func (gec *GiftEventController) GetEventGiftSuggestions(c *gin.Context) {
 	for rows.Next() {
 		var suggestion models.GiftSuggestion
 		var userVote sql.NullString
+		var url sql.NullString
 
 		err := rows.Scan(
 			&suggestion.ID, &suggestion.EventID, &suggestion.OwnerID, &suggestion.NameEN, &suggestion.NameFR,
 			&suggestion.DescriptionEN, &suggestion.DescriptionFR, &suggestion.PriceRange,
-			&suggestion.Category, &suggestion.URL, &suggestion.GeneratedAt,
+			&suggestion.Category, &url, &suggestion.GeneratedAt,
 			&suggestion.CreatedAt, &suggestion.UpdatedAt,
 			&suggestion.UpvoteCount, &suggestion.DownvoteCount, &userVote,
 		)
 		if err != nil {
 			fmt.Printf("Error scanning gift suggestion: %v\n", err)
 			continue
+		}
+
+		// Handle nullable URL field
+		if url.Valid {
+			suggestion.URL = url.String
+		} else {
+			suggestion.URL = ""
 		}
 
 		if userVote.Valid {
@@ -506,6 +516,20 @@ func (gec *GiftEventController) CreateGiftSuggestion(c *gin.Context) {
 		if req.PriceRange == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Price range is required"})
 			return
+		}
+
+		// Validate and sanitize URL if provided
+		if req.URL != "" {
+			req.URL = gec.URLValidator.SanitizeURL(req.URL)
+			isValid, err := gec.URLValidator.ValidateURL(req.URL)
+			if !isValid {
+				errMsg := "Invalid URL"
+				if err != nil {
+					errMsg = fmt.Sprintf("Invalid URL: %s", err.Error())
+				}
+				c.JSON(http.StatusBadRequest, gin.H{"error": errMsg})
+				return
+			}
 		}
 
 		// Create manual suggestion

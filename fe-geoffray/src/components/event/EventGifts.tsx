@@ -429,8 +429,8 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
                 </View>
               )}
               
-              {/* View Gift Icon Button - only show if URL exists */}
-              {suggestion.url && (
+              {/* View Gift Icon Button - only show if URL exists and is not empty */}
+              {suggestion.url && suggestion.url.trim() !== '' && (
                 <TouchableOpacity
                   onPress={() => handleOpenGift(suggestion.url!)}
                   style={{

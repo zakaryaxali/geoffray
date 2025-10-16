@@ -248,16 +248,19 @@ func (g *GiftSuggestionService) buildGiftSuggestionPrompt(request GiftSuggestion
       "description_fr": "French description explaining why this gift is perfect",
       "price_range": "€15-30",
       "category": "Books",
-      "url": "https://example.com/product"
+      "url": ""
     }
   ]
 }`)
 
-	prompt.WriteString("\n\nEnsure:\n")
+	prompt.WriteString("\n\nIMPORTANT RULES:\n")
 	prompt.WriteString("- Both English and French names/descriptions are provided\n")
 	prompt.WriteString("- Price ranges are realistic and in Euros\n")
-	prompt.WriteString("- Categories are specific (Books, Electronics, Fashion, Home, etc.)\n")
-	prompt.WriteString("- URLs are optional but preferred\n")
+	prompt.WriteString("- Categories are specific (Books, Electronics, Fashion, Home, Sports, Kitchen, etc.)\n")
+	prompt.WriteString("- URL field: LEAVE EMPTY (just use empty string \"\") - DO NOT create fake URLs\n")
+	prompt.WriteString("- NEVER generate example URLs like https://example.com or https://amazon.fr/fake-product\n")
+	prompt.WriteString("- DO NOT invent product IDs or links that don't exist\n")
+	prompt.WriteString("- Focus on describing the gift well so users can search for it themselves\n")
 	if request.UserPrompt != "" {
 		prompt.WriteString("- The suggestion closely matches the user's specific request\n")
 	}
