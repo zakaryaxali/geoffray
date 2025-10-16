@@ -11,4 +11,5 @@ func RegisterAuthRoutes(r *gin.RouterGroup) {
 	r.POST("/login", controllers.Login)
 	r.POST("/refresh", controllers.RefreshToken)
 	r.POST("/logout", controllers.Logout)
+	r.GET("/validate", controllers.ValidateToken)
 }

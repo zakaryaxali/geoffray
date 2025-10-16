@@ -1,5 +1,5 @@
 import React, {createContext, ReactNode, useContext, useEffect, useState} from 'react';
-import {isAuthenticated, login, logout, getToken} from '@/src/api/authApi';
+import {isAuthenticated, login, logout, getToken, validateTokenWithServer, isAuthenticatedLocal} from '@/src/api/authApi';
 
 // Function to decode JWT token
 const decodeJWT = (token: string): any => {
@@ -47,13 +47,21 @@ type User = {
   // Add more user properties as needed
 };
 
+type AuthError = {
+  message: string;
+  type: 'network' | 'auth' | 'validation' | 'unknown';
+};
+
 type AuthContextType = {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  authError: AuthError | null;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   checkAuthentication: () => Promise<boolean>;
+  validateAuth: () => Promise<boolean>;
+  clearError: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -62,21 +70,86 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isUserAuthenticated, setIsUserAuthenticated] = useState<boolean>(false);
+  const [authError, setAuthError] = useState<AuthError | null>(null);
+
+  // Clear any auth errors
+  const clearError = () => {
+    setAuthError(null);
+  };
+
+  // Enhanced authentication validation with server check
+  const validateAuth = async (): Promise<boolean> => {
+    try {
+      setAuthError(null);
+      const validation = await validateTokenWithServer();
+      
+      if (validation.valid && validation.user) {
+        setIsUserAuthenticated(true);
+        setUser({
+          id: validation.user.id,
+          email: validation.user.email,
+          firstName: validation.user.firstName,
+          lastName: validation.user.lastName,
+        });
+        return true;
+      } else {
+        setIsUserAuthenticated(false);
+        setUser(null);
+        if (validation.error) {
+          setAuthError({
+            message: validation.error,
+            type: validation.error.includes('network') ? 'network' : 'validation'
+          });
+        }
+        return false;
+      }
+    } catch (error) {
+      console.error('Auth validation error:', error);
+      setAuthError({
+        message: 'Failed to validate authentication',
+        type: 'network'
+      });
+      setIsUserAuthenticated(false);
+      setUser(null);
+      return false;
+    }
+  };
 
   // Check for existing authentication on app load
   useEffect(() => {
     const checkAuth = async () => {
       setIsLoading(true);
+      setAuthError(null);
+      
       try {
-        const authenticated = await isAuthenticated();
-        setIsUserAuthenticated(authenticated);
-        if (authenticated) {
-          // Get the token and extract user information from it
+        // First do a quick local check
+        const localAuth = await isAuthenticatedLocal();
+        if (!localAuth) {
+          setIsUserAuthenticated(false);
+          setUser(null);
+          setIsLoading(false);
+          return;
+        }
+
+        // Then validate with server for robust authentication
+        const serverValidation = await validateTokenWithServer();
+        
+        if (serverValidation.valid && serverValidation.user) {
+          setIsUserAuthenticated(true);
+          setUser({
+            id: serverValidation.user.id,
+            email: serverValidation.user.email,
+            firstName: serverValidation.user.firstName,
+            lastName: serverValidation.user.lastName,
+          });
+        } else {
+          // If server validation fails, try local token decoding as fallback
+          setIsUserAuthenticated(false);
           const token = await getToken();
           if (token) {
             const decodedToken = decodeJWT(token);
             if (decodedToken) {
-              // Extract user ID and other claims from the token
+              // Use local token but mark as potentially invalid
               const userId = decodedToken.sub || decodedToken.id || decodedToken.user_id;
               const userEmail = decodedToken.email || 'user@example.com';
               
@@ -88,12 +161,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 countryCode: decodedToken.country_code,
                 phoneNumber: decodedToken.phone_number
               });
+              
+              // Set a warning that server validation failed
+              setAuthError({
+                message: 'Unable to verify authentication with server',
+                type: 'network'
+              });
             }
           }
         }
       } catch (error) {
         console.error('Auth check error:', error);
+        setAuthError({
+          message: 'Failed to check authentication status',
+          type: 'network'
+        });
         setIsUserAuthenticated(false);
+        setUser(null);
       } finally {
         setIsLoading(false);
       }
@@ -104,6 +188,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
+    setAuthError(null);
+    
     try {
       // Call the login API which returns the token
       const token = await login(email, password);
@@ -130,6 +216,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setIsUserAuthenticated(true);
     } catch (error) {
       console.error('Sign in error:', error);
+      setAuthError({
+        message: error instanceof Error ? error.message : 'Sign in failed',
+        type: 'auth'
+      });
       throw error;
     } finally {
       setIsLoading(false);
@@ -140,20 +230,42 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const signOut = async () => {
     try {
+      setAuthError(null);
       // Call the logout API endpoint and remove tokens locally
       await logout();
       setUser(null);
       setIsUserAuthenticated(false);
     } catch (error) {
       console.error('Sign out error:', error);
-      throw error;
+      setAuthError({
+        message: 'Failed to sign out properly',
+        type: 'network'
+      });
+      // Still clear local state even if server logout fails
+      setUser(null);
+      setIsUserAuthenticated(false);
     }
   };
 
   const checkAuthentication = async () => {
-    const authenticated = await isAuthenticated();
-    setIsUserAuthenticated(authenticated);
-    return authenticated;
+    try {
+      setAuthError(null);
+      const authenticated = await isAuthenticated();
+      setIsUserAuthenticated(authenticated);
+      if (!authenticated) {
+        setUser(null);
+      }
+      return authenticated;
+    } catch (error) {
+      console.error('Check authentication error:', error);
+      setAuthError({
+        message: 'Failed to check authentication status',
+        type: 'network'
+      });
+      setIsUserAuthenticated(false);
+      setUser(null);
+      return false;
+    }
   };
 
   return (
@@ -162,9 +274,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         user,
         isLoading,
         isAuthenticated: isUserAuthenticated,
+        authError,
         signIn,
         signOut,
         checkAuthentication,
+        validateAuth,
+        clearError,
       }}
     >
       {children}

@@ -1,5 +1,37 @@
 import { apiConfig } from './config';
-import { getAuthHeader, isTokenExpired, refreshAccessToken } from './authApi';
+import { getAuthHeader, isTokenExpired, refreshAccessToken, removeTokens } from './authApi';
+
+// Global auth error handler
+let globalAuthErrorHandler: ((error: string) => void) | null = null;
+
+export const setGlobalAuthErrorHandler = (handler: (error: string) => void) => {
+  globalAuthErrorHandler = handler;
+};
+
+const handleAuthError = async (statusCode: number, requireAuth: boolean) => {
+  if (statusCode === 401 && requireAuth) {
+    // Try to refresh the token first
+    const newToken = await refreshAccessToken();
+    if (!newToken) {
+      // If refresh fails, clear all tokens and notify global handler
+      await removeTokens();
+      if (globalAuthErrorHandler) {
+        globalAuthErrorHandler('Session expired. Please log in again.');
+      }
+      throw new Error('Authentication expired');
+    }
+    return newToken;
+  }
+  
+  if (statusCode === 403) {
+    if (globalAuthErrorHandler) {
+      globalAuthErrorHandler('Access denied. You do not have permission for this action.');
+    }
+    throw new Error('Access denied');
+  }
+  
+  return null;
+};
 
 /**
  * Generic API client for making HTTP requests
@@ -32,24 +64,25 @@ export const apiClient = {
     });
 
     if (!response.ok) {
-      // Handle 401 Unauthorized errors specifically for token expiration
-      if (response.status === 401 && requireAuth) {
-        // Try to refresh the token
-        const newToken = await refreshAccessToken();
-        if (newToken) {
-          // Retry the request with the new token
-          const retryHeaders = { ...headers };
-          retryHeaders['Authorization'] = `Bearer ${newToken}`;
-          
-          const retryResponse = await fetch(`${apiConfig.baseUrl}${endpoint}`, {
-            method: 'GET',
-            headers: retryHeaders,
-          });
-          
-          if (retryResponse.ok) {
-            return await retryResponse.json();
-          }
+      // Handle auth errors with retry logic
+      const newToken = await handleAuthError(response.status, requireAuth);
+      if (newToken) {
+        // Retry the request with the new token
+        const retryHeaders = { ...headers };
+        retryHeaders['Authorization'] = `Bearer ${newToken}`;
+        
+        const retryResponse = await fetch(`${apiConfig.baseUrl}${endpoint}`, {
+          method: 'GET',
+          headers: retryHeaders,
+        });
+        
+        if (retryResponse.ok) {
+          return await retryResponse.json();
         }
+        
+        // If retry also fails, fall through to error handling
+        const retryErrorData = await retryResponse.json().catch(() => ({}));
+        throw new Error(retryErrorData.message || `Retry request failed with status ${retryResponse.status}`);
       }
       
       const errorData = await response.json().catch(() => ({}));
@@ -87,26 +120,26 @@ export const apiClient = {
     });
 
     if (!response.ok) {
-      // Handle 401 Unauthorized errors specifically for token expiration
-      if (response.status === 401 && requireAuth) {
-        // Try to refresh the token
-        const newToken = await refreshAccessToken();
-        if (newToken) {
-          // Retry the request with the new token
-          const retryHeaders = { ...headers };
-          retryHeaders['Authorization'] = `Bearer ${newToken}`;
-          
-          // Fixed: Use POST method for retry, not GET
-          const retryResponse = await fetch(`${apiConfig.baseUrl}${endpoint}`, {
-            method: 'POST',
-            headers: retryHeaders,
-            body: JSON.stringify(data),
-          });
-          
-          if (retryResponse.ok) {
-            return await retryResponse.json();
-          }
+      // Handle auth errors with retry logic
+      const newToken = await handleAuthError(response.status, requireAuth);
+      if (newToken) {
+        // Retry the request with the new token
+        const retryHeaders = { ...headers };
+        retryHeaders['Authorization'] = `Bearer ${newToken}`;
+        
+        const retryResponse = await fetch(`${apiConfig.baseUrl}${endpoint}`, {
+          method: 'POST',
+          headers: retryHeaders,
+          body: JSON.stringify(data),
+        });
+        
+        if (retryResponse.ok) {
+          return await retryResponse.json();
         }
+        
+        // If retry also fails, fall through to error handling
+        const retryErrorData = await retryResponse.json().catch(() => ({}));
+        throw new Error(retryErrorData.message || `Retry request failed with status ${retryResponse.status}`);
       }
       
       const errorData = await response.json().catch(() => ({}));
@@ -144,26 +177,26 @@ export const apiClient = {
     });
 
     if (!response.ok) {
-      // Handle 401 Unauthorized errors specifically for token expiration
-      if (response.status === 401 && requireAuth) {
-        // Try to refresh the token
-        const newToken = await refreshAccessToken();
-        if (newToken) {
-          // Retry the request with the new token
-          const retryHeaders = { ...headers };
-          retryHeaders['Authorization'] = `Bearer ${newToken}`;
-          
-          // Fixed: Use PUT method for retry, not GET
-          const retryResponse = await fetch(`${apiConfig.baseUrl}${endpoint}`, {
-            method: 'PUT',
-            headers: retryHeaders,
-            body: JSON.stringify(data),
-          });
-          
-          if (retryResponse.ok) {
-            return await retryResponse.json();
-          }
+      // Handle auth errors with retry logic
+      const newToken = await handleAuthError(response.status, requireAuth);
+      if (newToken) {
+        // Retry the request with the new token
+        const retryHeaders = { ...headers };
+        retryHeaders['Authorization'] = `Bearer ${newToken}`;
+        
+        const retryResponse = await fetch(`${apiConfig.baseUrl}${endpoint}`, {
+          method: 'PUT',
+          headers: retryHeaders,
+          body: JSON.stringify(data),
+        });
+        
+        if (retryResponse.ok) {
+          return await retryResponse.json();
         }
+        
+        // If retry also fails, fall through to error handling
+        const retryErrorData = await retryResponse.json().catch(() => ({}));
+        throw new Error(retryErrorData.message || `Retry request failed with status ${retryResponse.status}`);
       }
       
       const errorData = await response.json().catch(() => ({}));
@@ -200,25 +233,25 @@ export const apiClient = {
     });
 
     if (!response.ok) {
-      // Handle 401 Unauthorized errors specifically for token expiration
-      if (response.status === 401 && requireAuth) {
-        // Try to refresh the token
-        const newToken = await refreshAccessToken();
-        if (newToken) {
-          // Retry the request with the new token
-          const retryHeaders = { ...headers };
-          retryHeaders['Authorization'] = `Bearer ${newToken}`;
-          
-          // Fixed: Use DELETE method for retry, not GET
-          const retryResponse = await fetch(`${apiConfig.baseUrl}${endpoint}`, {
-            method: 'DELETE',
-            headers: retryHeaders,
-          });
-          
-          if (retryResponse.ok) {
-            return await retryResponse.json();
-          }
+      // Handle auth errors with retry logic
+      const newToken = await handleAuthError(response.status, requireAuth);
+      if (newToken) {
+        // Retry the request with the new token
+        const retryHeaders = { ...headers };
+        retryHeaders['Authorization'] = `Bearer ${newToken}`;
+        
+        const retryResponse = await fetch(`${apiConfig.baseUrl}${endpoint}`, {
+          method: 'DELETE',
+          headers: retryHeaders,
+        });
+        
+        if (retryResponse.ok) {
+          return await retryResponse.json();
         }
+        
+        // If retry also fails, fall through to error handling
+        const retryErrorData = await retryResponse.json().catch(() => ({}));
+        throw new Error(retryErrorData.message || `Retry request failed with status ${retryResponse.status}`);
       }
       
       const errorData = await response.json().catch(() => ({}));

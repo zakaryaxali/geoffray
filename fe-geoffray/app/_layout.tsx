@@ -4,6 +4,7 @@ import {Stack, useRouter, useSegments} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import {StatusBar} from 'expo-status-bar';
 import {useEffect, useState} from 'react';
+import {View, Text, TouchableOpacity} from 'react-native';
 import 'react-native-reanimated';
 
 import CustomSplashScreen from '@/src/components/SplashScreen';
@@ -20,23 +21,71 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 
 // This function ensures protected routes redirect to auth if not signed in
 function RootLayoutNav() {
-  const { user } = useAuth();
+  const { user, isLoading, isAuthenticated, authError, clearError } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  const [isNavigationReady, setIsNavigationReady] = useState(false);
 
   useEffect(() => {
+    // Wait for auth loading to complete before handling navigation
+    if (isLoading) {
+      return;
+    }
+
     const inAuthGroup = segments[0] === 'auth';
     const inInviteGroup = segments[0] === 'invite';
     const isPrivacyPolicy = segments[0] === 'privacy-policy';
+    const isPublicRoute = inAuthGroup || inInviteGroup || isPrivacyPolicy;
     
-    if (!user && !inAuthGroup && !inInviteGroup && !isPrivacyPolicy) {
+    // Handle authentication-based navigation
+    if (!isAuthenticated && !isPublicRoute) {
+      // Clear any existing auth errors when redirecting to login
+      if (authError) {
+        clearError();
+      }
       // Redirect to the login page if not signed in and not in allowed public routes
       router.replace('/auth/login');
-    } else if (user && inAuthGroup) {
-      // Redirect to the main app if signed in
+    } else if (isAuthenticated && user && inAuthGroup) {
+      // Redirect to the main app if signed in and trying to access auth routes
       router.replace('/home');
     }
-  }, [user, segments]);
+
+    setIsNavigationReady(true);
+  }, [user, isAuthenticated, isLoading, segments, authError, clearError, router]);
+
+  // Show loading screen while auth is initializing
+  if (isLoading || !isNavigationReady) {
+    return <CustomSplashScreen />;
+  }
+
+  // Show auth error overlay if there's a critical auth error
+  if (authError && authError.type === 'network' && !isAuthenticated) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+        <Text style={{ fontSize: 18, marginBottom: 10, textAlign: 'center' }}>
+          Authentication Error
+        </Text>
+        <Text style={{ fontSize: 14, marginBottom: 20, textAlign: 'center', color: '#666' }}>
+          {authError.message}
+        </Text>
+        <TouchableOpacity 
+          onPress={() => {
+            clearError();
+            router.replace('/auth/login');
+          }}
+          style={{ 
+            backgroundColor: '#007AFF', 
+            padding: 15, 
+            borderRadius: 8,
+            minWidth: 120,
+            alignItems: 'center'
+          }}
+        >
+          <Text style={{ color: 'white', fontSize: 16 }}>Go to Login</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <Stack screenOptions={{ headerShown: false }}>

@@ -151,11 +151,130 @@ export const removeTokens = async (): Promise<void> => {
 };
 
 /**
- * Check if user is authenticated
+ * Validate token with server and check if user is authenticated
+ */
+export const validateTokenWithServer = async (): Promise<{
+  valid: boolean;
+  user?: {
+    id: string;
+    email: string;
+    firstName?: string;
+    lastName?: string;
+    expiresAt?: string;
+  };
+  error?: string;
+}> => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      return { valid: false, error: 'No token found' };
+    }
+
+    const response = await fetch(`${apiConfig.baseUrl}/auth/validate`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      // If token is invalid, try to refresh it
+      if (response.status === 401) {
+        const newToken = await refreshAccessToken();
+        if (newToken) {
+          // Retry validation with new token
+          const retryResponse = await fetch(`${apiConfig.baseUrl}/auth/validate`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${newToken}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          
+          if (retryResponse.ok) {
+            const data = await retryResponse.json();
+            return {
+              valid: data.valid,
+              user: {
+                id: data.user_id,
+                email: data.email,
+                firstName: data.first_name,
+                lastName: data.last_name,
+                expiresAt: data.expires_at,
+              },
+            };
+          }
+        }
+        
+        // If refresh failed, clear tokens
+        await removeTokens();
+        return { valid: false, error: 'Token validation failed and refresh unsuccessful' };
+      }
+      
+      const errorData = await response.json().catch(() => ({ error: 'Validation failed' }));
+      return { valid: false, error: errorData.error || 'Token validation failed' };
+    }
+
+    const data = await response.json();
+    return {
+      valid: data.valid,
+      user: {
+        id: data.user_id,
+        email: data.email,
+        firstName: data.first_name,
+        lastName: data.last_name,
+        expiresAt: data.expires_at,
+      },
+    };
+  } catch (error) {
+    console.error('Token validation error:', error);
+    return { valid: false, error: 'Network error during token validation' };
+  }
+};
+
+/**
+ * Check if user is authenticated (enhanced version with server validation)
  */
 export const isAuthenticated = async (): Promise<boolean> => {
+  // First check if we have a token locally
   const token = await getToken();
-  return !!token;
+  if (!token) {
+    return false;
+  }
+
+  // Check if token is expired locally
+  const expired = await isTokenExpired();
+  if (expired) {
+    // Try to refresh the token
+    const newToken = await refreshAccessToken();
+    return !!newToken;
+  }
+
+  // For a more robust check, validate with server
+  // This can be enabled/disabled based on preference
+  const serverValidation = await validateTokenWithServer();
+  return serverValidation.valid;
+};
+
+/**
+ * Quick local authentication check (doesn't hit server)
+ */
+export const isAuthenticatedLocal = async (): Promise<boolean> => {
+  const token = await getToken();
+  if (!token) {
+    return false;
+  }
+
+  // Check if token is expired locally
+  const expired = await isTokenExpired();
+  if (expired) {
+    // Try to refresh the token
+    const newToken = await refreshAccessToken();
+    return !!newToken;
+  }
+
+  return true;
 };
 
 /**

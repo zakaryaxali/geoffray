@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"be-geoffray/api/middlewares"
@@ -12,6 +13,7 @@ import (
 	"be-geoffray/services"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 // Register handles user signup
@@ -259,6 +261,68 @@ func RefreshToken(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"token":      accessToken,
 		"expires_in": int(middlewares.AccessTokenExpiration.Seconds()),
+	})
+}
+
+// ValidateToken checks if the provided access token is valid
+func ValidateToken(c *gin.Context) {
+	// Get the Authorization header
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+		return
+	}
+
+	// Extract the token
+	tokenString := authHeader
+	if len(authHeader) > 7 && authHeader[:7] == "Bearer " {
+		tokenString = authHeader[7:]
+	}
+
+	// Parse and validate the token using the same logic as the JWT middleware
+	claims := &middlewares.Claims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		// Get JWT secret from environment
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+
+	if err != nil || !token.Valid {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"valid": false,
+			"error": "Invalid or expired token",
+		})
+		return
+	}
+
+	// Ensure this is an access token, not a refresh token
+	if claims.Type != "access" && claims.Type != "" {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"valid": false,
+			"error": "Invalid token type",
+		})
+		return
+	}
+
+	// Check if user still exists in database
+	var userExists bool
+	query := `SELECT EXISTS(SELECT 1 FROM users WHERE id = $1)`
+	err = db.DB.QueryRow(query, claims.UserID).Scan(&userExists)
+	if err != nil || !userExists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"valid": false,
+			"error": "User not found",
+		})
+		return
+	}
+
+	// Return validation success with user info
+	c.JSON(http.StatusOK, gin.H{
+		"valid":      true,
+		"user_id":    claims.UserID,
+		"email":      claims.Email,
+		"first_name": claims.FirstName,
+		"last_name":  claims.LastName,
+		"expires_at": claims.ExpiresAt.Time,
 	})
 }
 
