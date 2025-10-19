@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Alert, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { register } from '@/src/api/authApi';
 import { eventApi, InviteValidationResponse } from '@/src/api/eventApi';
 import { useAuth } from '@/src/contexts/AuthContext';
 
@@ -21,7 +20,7 @@ const getRandomBanner = () => {
 
 export const useSignupData = (inviteCode: string | null) => {
   const { t } = useTranslation();
-  const { } = useAuth();
+  const { signUp } = useAuth();
 
   // Form state
   const [firstName, setFirstName] = useState('');
@@ -133,11 +132,8 @@ export const useSignupData = (inviteCode: string | null) => {
     try {
       setIsRegistering(true);
       
-      // Construct the full name from first and last name
-      const fullName = `${firstName} ${lastName}`;
-      
-      // Call the registration API function with all user details
-      await register(fullName, email, password, firstName, lastName);
+      // Use Firebase authentication to create the user
+      await signUp(email, password, firstName, lastName);
       
       // If we have a valid invite code, accept the invitation
       if (inviteCode && inviteInfo?.valid) {

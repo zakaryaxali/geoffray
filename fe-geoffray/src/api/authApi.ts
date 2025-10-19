@@ -5,16 +5,6 @@ const ACCESS_TOKEN_KEY = 'rendez_vous_access_token';
 const REFRESH_TOKEN_KEY = 'rendez_vous_refresh_token';
 const TOKEN_EXPIRY_KEY = 'rendez_vous_token_expiry';
 
-interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-interface RegisterRequest {
-  username: string;
-  email: string;
-  password: string;
-}
 
 interface AuthResponse {
   token: string;
@@ -22,84 +12,8 @@ interface AuthResponse {
   expires_in?: number;
 }
 
-/**
- * Register a new user with first name, last name, email, and password
- */
-export const register = async (
-  username: string, 
-  email: string, 
-  password: string, 
-  firstName?: string, 
-  lastName?: string
-): Promise<void> => {
-  try {
-    const response = await fetch(`${apiConfig.baseUrl}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ 
-        username, 
-        email, 
-        password, 
-        first_name: firstName, 
-        last_name: lastName
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Registration failed' }));
-      const errorMessage = errorData.message || 'Registration failed';
-      throw new Error(errorMessage);
-    }
-
-    // Registration successful, but we don't automatically log the user in
-    // They will be redirected to the login page
-    return;
-  } catch (error) {
-    console.error('Registration error:', error);
-    if (error instanceof Error) {
-      throw error;
-    } else {
-      throw new Error(`An unexpected error occurred during registration: ${error}`);
-    }
-  }
-};
-
-/**
- * Authenticate user with email and password
- */
-export const login = async (email: string, password: string): Promise<string> => {
-  try {
-    const response = await fetch(`${apiConfig.baseUrl}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Login failed' }));
-      const errorMessage = errorData.message || 'Login failed';
-      throw new Error(errorMessage);
-    }
-
-    const data: AuthResponse = await response.json();
-    
-    // Store the tokens securely
-    await saveTokens(data.token, data.refresh_token, data.expires_in);
-    
-    return data.token;
-  } catch (error) {
-    console.error('Login error:', error);
-    if (error instanceof Error) {
-      throw error;
-    } else {
-      throw new Error(`An unexpected error occurred during login: ${error}`);
-    }
-  }
-};
+// Note: register() and login() functions removed - now handled by Firebase Authentication
+// Authentication is managed by Firebase SDK in AuthContext
 
 /**
  * Save authentication tokens securely

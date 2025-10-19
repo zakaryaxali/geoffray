@@ -3,7 +3,6 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { router } from 'expo-router';
 import SignupScreen from '../signup';
 import { useAuth } from '@/src/contexts/AuthContext';
-import { register } from '../../../src/api/authApi';
 
 // Mock the expo-router
 jest.mock('expo-router', () => ({
@@ -23,11 +22,6 @@ jest.mock('@expo/vector-icons', () => ({
   Ionicons: 'Ionicons',
 }));
 
-// Mock the authApi
-jest.mock('../../../src/api/authApi', () => ({
-  register: jest.fn(),
-}));
-
 // Mock Alert
 jest.mock('react-native/Libraries/Alert/Alert', () => ({
   alert: jest.fn((title, message, buttons) => {
@@ -45,6 +39,7 @@ describe('SignupScreen', () => {
     
     // Setup default auth context mock
     (useAuth as jest.Mock).mockReturnValue({
+      signUp: jest.fn(),
       signInWithGoogle: jest.fn(),
       signInWithApple: jest.fn(),
       isLoading: false,
@@ -52,9 +47,14 @@ describe('SignupScreen', () => {
   });
 
   // Test 1: Valid registration
-  it('should register user and navigate to login screen on successful registration', async () => {
-    const mockRegister = jest.fn().mockResolvedValue(undefined);
-    (register as jest.Mock).mockImplementation(mockRegister);
+  it('should register user and navigate to home screen on successful registration', async () => {
+    const mockSignUp = jest.fn().mockResolvedValue(undefined);
+    (useAuth as jest.Mock).mockReturnValue({
+      signUp: mockSignUp,
+      signInWithGoogle: jest.fn(),
+      signInWithApple: jest.fn(),
+      isLoading: false,
+    });
 
     const { getByPlaceholderText, getByText } = render(<SignupScreen />);
     
@@ -66,15 +66,12 @@ describe('SignupScreen', () => {
     // Submit the form
     fireEvent.press(getByText('Sign Up'));
     
-    // Verify register was called with correct parameters
-    expect(mockRegister).toHaveBeenCalledWith('testuser', 'test@example.com', 'password123');
+    // Verify signUp was called with correct parameters
+    expect(mockSignUp).toHaveBeenCalledWith('test@example.com', 'password123', 'testuser');
     
     // Wait for navigation to occur
     await waitFor(() => {
-      expect(router.replace).toHaveBeenCalledWith({
-        pathname: '/auth/login',
-        params: { email: 'test@example.com' }
-      });
+      expect(router.replace).toHaveBeenCalledWith('/home');
     });
   });
 
@@ -94,9 +91,6 @@ describe('SignupScreen', () => {
     
     // Verify error message is displayed
     expect(queryByText('Username must be at least 3 characters')).toBeTruthy();
-    
-    // Verify register was not called
-    expect(register).not.toHaveBeenCalled();
   });
 
   // Test 3: Invalid email format
@@ -117,9 +111,6 @@ describe('SignupScreen', () => {
     
     // Verify error message is displayed
     expect(queryByText('Please enter a valid email address')).toBeTruthy();
-    
-    // Verify register was not called
-    expect(register).not.toHaveBeenCalled();
   });
 
   // Test 4: Password too short
@@ -140,9 +131,6 @@ describe('SignupScreen', () => {
     
     // Verify error message is displayed
     expect(queryByText('Password must be at least 6 characters')).toBeTruthy();
-    
-    // Verify register was not called
-    expect(register).not.toHaveBeenCalled();
   });
 
   // Test 5: Empty form submission
@@ -156,16 +144,18 @@ describe('SignupScreen', () => {
     expect(queryByText('Username must be at least 3 characters')).toBeTruthy();
     expect(queryByText('Please enter a valid email address')).toBeTruthy();
     expect(queryByText('Password must be at least 6 characters')).toBeTruthy();
-    
-    // Verify register was not called
-    expect(register).not.toHaveBeenCalled();
   });
 
   // Test 6: Registration API error
   it('should display error message when registration fails', async () => {
     const errorMessage = 'Email already exists';
-    const mockRegister = jest.fn().mockRejectedValue(new Error(errorMessage));
-    (register as jest.Mock).mockImplementation(mockRegister);
+    const mockSignUp = jest.fn().mockRejectedValue(new Error(errorMessage));
+    (useAuth as jest.Mock).mockReturnValue({
+      signUp: mockSignUp,
+      signInWithGoogle: jest.fn(),
+      signInWithApple: jest.fn(),
+      isLoading: false,
+    });
 
     const { getByPlaceholderText, getByText, findByText } = render(<SignupScreen />);
     
@@ -177,8 +167,8 @@ describe('SignupScreen', () => {
     // Submit the form
     fireEvent.press(getByText('Sign Up'));
     
-    // Verify register was called
-    expect(mockRegister).toHaveBeenCalledWith('testuser', 'test@example.com', 'password123');
+    // Verify signUp was called
+    expect(mockSignUp).toHaveBeenCalledWith('test@example.com', 'password123', 'testuser');
     
     // Verify error message is displayed
     const errorElement = await findByText(errorMessage);

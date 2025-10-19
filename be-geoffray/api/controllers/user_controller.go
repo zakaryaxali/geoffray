@@ -10,104 +10,10 @@ import (
 	"be-geoffray/api/middlewares"
 	"be-geoffray/db"
 	"be-geoffray/models"
-	"be-geoffray/services"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
-
-// Register handles user signup
-func Register(c *gin.Context) {
-	var input models.User
-
-	// Bind JSON input
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Hash password
-	hashedPassword, err := services.HashPassword(input.Password)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not hash password"})
-		return
-	}
-
-	input.Password = hashedPassword
-
-	// Save user to DB
-	query := `INSERT INTO users (first_name, last_name, email, password, profile_picture, created_at, updated_at) 
-          VALUES ($1, $2, $3, $4, $5, $6, $7)`
-
-	now := time.Now()
-	_, err = db.DB.Exec(
-		query,
-		input.FirstName,
-		input.LastName,
-		input.Email,
-		input.Password,
-		input.ProfilePicture,
-		now,
-		now,
-	)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create user"})
-		return
-	}
-
-	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
-}
-
-// Login handles user authentication
-func Login(c *gin.Context) {
-	var input models.User
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Find user
-	var user models.User
-	query := `SELECT id, first_name, last_name, email, password, profile_picture, created_at, updated_at 
-          FROM users WHERE email = $1`
-
-	err := db.DB.QueryRow(query, input.Email).Scan(
-		&user.ID,
-		&user.FirstName,
-		&user.LastName,
-		&user.Email,
-		&user.Password,
-		&user.ProfilePicture,
-		&user.CreatedAt,
-		&user.UpdatedAt,
-	)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error: " + err.Error()})
-		}
-		return
-	}
-
-	// Verify password
-	if !services.CheckPasswordHash(input.Password, user.Password) {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
-		return
-	}
-
-	// Generate token pair (access token + refresh token)
-	tokenResponse, err := middlewares.GenerateTokenPair(user.ID)
-	if err != nil {
-		// Log the detailed error for debugging
-		fmt.Printf("Token generation error: %v\n", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate tokens: " + err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, tokenResponse)
-}
 
 func GetUserProfile(c *gin.Context) {
 	// Get user ID from context (set by JWT middleware)
@@ -119,7 +25,7 @@ func GetUserProfile(c *gin.Context) {
 
 	// Query the database for user information
 	var user models.User
-	query := `SELECT id, first_name, last_name, email, profile_picture, created_at, updated_at 
+	query := `SELECT id, first_name, last_name, email, firebase_uid, created_at, updated_at 
           FROM users WHERE id = $1`
 
 	err := db.DB.QueryRow(query, userID).Scan(
@@ -127,7 +33,7 @@ func GetUserProfile(c *gin.Context) {
 		&user.FirstName,
 		&user.LastName,
 		&user.Email,
-		&user.ProfilePicture,
+		&user.FirebaseUID,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
@@ -141,8 +47,7 @@ func GetUserProfile(c *gin.Context) {
 		return
 	}
 
-	// Don't return password
-	user.Password = ""
+	// No sensitive data to clear since we use Firebase auth
 
 	c.JSON(http.StatusOK, user)
 }
@@ -158,11 +63,9 @@ func UpdateUserProfile(c *gin.Context) {
 
 	// Bind the input JSON
 	var input struct {
-		FirstName      *string `json:"first_name,omitempty"`
-		LastName       *string `json:"last_name,omitempty"`
-		Email          *string `json:"email,omitempty"`
-		Password       *string `json:"password,omitempty"`
-		ProfilePicture *string `json:"profile_picture,omitempty"`
+		FirstName *string `json:"first_name,omitempty"`
+		LastName  *string `json:"last_name,omitempty"`
+		Email     *string `json:"email,omitempty"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -194,23 +97,7 @@ func UpdateUserProfile(c *gin.Context) {
 		args = append(args, *input.Email)
 	}
 
-	if input.ProfilePicture != nil {
-		paramCount++
-		query += fmt.Sprintf(", profile_picture = $%d", paramCount)
-		args = append(args, *input.ProfilePicture)
-	}
-
-	// Handle password update separately (needs hashing)
-	if input.Password != nil && *input.Password != "" {
-		hashedPassword, err := services.HashPassword(*input.Password)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not hash password"})
-			return
-		}
-		paramCount++
-		query += fmt.Sprintf(", password = $%d", paramCount)
-		args = append(args, hashedPassword)
-	}
+	// Password updates are now handled by Firebase, remove this functionality
 
 	// Complete the query with the WHERE clause
 	paramCount++

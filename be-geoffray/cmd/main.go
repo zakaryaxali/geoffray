@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"be-geoffray/api/controllers"
 	"be-geoffray/api/middlewares"
 	"be-geoffray/api/routes"
 	"be-geoffray/config"
@@ -16,6 +17,9 @@ func main() {
 	// Initialize application configuration
 	// This will load environment variables and set up the config singleton
 	config.GetConfig()
+
+	// Initialize Firebase after environment variables are loaded
+	controllers.InitializeFirebase()
 
 	// Initialize database connection with config
 	db.InitDB()

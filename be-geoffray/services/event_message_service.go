@@ -35,7 +35,7 @@ func GetEventMessages(c *gin.Context, eventID string) ([]models.EventMessage, er
 			u.email, 
 			u.first_name, 
 			u.last_name, 
-			u.profile_picture
+			u.firebase_uid
 		FROM event_messages m
 		JOIN users u ON m.user_id = u.id
 		WHERE m.event_id = $1
@@ -67,7 +67,7 @@ func GetEventMessages(c *gin.Context, eventID string) ([]models.EventMessage, er
 			&message.User.Email,
 			&message.User.FirstName,
 			&message.User.LastName,
-			&message.User.ProfilePicture,
+			&message.User.FirebaseUID,
 		); err != nil {
 			return nil, err
 		}
@@ -180,7 +180,7 @@ func GetAgentMessages(c *gin.Context, eventID string) ([]models.EventMessage, er
 			&message.User.Email,
 			&message.User.FirstName,
 			&message.User.LastName,
-			&message.User.ProfilePicture,
+			&message.User.FirebaseUID,
 		); err != nil {
 			return nil, err
 		}
@@ -277,7 +277,7 @@ func GetOrCreateSystemUser(c *gin.Context) (*models.User, error) {
 	var systemUser models.User
 
 	query := `
-		SELECT id, email, first_name, last_name, profile_picture
+		SELECT id, email, first_name, last_name, firebase_uid
 		FROM users
 		WHERE email = 'agent@system.local'
 	`
@@ -287,7 +287,7 @@ func GetOrCreateSystemUser(c *gin.Context) (*models.User, error) {
 		&systemUser.Email,
 		&systemUser.FirstName,
 		&systemUser.LastName,
-		&systemUser.ProfilePicture,
+		&systemUser.FirebaseUID,
 	)
 
 	if err == nil {
@@ -302,16 +302,15 @@ func GetOrCreateSystemUser(c *gin.Context) (*models.User, error) {
 
 	// User doesn't exist, create it
 	systemUser = models.User{
-		ID:             uuid.New().String(),
-		Email:          "agent@system.local",
-		FirstName:      "AI",
-		LastName:       "Assistant",
-		ProfilePicture: "/assets/images/ai-avatar.png",
+		ID:        uuid.New().String(),
+		Email:     "agent@system.local",
+		FirstName: "AI",
+		LastName:  "Assistant",
 	}
 
 	insertQuery := `
-		INSERT INTO users (id, email, first_name, last_name, profile_picture, password, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		INSERT INTO users (id, email, first_name, last_name, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
 	`
 
 	_, err = db.DB.Exec(insertQuery,
@@ -319,8 +318,6 @@ func GetOrCreateSystemUser(c *gin.Context) (*models.User, error) {
 		systemUser.Email,
 		systemUser.FirstName,
 		systemUser.LastName,
-		systemUser.ProfilePicture,
-		"SYSTEM_USER_NO_LOGIN", // Placeholder password hash
 		time.Now(),
 		time.Now(),
 	)

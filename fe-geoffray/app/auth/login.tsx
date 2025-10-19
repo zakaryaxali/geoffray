@@ -15,7 +15,8 @@ export default function LoginScreen() {
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [isValidPassword, setIsValidPassword] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const { signIn, isLoading } = useAuth();
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const { signIn, signInWithGoogle, isLoading } = useAuth();
 
   useEffect(() => {
     if (prefillEmail) {
@@ -53,6 +54,7 @@ export default function LoginScreen() {
     if (!isValid) return;
 
     try {
+      // Now uses Firebase authentication
       await signIn(email, password);
       router.replace('/home');
     } catch (error) {
@@ -64,6 +66,21 @@ export default function LoginScreen() {
 
   const navigateToSignup = () => {
     router.push('/auth/signup');
+  };
+  
+  const handleGooglePress = async () => {
+    setIsGoogleLoading(true);
+    setErrorMessage('');
+    
+    try {
+      await signInWithGoogle();
+      router.replace('/home');
+    } catch (error) {
+      console.error('Google sign in error:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Google sign in failed. Please try again.');
+    } finally {
+      setIsGoogleLoading(false);
+    }
   };
 
   return (
@@ -130,6 +147,24 @@ export default function LoginScreen() {
             <ActivityIndicator color={BrandColors.gradientInputText} />
           ) : (
             <Text style={styles.continueButtonText}>{t('auth.login')}</Text>
+          )}
+        </TouchableOpacity>
+        
+        <View style={styles.dividerContainer}>
+          <View style={styles.divider} />
+          <Text style={styles.dividerText}>{t('auth.or')}</Text>
+          <View style={styles.divider} />
+        </View>
+        
+        <TouchableOpacity
+          style={styles.googleButton}
+          onPress={handleGooglePress}
+          disabled={isGoogleLoading}
+        >
+          {isGoogleLoading ? (
+            <ActivityIndicator color={BrandColors.gradientInputText} />
+          ) : (
+            <Text style={styles.googleButtonText}>{t('auth.signInWithGoogle')}</Text>
           )}
         </TouchableOpacity>
         
@@ -212,7 +247,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,
-    marginBottom: 40,
+    marginBottom: 20,
   },
   continueButtonText: {
     color: BrandColors.gradientText,
@@ -236,5 +271,42 @@ const styles = StyleSheet.create({
     color: BrandColors.gradientText,
     fontWeight: '500',
     textDecorationLine: 'underline',
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  dividerText: {
+    color: BrandColors.gradientText,
+    paddingHorizontal: 10,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  googleButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    height: 56,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  googleButtonText: {
+    color: '#4285F4',
+    fontSize: 18,
+    fontWeight: '600',
   },
 });

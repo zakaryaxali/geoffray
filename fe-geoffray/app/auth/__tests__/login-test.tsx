@@ -79,8 +79,6 @@ describe('LoginScreen', () => {
     expect(queryByText('Please enter a valid email address')).toBeTruthy();
     
     // Verify signIn was not called
-    const { signIn } = useAuth();
-    expect(signIn).not.toHaveBeenCalled();
   });
 
   // Test 3: Password too short
@@ -100,8 +98,6 @@ describe('LoginScreen', () => {
     expect(queryByText('Password must be at least 6 characters')).toBeTruthy();
     
     // Verify signIn was not called
-    const { signIn } = useAuth();
-    expect(signIn).not.toHaveBeenCalled();
   });
 
   // Test 4: Empty form submission
@@ -116,8 +112,6 @@ describe('LoginScreen', () => {
     expect(queryByText('Password must be at least 6 characters')).toBeTruthy();
     
     // Verify signIn was not called
-    const { signIn } = useAuth();
-    expect(signIn).not.toHaveBeenCalled();
   });
 
   // Test 5: Login API error

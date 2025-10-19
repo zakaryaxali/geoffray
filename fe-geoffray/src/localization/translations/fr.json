@@ -73,6 +73,8 @@
   "auth.registrationSuccessful": "Inscription Réussie",
   "auth.accountCreatedSuccessfully": "Votre compte a été créé avec succès.",
   "auth.logoutConfirm": "Êtes-vous sûr de vouloir vous déconnecter ?",
+  "auth.or": "ou",
+  "auth.signInWithGoogle": "Se connecter avec Google",
   "home.events": "Événements",
   "home.profile": "Profil",
   "home.createEvent": "Créer un événement",
