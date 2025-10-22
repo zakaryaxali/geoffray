@@ -225,12 +225,9 @@ func Logout(c *gin.Context) {
 		return
 	}
 
-	// Invalidate the refresh token
-	err := middlewares.InvalidateRefreshToken(input.RefreshToken)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not logout"})
-		return
-	}
+	// Note: JWT tokens are stateless and cannot be invalidated server-side
+	// The client should discard the token. The token will expire naturally.
+	// For enhanced security, consider implementing a token blacklist if needed.
 
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
 }

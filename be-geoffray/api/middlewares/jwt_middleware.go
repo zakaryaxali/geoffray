@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
@@ -10,7 +9,6 @@ import (
 	"time"
 
 	"be-geoffray/db"
-	"be-geoffray/models"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -72,27 +70,33 @@ func GenerateJWT(userID string) (string, error) {
 }
 
 // GenerateRefreshToken creates a new long-lived refresh token
+// Note: With Firebase authentication, refresh tokens are managed by Firebase
+// This function now creates a JWT-based refresh token instead of storing in database
 func GenerateRefreshToken(userID string) (string, error) {
-	// Generate a secure random token
-	tokenString, err := models.GenerateToken(32)
+	// Get user details from database
+	var firstName, lastName, email string
+
+	query := `SELECT first_name, last_name, email FROM users WHERE id = $1`
+	err := db.DB.QueryRow(query, userID).Scan(&firstName, &lastName, &email)
 	if err != nil {
-		return "", fmt.Errorf("token generation error: %w", err)
+		return "", fmt.Errorf("error fetching user details: %w", err)
 	}
 
-	// Store the refresh token in the database
 	expirationTime := time.Now().Add(RefreshTokenExpiration)
-
-	// Create a UUID for the token
-	query := `INSERT INTO refresh_tokens (id, user_id, token, expires_at, created_at) 
-			VALUES (uuid_generate_v4(), $1, $2, $3, $4) RETURNING id`
-
-	var tokenID string
-	err = db.DB.QueryRow(query, userID, tokenString, expirationTime, time.Now()).Scan(&tokenID)
-	if err != nil {
-		return "", fmt.Errorf("database error: %w", err)
+	claims := &Claims{
+		UserID:    userID,
+		FirstName: firstName,
+		LastName:  lastName,
+		Email:     email,
+		Type:      "refresh",
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
 	}
 
-	return tokenString, nil
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(getJWTSecret())
 }
 
 // GenerateTokenPair creates both access and refresh tokens
@@ -117,34 +121,28 @@ func GenerateTokenPair(userID string) (TokenResponse, error) {
 }
 
 // ValidateRefreshToken checks if a refresh token is valid and returns the user ID
+// Note: With Firebase authentication, we now validate JWT-based refresh tokens
 func ValidateRefreshToken(tokenString string) (string, error) {
-	// Find the token in the database
-	query := `SELECT user_id, expires_at FROM refresh_tokens WHERE token = $1`
-	var userID string
-	var expiresAt time.Time
+	claims := &Claims{}
 
-	err := db.DB.QueryRow(query, tokenString).Scan(&userID, &expiresAt)
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return getJWTSecret(), nil
+	})
+
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return "", errors.New("invalid refresh token")
-		}
-		return "", err
+		return "", fmt.Errorf("invalid refresh token: %w", err)
 	}
 
-	// Check if the token has expired
-	if time.Now().After(expiresAt) {
-		// Delete the expired token
-		_, _ = db.DB.Exec("DELETE FROM refresh_tokens WHERE token = $1", tokenString)
-		return "", errors.New("refresh token expired")
+	if !token.Valid {
+		return "", errors.New("invalid refresh token")
 	}
 
-	return userID, nil
-}
+	// Ensure this is a refresh token, not an access token
+	if claims.Type != "refresh" {
+		return "", errors.New("invalid token type: expected refresh token")
+	}
 
-// InvalidateRefreshToken removes a refresh token from the database
-func InvalidateRefreshToken(tokenString string) error {
-	_, err := db.DB.Exec("DELETE FROM refresh_tokens WHERE token = $1", tokenString)
-	return err
+	return claims.UserID, nil
 }
 
 // JWTAuthMiddleware checks the JWT token in the request
