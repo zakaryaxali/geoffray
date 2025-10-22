@@ -41,6 +41,8 @@ services:
       MISTRAL_AGENT_ID: ${MISTRAL_AGENT_ID}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      FIREBASE_SERVICE_ACCOUNT_BASE64: ${FIREBASE_SERVICE_ACCOUNT_BASE64}
     depends_on:
       postgres:
         condition: service_healthy
@@ -62,6 +64,10 @@ services:
         ENV: staging
         EXPO_PUBLIC_API_URL: https://staging.geoffray.xyz/api
     container_name: geoffray-frontend
+    environment:
+      EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID}
+      EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID: ${EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID:-}
+      EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID: ${EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID:-}
     networks:
       - geoffray-network
     restart: unless-stopped
