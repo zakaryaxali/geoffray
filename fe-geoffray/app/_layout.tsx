@@ -4,7 +4,7 @@ import {Stack, useRouter, useSegments} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import {StatusBar} from 'expo-status-bar';
 import {useEffect, useState} from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity, Platform} from 'react-native';
 import 'react-native-reanimated';
 
 import CustomSplashScreen from '@/src/components/SplashScreen';
@@ -127,6 +127,13 @@ export default function RootLayout() {
       });
     }
   }, [loaded, isI18nInitialized]);
+
+  // Set page title for web
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      document.title = 'geoffray';
+    }
+  }, []);
 
   if (!loaded) {
     return null;
