@@ -227,7 +227,6 @@ export default function EventDetailsScreen() {
                 setStartHours(hours);
                 setStartMinutes(minutes);
               }}
-              label={t('event.time')}
             />
           </View>
 
@@ -289,7 +288,6 @@ export default function EventDetailsScreen() {
                     setEndHours(hours);
                     setEndMinutes(minutes);
                   }}
-                  label={t('event.time')}
                 />
               </View>
             </>
