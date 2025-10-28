@@ -315,29 +315,27 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
             </ThemedText>
             
             {/* Add Suggestion Button for empty state */}
-            {isCreator && (
-              <TouchableOpacity
-                onPress={() => router.push(`/event/${eventId}/add-suggestion`)}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  backgroundColor: BrandColors.peach,
-                  paddingHorizontal: 24,
-                  paddingVertical: 12,
-                  borderRadius: 8,
-                  marginTop: 24,
-                }}
-              >
-                <Ionicons 
-                  name="add" 
-                  size={20} 
-                  color="#FFFFFF" 
-                />
-                <ThemedText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: '600' }}>
-                  {t('event.gifts.addFirstSuggestion')}
-                </ThemedText>
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity
+              onPress={() => router.push(`/event/${eventId}/add-suggestion`)}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: BrandColors.peach,
+                paddingHorizontal: 24,
+                paddingVertical: 12,
+                borderRadius: 8,
+                marginTop: 24,
+              }}
+            >
+              <Ionicons
+                name="add"
+                size={20}
+                color="#FFFFFF"
+              />
+              <ThemedText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: '600' }}>
+                {t('event.gifts.addFirstSuggestion')}
+              </ThemedText>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -544,7 +542,7 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
         ))}
 
         {/* Add New Suggestion Button - centered below suggestions */}
-        {isCreator && suggestions && suggestions.length > 0 && (
+        {suggestions && suggestions.length > 0 && (
           <View style={{ alignItems: 'center', marginTop: 20, marginBottom: 20 }}>
             <TouchableOpacity
               onPress={() => router.push(`/event/${eventId}/add-suggestion`)}
@@ -557,10 +555,10 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
                 borderRadius: 8,
               }}
             >
-              <Ionicons 
-                name="add" 
-                size={16} 
-                color="#FFFFFF" 
+              <Ionicons
+                name="add"
+                size={16}
+                color="#FFFFFF"
               />
               <ThemedText style={{ color: '#FFFFFF', marginLeft: 8, fontSize: 16, fontWeight: '600' }}>
                 {t('event.gifts.addSuggestion')}
