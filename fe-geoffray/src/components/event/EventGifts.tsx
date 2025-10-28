@@ -44,7 +44,6 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
   const [suggestions, setSuggestions] = useState<GiftSuggestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [votingStates, setVotingStates] = useState<Record<string, boolean>>({});
   const [deletingStates, setDeletingStates] = useState<Record<string, boolean>>({});
@@ -70,29 +69,6 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
       }
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Handle manual refresh
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    try {
-      const response = await apiClient.get<GiftSuggestion[]>(
-        `/api/events/${eventId}/gift-suggestions`,
-        true
-      );
-      setSuggestions(response || []);
-      setError(null);
-    } catch (err: any) {
-      console.error('Error fetching gift suggestions:', err);
-      if (err.status === 404) {
-        setSuggestions([]);
-        setError(null);
-      } else {
-        setError(t('event.gifts.fetchError'));
-      }
-    } finally {
-      setRefreshing(false);
     }
   };
 
@@ -291,34 +267,11 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
       <View style={{ padding: 20 }}>
         {/* Header */}
         <View style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
           marginBottom: 20
         }}>
           <ThemedText style={{ fontSize: 24, fontWeight: 'bold', color: themeColors.text }}>
             {t('event.gifts.title')}
           </ThemedText>
-
-          {/* Refresh Button */}
-          <TouchableOpacity
-            onPress={handleRefresh}
-            disabled={refreshing}
-            style={{
-              padding: 8,
-              opacity: refreshing ? 0.6 : 1,
-            }}
-          >
-            {refreshing ? (
-              <ActivityIndicator size="small" color={themeColors.text} />
-            ) : (
-              <Ionicons
-                name="refresh-outline"
-                size={24}
-                color={themeColors.text}
-              />
-            )}
-          </TouchableOpacity>
         </View>
 
         {/* Error State */}
