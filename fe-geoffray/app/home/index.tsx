@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   listContent: {
-    paddingBottom: 20,
+    paddingBottom: 100,
   },
   loadingContainer: {
     flex: 1,
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
   },
   giftSearchFab: {
     position: 'absolute',
-    bottom: 24,
+    bottom: 40,
     right: 24,
     backgroundColor: '#FFA726',
     width: 56,
