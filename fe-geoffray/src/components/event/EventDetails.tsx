@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {ScrollView, TouchableOpacity, View, ActivityIndicator, Platform, Linking} from 'react-native';
 import {useTranslation} from 'react-i18next';
+import {Ionicons} from '@expo/vector-icons';
 import {useTheme} from '@/src/contexts/ThemeContext';
 import {ThemedText} from '@/src/components/ThemedText';
 import {IconSymbol} from '@/src/components/ui/IconSymbol';
@@ -256,9 +257,7 @@ export const EventDetails: React.FC<EventDetailsProps> = ({
                       setStatusModalVisible(true);
                     }}
                   >
-                    <ThemedText style={{ fontSize: 12, color: themeColors.primary }}>
-                      {t('event.change')}
-                    </ThemedText>
+                    <Ionicons name="create-outline" size={16} color={themeColors.primary} />
                   </TouchableOpacity>
                 )}
               </View>
