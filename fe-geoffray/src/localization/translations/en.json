@@ -274,7 +274,7 @@
   "giftEvent.deleteConfirm": "Are you sure you want to delete this gift suggestion?",
   "giftEvent.deleteError": "Failed to delete gift suggestion. Please try again.",
   "giftSuggestion.manualMode": "Manual Entry",
-  "giftSuggestion.aiMode": "AI Generate",
+  "giftSuggestion.aiMode": "Ask Geoffray",
   "giftSuggestion.name": "Gift Name",
   "giftSuggestion.namePlaceholder": "Enter the gift name",
   "giftSuggestion.description": "Description",

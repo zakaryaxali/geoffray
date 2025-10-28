@@ -273,7 +273,7 @@
   "giftEvent.deleteError": "Échec de la suppression de la suggestion de cadeau. Veuillez réessayer.",
   "event.gifts.addFirstSuggestion": "Ajouter une première suggestion",
   "giftSuggestion.manualMode": "Saisie manuelle",
-  "giftSuggestion.aiMode": "Génération IA",
+  "giftSuggestion.aiMode": "Demander à Geoffray",
   "giftSuggestion.name": "Nom du cadeau",
   "giftSuggestion.namePlaceholder": "Entrez le nom du cadeau",
   "giftSuggestion.description": "Description",
