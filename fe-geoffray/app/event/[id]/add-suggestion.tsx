@@ -298,7 +298,7 @@ export default function AddGiftSuggestionScreen() {
           onPress={() => router.push(`/event/${id}`)}
         >
           <Text style={[styles.cancelButtonText, { color: themeColors.text }]}>
-            {t('cancel')}
+            {t('common.cancel')}
           </Text>
         </TouchableOpacity>
       </ScrollView>
