@@ -82,6 +82,13 @@ type EventWithParticipants struct {
 }
 
 // GetEventByID returns a single event by its ID along with its participants
+// PendingInvitation represents an invitation that hasn't been accepted yet
+type PendingInvitation struct {
+	Email     *string   `json:"email"`
+	InvitedAt time.Time `json:"invitedAt"`
+	ExpiresAt time.Time `json:"expiresAt"`
+}
+
 func GetEventByID(c *gin.Context) {
 	// Get the user ID from the authenticated context
 	userID, exists := c.Get("user_id")
@@ -107,8 +114,39 @@ func GetEventByID(c *gin.Context) {
 		return
 	}
 
-	// Return the event with participants
-	c.JSON(http.StatusOK, gin.H{"event": event, "participants": participants})
+	// Get pending invitations for this event
+	pendingInvitations := []PendingInvitation{}
+	query := `
+		SELECT email, created_at, expires_at
+		FROM event_invitations
+		WHERE event_id = $1
+		AND status = 'pending'
+		ORDER BY created_at DESC
+	`
+
+	rows, err := db.DB.Query(query, eventID)
+	if err != nil {
+		log.Printf("Error fetching pending invitations: %v", err)
+		// Continue without invitations if there's an error
+	} else {
+		defer rows.Close()
+
+		for rows.Next() {
+			var invitation PendingInvitation
+			if err := rows.Scan(&invitation.Email, &invitation.InvitedAt, &invitation.ExpiresAt); err != nil {
+				log.Printf("Error scanning invitation: %v", err)
+				continue
+			}
+			pendingInvitations = append(pendingInvitations, invitation)
+		}
+	}
+
+	// Return the event with participants and pending invitations
+	c.JSON(http.StatusOK, gin.H{
+		"event":              event,
+		"participants":       participants,
+		"pendingInvitations": pendingInvitations,
+	})
 }
 
 // InviteParticipantInput represents the request body for inviting a participant
@@ -241,16 +279,41 @@ func InviteParticipant(c *gin.Context) {
 		return
 	}
 
-	// User doesn't exist, create an invitation
+	// User doesn't exist, check if there's already a pending invitation
+	var existingInviteCode string
+	invitationCheckQuery := `
+		SELECT invite_code FROM event_invitations
+		WHERE event_id = $1
+		AND email = $2
+		AND status = 'pending'
+		LIMIT 1
+	`
+	err = db.DB.QueryRow(invitationCheckQuery, eventID, input.Identifier).Scan(&existingInviteCode)
+
+	if err == nil {
+		// Invitation already exists, return the existing invite link
+		appConfig := config.GetConfig()
+		existingInviteLink := appConfig.FrontendURL + "/invite/" + existingInviteCode
+
+		c.JSON(http.StatusOK, InviteParticipantResponse{
+			Success:    true,
+			Message:    "An invitation has already been sent to this email",
+			UserExists: false,
+			InviteLink: existingInviteLink,
+		})
+		return
+	}
+
+	// No existing invitation, create a new one
 	inviteCode := generateInviteCode()
-	// Set expiration to 7 days from now
-	expiresAt := time.Now().AddDate(0, 0, 7)
+	// Set expiration to far future (100 years - effectively no expiration)
+	expiresAt := time.Now().AddDate(100, 0, 0)
 
 	// Create the invitation record
 	inviteQuery := `
-		INSERT INTO event_invitations 
-		(event_id, email, invite_code, status, expires_at, created_at, updated_at) 
-		VALUES ($1, $2, $3, $4, $5, $6, $7) 
+		INSERT INTO event_invitations
+		(event_id, email, invite_code, status, expires_at, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id
 	`
 
@@ -282,6 +345,67 @@ func InviteParticipant(c *gin.Context) {
 		Message:    "Invitation created successfully",
 		UserExists: false,
 		InviteLink: inviteLink,
+	})
+}
+
+// RescindInvitation deletes a pending invitation
+func RescindInvitation(c *gin.Context) {
+	// Get the user ID from the authenticated context
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	// Get the event ID and email from URL parameters
+	eventID := c.Param("id")
+	email := c.Param("email")
+
+	if eventID == "" || email == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Event ID and email are required"})
+		return
+	}
+
+	// Verify that the event exists and the user is the creator
+	var creatorID string
+	eventQuery := `SELECT creator_id FROM events WHERE id = $1`
+	err := db.DB.QueryRow(eventQuery, eventID).Scan(&creatorID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to verify event"})
+		}
+		return
+	}
+
+	// Only the creator can rescind invitations
+	if creatorID != userID.(string) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Only the event creator can rescind invitations"})
+		return
+	}
+
+	// Delete the invitation
+	deleteQuery := `
+		DELETE FROM event_invitations
+		WHERE event_id = $1 AND email = $2 AND status = 'pending'
+	`
+	result, err := db.DB.Exec(deleteQuery, eventID, email)
+	if err != nil {
+		log.Printf("Error deleting invitation: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete invitation"})
+		return
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Invitation not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Invitation rescinded successfully",
 	})
 }
 

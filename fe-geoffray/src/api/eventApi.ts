@@ -41,6 +41,13 @@ export interface EventResponse {
   event_occasion?: string;
 }
 
+export interface PendingInvitation {
+  email?: string;
+  phone?: string;
+  invitedAt: string;
+  expiresAt: string;
+}
+
 export interface ParticipantInviteRequest {
   identifier: string; // email
   type: 'email';
@@ -166,14 +173,15 @@ export const eventApi = {
   /**
    * Get a specific event by ID and its participants
    */
-  getEventById: async (eventId: string): Promise<{ event: EventResponse, participants: Participant[] }> => {
-    const response = await apiClient.get<{ event: EventResponse, participants: Participant[] }>(
-      `/events/${eventId}`, 
+  getEventById: async (eventId: string): Promise<{ event: EventResponse, participants: Participant[], pendingInvitations: PendingInvitation[] }> => {
+    const response = await apiClient.get<{ event: EventResponse, participants: Participant[], pendingInvitations: PendingInvitation[] }>(
+      `/events/${eventId}`,
       true
     );
     return {
       event: response.event,
-      participants: response.participants || []
+      participants: response.participants || [],
+      pendingInvitations: response.pendingInvitations || []
     };
   },
   
@@ -181,81 +189,44 @@ export const eventApi = {
    * Invite a participant to an event
    */
   inviteParticipant: async (eventId: string, participantData: ParticipantInviteRequest): Promise<ParticipantInviteResponse> => {
-    try {
-      const response = await apiClient.post<ParticipantInviteResponse>(
-        `/events/${eventId}/participants`, 
-        participantData, 
-        true
-      );
-      return response;
-    } catch (error) {
-      // For demo purposes, simulate API behavior
-      // In a real app, this would be handled by the backend
-      console.log('Simulating participant invite response');
-      
-      // Simulate a random response (user exists or not)
-      const userExists = Math.random() > 0.5;
-      
-      return {
-        success: true,
-        message: userExists ? 'Participant invited successfully' : 'User not found',
-        userExists: userExists,
-        inviteLink: userExists ? undefined : `https://geoffray.app/invite/${eventId}`
-      };
-    }
+    const response = await apiClient.post<any>(
+      `/events/${eventId}/participants`,
+      participantData,
+      true
+    );
+
+    // Normalize backend response (PascalCase to camelCase)
+    return {
+      success: response.success ?? response.Success ?? true,
+      message: response.message ?? response.Message ?? '',
+      userExists: response.userExists ?? response.UserExists ?? false,
+      inviteLink: response.inviteLink ?? response.InviteLink
+    };
   },
   
   /**
    * Validate an invitation code and get event details
    */
   validateInvite: async (inviteCode: string): Promise<InviteValidationResponse> => {
-    try {
-      const response = await apiClient.get<InviteValidationResponse>(
-        `/invites/${inviteCode}`,
-        true
-      );
-      return response;
-    } catch (error) {
-      // For demo purposes, simulate API behavior
-      console.log('Simulating invite validation response');
-      
-      // Generate a random event ID to simulate a valid invitation
-      const eventId = '526b0d2d-fd78-4ea4-8ba3-06b9f7877a5e';
-      
-      // Simulate a valid response
-      return {
-        valid: true,
-        eventId: eventId,
-        eventTitle: 'Demo Event',
-        message: 'Valid invitation'
-      };
-    }
+    const response = await apiClient.get<InviteValidationResponse>(
+      `/invites/${inviteCode}`
+    );
+    return response;
   },
   
   /**
    * Accept an invitation and join the event
    */
   acceptInvite: async (inviteCode: string): Promise<{success: boolean; message: string; eventId?: string}> => {
-    try {
-      const response = await apiClient.post<{success: boolean; message: string; eventId: string}>(
-        `/invites/${inviteCode}/accept`,
-        {},
-        true
-      );
-      return response;
-    } catch (error) {
-      // For demo purposes, simulate API behavior
-      console.log('Simulating invite acceptance response');
-      
-      // Generate a random event ID to simulate a valid invitation
-      const eventId = '526b0d2d-fd78-4ea4-8ba3-06b9f7877a5e';
-      
-      return {
-        success: true,
-        message: 'Successfully joined the event',
-        eventId: eventId
-      };
-    }
+    const response = await apiClient.post<{message: string; event_id: string}>(
+      `/invites/${inviteCode}/accept`,
+      {}
+    );
+    return {
+      success: true,
+      message: response.message,
+      eventId: response.event_id
+    };
   },
 
   /**
@@ -275,12 +246,28 @@ export const eventApi = {
   },
 
   /**
+   * Rescind a pending invitation
+   */
+  rescindInvitation: async (eventId: string, email: string): Promise<{ success: boolean; message: string }> => {
+    try {
+      const response = await apiClient.delete<{ success: boolean; message: string }>(
+        `/events/${eventId}/invitations/${encodeURIComponent(email)}`,
+        true
+      );
+      return response;
+    } catch (error) {
+      console.error('Error rescinding invitation:', error);
+      throw error;
+    }
+  },
+
+  /**
    * Update event details (only available to the event creator)
    */
   updateEvent: async (eventId: string, updateData: UpdateEventRequest): Promise<EventResponse> => {
     try {
       console.log('updateEvent API call with data:', JSON.stringify(updateData));
-      
+
       const response = await apiClient.put<{ message: string; event: EventResponse }>(
         `/events/${eventId}`,
         updateData,

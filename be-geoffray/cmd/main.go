@@ -79,6 +79,9 @@ func main() {
 	// Gift routes (some public, some protected)
 	routes.SetupGiftRoutes(router, db.DB)
 
+	// Invite routes (validation is public, accept is protected)
+	routes.SetupInviteRoutes(router, db.DB)
+
 	// Protected routes (JWT required)
 	protected := router.Group("/")
 	protected.Use(middlewares.JWTAuthMiddleware()) // Apply JWT middleware only to protected routes

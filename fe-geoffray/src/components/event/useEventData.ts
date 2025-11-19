@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { eventApi, EventResponse, ParticipantInviteRequest, ParticipantInviteResponse, UpdateEventRequest } from '@/src/api/eventApi';
+import { eventApi, EventResponse, ParticipantInviteRequest, ParticipantInviteResponse, UpdateEventRequest, PendingInvitation } from '@/src/api/eventApi';
 import { mapParticipantStatus } from './EventUtils';
 
 export interface Participant {
@@ -12,18 +12,22 @@ export interface Participant {
 export interface EventData {
   event: EventResponse | null;
   participants: Participant[];
+  pendingInvitations: PendingInvitation[];
   loading: boolean;
   error: string;
   inviteParticipant: (request: ParticipantInviteRequest) => Promise<ParticipantInviteResponse>;
   refreshEvent: () => Promise<void>;
   updateParticipantStatus: (participantId: string, newStatus: 'going' | 'pending' | 'not_going') => Promise<boolean>;
   updateEvent: (updateData: UpdateEventRequest) => Promise<boolean>;
+  rescindInvitation: (email: string) => Promise<boolean>;
+  getInviteLink: (email: string) => Promise<string | null>;
   isCreator: boolean;
 }
 
 export const useEventData = (eventId: string | string[]): EventData => {
   const [event, setEvent] = useState<EventResponse | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const [pendingInvitations, setPendingInvitations] = useState<PendingInvitation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isCreator, setIsCreator] = useState(false);
@@ -40,10 +44,11 @@ export const useEventData = (eventId: string | string[]): EventData => {
       
       // Convert id to string if it's not already
       const id = typeof eventId === 'object' ? String(eventId) : eventId;
-      
-      // Fetch the event and participants from the API
-      const { event: eventData, participants: participantsData } = await eventApi.getEventById(id);
+
+      // Fetch the event, participants, and pending invitations from the API
+      const { event: eventData, participants: participantsData, pendingInvitations: pendingInvitationsData } = await eventApi.getEventById(id);
       setEvent(eventData);
+      setPendingInvitations(pendingInvitationsData);
       
       // Check if current user is the creator
       try {
@@ -97,13 +102,13 @@ export const useEventData = (eventId: string | string[]): EventData => {
     if (!eventId) {
       throw new Error('Event ID is missing');
     }
-    
+
     const id = typeof eventId === 'object' ? String(eventId) : eventId;
     const response = await eventApi.inviteParticipant(id, request);
-    
-    // Refresh the event data to get updated participants
-    await fetchEvent();
-    
+
+    // Don't refresh here - let the modal close first, then parent will refresh
+    // This prevents the modal state from being reset by the parent re-render
+
     return response;
   };
 
@@ -145,17 +150,63 @@ export const useEventData = (eventId: string | string[]): EventData => {
 
     try {
       const id = typeof eventId === 'object' ? String(eventId) : eventId;
-      
+
       // Call the API to update the event
       const updatedEvent = await eventApi.updateEvent(id, updateData);
-      
+
       // Update the local state with the updated event
       setEvent(updatedEvent);
-      
+
       return true;
     } catch (error) {
       console.error('Error updating event:', error);
       return false;
+    }
+  };
+
+  // Rescind an invitation
+  const rescindInvitation = async (email: string): Promise<boolean> => {
+    if (!eventId) {
+      throw new Error('Event ID is missing');
+    }
+
+    try {
+      const id = typeof eventId === 'object' ? String(eventId) : eventId;
+
+      // Call the API to rescind the invitation
+      await eventApi.rescindInvitation(id, email);
+
+      // Update local state by removing the invitation from the list
+      setPendingInvitations(prevInvitations =>
+        prevInvitations.filter(inv => inv.email !== email && inv.phone !== email)
+      );
+
+      return true;
+    } catch (error) {
+      console.error('Error rescinding invitation:', error);
+      return false;
+    }
+  };
+
+  // Get invite link for an email (by re-inviting)
+  const getInviteLink = async (email: string): Promise<string | null> => {
+    if (!eventId) {
+      throw new Error('Event ID is missing');
+    }
+
+    try {
+      const id = typeof eventId === 'object' ? String(eventId) : eventId;
+
+      // Call the invite API which will return the existing invite link
+      const response = await eventApi.inviteParticipant(id, {
+        identifier: email,
+        type: 'email'
+      });
+
+      return response.inviteLink || null;
+    } catch (error) {
+      console.error('Error getting invite link:', error);
+      return null;
     }
   };
 
@@ -167,12 +218,15 @@ export const useEventData = (eventId: string | string[]): EventData => {
   return {
     event,
     participants,
+    pendingInvitations,
     loading,
     error,
     inviteParticipant,
     refreshEvent: fetchEvent,
     updateParticipantStatus,
     updateEvent,
+    rescindInvitation,
+    getInviteLink,
     isCreator
   };
 };

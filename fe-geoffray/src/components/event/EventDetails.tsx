@@ -5,7 +5,7 @@ import {Ionicons} from '@expo/vector-icons';
 import {useTheme} from '@/src/contexts/ThemeContext';
 import {ThemedText} from '@/src/components/ThemedText';
 import {IconSymbol} from '@/src/components/ui/IconSymbol';
-import {EventResponse, UpdateEventRequest} from '@/src/api/eventApi';
+import {EventResponse, UpdateEventRequest, PendingInvitation} from '@/src/api/eventApi';
 import {Participant} from './useEventData';
 import {getInitials} from './EventUtils';
 import {eventStyles} from './EventStyles';
@@ -15,27 +15,34 @@ import {useAuth} from '@/src/contexts/AuthContext';
 import {EditEventDetails} from './EditEventDetails';
 import {EventDateTimeDisplay} from './EventDateTimeDisplay';
 import {EventLocationDisplay} from './EventLocationDisplay';
+import {PendingInvitations} from './PendingInvitations';
 
 interface EventDetailsProps {
   event: EventResponse;
   participants: Participant[];
+  pendingInvitations: PendingInvitation[];
   onInvitePress: () => void;
   onParticipantStatusChanged?: (participantId: string, newStatus: 'going' | 'pending' | 'not_going') => void;
   isCreator: boolean;
   onUpdateEvent?: (updateData: UpdateEventRequest) => Promise<boolean>;
   isEditMode?: boolean;
   onEditComplete?: () => void;
+  onRescindInvitation?: (email: string) => void;
+  onCopyInviteLink?: (email: string) => Promise<string | null>;
 }
 
-export const EventDetails: React.FC<EventDetailsProps> = ({ 
-  event, 
+export const EventDetails: React.FC<EventDetailsProps> = ({
+  event,
   participants,
+  pendingInvitations,
   onInvitePress,
   onParticipantStatusChanged,
   isCreator,
   onUpdateEvent,
   isEditMode = false,
-  onEditComplete
+  onEditComplete,
+  onRescindInvitation,
+  onCopyInviteLink
 }) => {
   const { t, i18n } = useTranslation();
   const { theme } = useTheme();
@@ -275,21 +282,29 @@ export const EventDetails: React.FC<EventDetailsProps> = ({
             onStatusChanged={handleStatusChange}
           />
         )}
-
-        {/* Invite Button */}
-        <TouchableOpacity 
-          style={[
-            eventStyles.inviteButton, 
-            { backgroundColor: themeColors.primary }
-          ]}
-          onPress={onInvitePress}
-        >
-          <IconSymbol name="person.badge.plus" size={20} color="#FFFFFF" />
-          <ThemedText style={[eventStyles.inviteButtonText, { color: '#FFFFFF' }]}>
-            {t('event.inviteParticipant')}
-          </ThemedText>
-        </TouchableOpacity>
       </View>
+
+      {/* Pending Invitations - Only show to creator */}
+      {isCreator && <PendingInvitations invitations={pendingInvitations} onRescind={onRescindInvitation} onCopyInviteLink={onCopyInviteLink} />}
+
+      {/* Participants Container End - Invite Button - Only show to creator */}
+      {isCreator && (
+        <View style={eventStyles.participantsContainer}>
+          {/* Invite Button */}
+          <TouchableOpacity
+            style={[
+              eventStyles.inviteButton,
+              { backgroundColor: themeColors.primary }
+            ]}
+            onPress={onInvitePress}
+          >
+            <IconSymbol name="person.badge.plus" size={20} color="#FFFFFF" />
+            <ThemedText style={[eventStyles.inviteButtonText, { color: '#FFFFFF' }]}>
+              {t('event.inviteParticipant')}
+            </ThemedText>
+          </TouchableOpacity>
+        </View>
+      )}
     </ScrollView>
   );
 };

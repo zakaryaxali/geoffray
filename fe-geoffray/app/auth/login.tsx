@@ -3,9 +3,11 @@ import {ActivityIndicator, StyleSheet, Text, TextInput, TouchableOpacity, View} 
 import {router, useLocalSearchParams} from 'expo-router';
 import {StatusBar} from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useAuth} from '@/src/contexts/AuthContext';
 import {BrandColors} from '@/src/constants/Colors';
 import { useTranslation } from 'react-i18next';
+import { eventApi } from '@/src/api/eventApi';
 
 export default function LoginScreen() {
   const { t } = useTranslation();
@@ -33,6 +35,41 @@ export default function LoginScreen() {
     return password.length >= 6;
   };
 
+  const handlePostLoginInvite = async () => {
+    try {
+      const pendingCode = await AsyncStorage.getItem('pendingInviteCode');
+
+      if (pendingCode) {
+        console.log('Found pending invite code:', pendingCode);
+
+        // Accept the invite
+        const result = await eventApi.acceptInvite(pendingCode);
+
+        // Clear the pending code
+        await AsyncStorage.removeItem('pendingInviteCode');
+
+        // Redirect to the event
+        if (result.eventId) {
+          router.replace(`/event/${result.eventId}`);
+          return true;
+        }
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Error handling pending invite:', error);
+      // Clear the invalid pending code
+      await AsyncStorage.removeItem('pendingInviteCode');
+
+      // Show error to user
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      }
+
+      return false;
+    }
+  };
+
   const handleContinue = async () => {
     setErrorMessage('');
     let isValid = true;
@@ -56,7 +93,14 @@ export default function LoginScreen() {
     try {
       // Now uses Firebase authentication
       await signIn(email, password);
-      router.replace('/home');
+
+      // Check if there's a pending invite code
+      const hasInvite = await handlePostLoginInvite();
+
+      // Only navigate to home if there was no invite to process
+      if (!hasInvite) {
+        router.replace('/home');
+      }
     } catch (error) {
       console.error('Login error:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Login failed. Please try again.');
@@ -71,10 +115,17 @@ export default function LoginScreen() {
   const handleGooglePress = async () => {
     setIsGoogleLoading(true);
     setErrorMessage('');
-    
+
     try {
       await signInWithGoogle();
-      router.replace('/home');
+
+      // Check if there's a pending invite code
+      const hasInvite = await handlePostLoginInvite();
+
+      // Only navigate to home if there was no invite to process
+      if (!hasInvite) {
+        router.replace('/home');
+      }
     } catch (error) {
       console.error('Google sign in error:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Google sign in failed. Please try again.');

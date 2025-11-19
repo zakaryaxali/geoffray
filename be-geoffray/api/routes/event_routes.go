@@ -15,5 +15,6 @@ func RegisterEventRoutes(r *gin.RouterGroup) {
 	events.GET("/:id", controllers.GetEventByID)                               // Get a specific event by ID
 	events.PUT("/:id", controllers.UpdateEvent)                                // Update an event's details
 	events.POST("/:id/participants", controllers.InviteParticipant)            // Invite a participant to an event
+	events.DELETE("/:id/invitations/:email", controllers.RescindInvitation)    // Rescind an invitation
 	events.PUT("/:id/participant-status", controllers.UpdateParticipantStatus) // Update participant status
 }

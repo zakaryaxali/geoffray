@@ -10,6 +10,7 @@ import { IconSymbol } from '@/src/components/ui/IconSymbol';
 import { eventApi, InviteValidationResponse } from '@/src/api/eventApi';
 import { Colors, BrandColors } from '@/src/constants/Colors';
 import { useTheme } from '@/src/contexts/ThemeContext';
+import { useAuth } from '@/src/contexts/AuthContext';
 
 // Array of random event banner images (reusing from event page)
 const randomEventBanners = [
@@ -32,28 +33,16 @@ export default function InvitePage() {
   const router = useRouter();
   const { theme } = useTheme();
   const { t } = useTranslation();
-  
+  const { user } = useAuth();
+
   const [loading, setLoading] = useState(true);
   const [accepting, setAccepting] = useState(false);
   const [inviteInfo, setInviteInfo] = useState<InviteValidationResponse | null>(null);
   const [error, setError] = useState('');
-  const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
-  
-  // Check if the user is authenticated
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const token = await AsyncStorage.getItem('authToken');
-        setIsUserAuthenticated(!!token);
-      } catch (error) {
-        console.error('Error checking authentication:', error);
-        setIsUserAuthenticated(false);
-      }
-    };
-    
-    checkAuth();
-  }, []);
-  
+
+  // Use AuthContext to determine if user is authenticated
+  const isUserAuthenticated = !!user;
+
   // Get theme colors based on the current theme
   const themeColors = theme === 'dark' ? Colors.dark : Colors.light;
   

@@ -32,15 +32,19 @@ export default function EventScreen() {
   const [isEditing, setIsEditing] = useState(false);
   
   // Use our custom hook to fetch event data
-  const { 
-    event, 
-    participants, 
-    loading, 
-    error, 
+  const {
+    event,
+    participants,
+    pendingInvitations,
+    loading,
+    error,
     inviteParticipant,
     updateParticipantStatus,
     isCreator,
-    updateEvent
+    updateEvent,
+    refreshEvent,
+    rescindInvitation,
+    getInviteLink
   } = useEventData(id);
 
   // Get theme colors based on the current theme
@@ -116,9 +120,10 @@ export default function EventScreen() {
       {/* Tab content */}
       <View style={eventStyles.contentContainer}>
         {activeTab === 'details' && (
-          <EventDetails 
-            event={event!} 
-            participants={participants} 
+          <EventDetails
+            event={event!}
+            participants={participants}
+            pendingInvitations={pendingInvitations}
             onInvitePress={() => setModalVisible(true)}
             onParticipantStatusChanged={(participantId, newStatus) => {
               updateParticipantStatus(participantId, newStatus);
@@ -127,6 +132,8 @@ export default function EventScreen() {
             onUpdateEvent={updateEvent}
             isEditMode={isEditing}
             onEditComplete={() => setIsEditing(false)}
+            onRescindInvitation={rescindInvitation}
+            onCopyInviteLink={getInviteLink}
           />
         )}
         
@@ -149,10 +156,14 @@ export default function EventScreen() {
       </View>
       
       {/* Invite Participant Modal */}
-      <InviteParticipantModal 
-        visible={modalVisible} 
-        onClose={() => setModalVisible(false)} 
-        onInvite={handleInvite} 
+      <InviteParticipantModal
+        visible={modalVisible}
+        onClose={() => {
+          setModalVisible(false);
+          // Refresh event data after modal closes to show new participant
+          refreshEvent();
+        }}
+        onInvite={handleInvite}
       />
     </SafeAreaView>
   );
