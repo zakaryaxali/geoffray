@@ -84,6 +84,7 @@
   "home.past": "Past",
   "home.noEvents": "No events found",
   "home.noUpcomingEvents": "No upcoming events found",
+  "home.noIncomingEvents": "No incoming events",
   "home.noPastEvents": "No past events found",
   "home.noInactiveEvents": "No inactive events found",
   "home.seeAll": "See All",

@@ -1,12 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList, SafeAreaView, StatusBar, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, SectionList, SafeAreaView, StatusBar, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {useTranslation} from 'react-i18next';
 import {useRouter} from 'expo-router';
 
 import {ThemedText} from '@/src/components/ThemedText';
 import {ThemedView} from '@/src/components/ThemedView';
 import {Event, EventCard} from '@/src/components/EventCard';
-import {EventsFilter, FilterType} from '@/src/components/EventsFilter';
 import {eventApi, EventResponse} from '@/src/api/eventApi';
 
 
@@ -26,14 +25,66 @@ const mapApiEventToComponentEvent = (apiEvent: EventResponse): Event => {
   };
 };
 
+// Section data structure for SectionList
+interface EventSection {
+  title: string;
+  data: Event[];
+}
+
 export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
-  const [activeFilter, setActiveFilter] = useState<FilterType>('next');
+  const [sections, setSections] = useState<EventSection[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Helper function to organize events into sections
+  const organizeSections = (allEvents: Event[]): EventSection[] => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
+
+    // Filter incoming events (today or future based on endDate if available, else startDate)
+    const incomingEvents = allEvents.filter(event => {
+      const relevantDate = event.endDate ? new Date(event.endDate) : new Date(event.startDate);
+      return relevantDate >= today;
+    });
+
+    // Sort incoming events ascending (soonest first)
+    incomingEvents.sort((a, b) =>
+      new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+    );
+
+    // Filter past events (before today based on endDate if available, else startDate)
+    const pastEvents = allEvents.filter(event => {
+      const relevantDate = event.endDate ? new Date(event.endDate) : new Date(event.startDate);
+      return relevantDate < today;
+    });
+
+    // Sort past events descending (most recent first)
+    pastEvents.sort((a, b) =>
+      new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+    );
+
+    // Build sections array
+    const newSections: EventSection[] = [];
+
+    // Always add Incoming section
+    newSections.push({
+      title: 'Incoming',
+      data: incomingEvents,
+    });
+
+    // Only add Past Events section if there are past events
+    if (pastEvents.length > 0) {
+      newSections.push({
+        title: 'Past Events',
+        data: pastEvents,
+      });
+    }
+
+    return newSections;
+  };
 
   // Fetch events from the backend API
   useEffect(() => {
@@ -41,19 +92,12 @@ export default function HomeScreen() {
       try {
         setLoading(true);
         const apiEvents = await eventApi.getUserEvents();
-        
+
         // Convert API events to the format expected by the EventCard component
         const formattedEvents = apiEvents.map(mapApiEventToComponentEvent);
-        
+
         setEvents(formattedEvents);
-        
-        // Apply initial filtering based on date
-        const currentDate = new Date();
-        const upcomingEvents = formattedEvents.filter(event => new Date(event.startDate) >= currentDate);
-        const sortedEvents = upcomingEvents.sort((a, b) => 
-          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-        );
-        setFilteredEvents(sortedEvents);
+        setSections(organizeSections(formattedEvents));
         setError(null);
       } catch (error) {
         console.error('Error fetching events:', error);
@@ -66,30 +110,6 @@ export default function HomeScreen() {
     fetchEvents();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Filter and sort events based on date
-  const handleFilterChange = (filter: FilterType) => {
-    setActiveFilter(filter);
-    const currentDate = new Date();
-    
-    if (filter === 'next') {
-      // Filter for upcoming events (start date is in the future)
-      const upcomingEvents = events.filter(event => new Date(event.startDate) >= currentDate);
-      // Sort by start date (closest first)
-      const sortedEvents = upcomingEvents.sort((a, b) => 
-        new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-      );
-      setFilteredEvents(sortedEvents);
-    } else { // 'past'
-      // Filter for past events (start date is in the past)
-      const pastEvents = events.filter(event => new Date(event.startDate) < currentDate);
-      // Sort by start date (most recent first)
-      const sortedEvents = pastEvents.sort((a, b) => 
-        new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-      );
-      setFilteredEvents(sortedEvents);
-    }
-  };
 
   if (loading && events.length === 0) {
     return (
@@ -114,86 +134,81 @@ export default function HomeScreen() {
     );
   }
 
+  // Determine if there are any past events to show the appropriate empty state
+  const hasPastEvents = sections.some(section => section.title === 'Past Events');
+  const hasIncomingEvents = sections.length > 0 && sections[0].data.length > 0;
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      
-      <EventsFilter 
-        activeFilter={activeFilter} 
-        onFilterChange={handleFilterChange} 
+
+      <SectionList
+        sections={sections}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <EventCard event={item} />}
+        renderSectionHeader={({ section: { title, data } }) => (
+          <View style={styles.sectionHeader}>
+            <ThemedText style={styles.sectionTitle}>{title}</ThemedText>
+          </View>
+        )}
+        renderSectionFooter={({ section: { title, data } }) => {
+          // Show empty state only for Incoming section when it's empty
+          if (title === 'Incoming' && data.length === 0) {
+            // If there are past events, show simple message. Otherwise show button
+            if (hasPastEvents) {
+              return (
+                <View style={styles.emptyIncomingContainer}>
+                  <ThemedText style={styles.emptyText}>
+                    {t('home.noIncomingEvents')}
+                  </ThemedText>
+                </View>
+              );
+            } else {
+              return (
+                <View style={styles.emptyIncomingContainer}>
+                  <TouchableOpacity
+                    style={styles.giftSearchButtonCentered}
+                    onPress={() => {
+                      router.push('/create-event-with-gifts');
+                    }}
+                  >
+                    <ThemedText style={styles.giftSearchTextCentered}>
+                      {t('home.giftSearch')}
+                    </ThemedText>
+                  </TouchableOpacity>
+                </View>
+              );
+            }
+          }
+          return null;
+        }}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+        refreshing={loading}
+        onRefresh={() => {
+          setLoading(true);
+          eventApi.getUserEvents()
+            .then(apiEvents => {
+              const formattedEvents = apiEvents.map(mapApiEventToComponentEvent);
+              setEvents(formattedEvents);
+              setSections(organizeSections(formattedEvents));
+            })
+            .catch(err => {
+              console.error('Error refreshing events:', err);
+            })
+            .finally(() => setLoading(false));
+        }}
       />
-      
-      {filteredEvents.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          {/* Gift Search Button - centered when no events */}
-          {activeFilter === 'next' ? (
-            <TouchableOpacity 
-              style={styles.giftSearchButtonCentered}
-              onPress={() => {
-                router.push('/create-event-with-gifts');
-              }}
-            >
-              <ThemedText style={styles.giftSearchTextCentered}>
-                {t('home.giftSearch')}
-              </ThemedText>
-            </TouchableOpacity>
-          ) : (
-            <ThemedText style={styles.emptyText}>
-              {t('home.noPastEvents')}
-            </ThemedText>
-          )}
-        </View>
-      ) : (
-        <>
-          <FlatList
-            data={filteredEvents}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => <EventCard event={item} />}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-            refreshing={loading}
-            onRefresh={() => {
-              setLoading(true);
-              eventApi.getUserEvents()
-                .then(apiEvents => {
-                  const formattedEvents = apiEvents.map(mapApiEventToComponentEvent);
-                  setEvents(formattedEvents);
-                  // Apply current filter to the refreshed events
-                  const currentDate = new Date();
-                  if (activeFilter === 'next') {
-                    const upcomingEvents = formattedEvents.filter(event => new Date(event.startDate) >= currentDate);
-                    const sortedEvents = upcomingEvents.sort((a, b) => 
-                      new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-                    );
-                    setFilteredEvents(sortedEvents);
-                  } else { // 'past'
-                    const pastEvents = formattedEvents.filter(event => new Date(event.startDate) < currentDate);
-                    const sortedEvents = pastEvents.sort((a, b) => 
-                      new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-                    );
-                    setFilteredEvents(sortedEvents);
-                  }
-                })
-                .catch(err => {
-                  console.error('Error refreshing events:', err);
-                })
-                .finally(() => setLoading(false));
-            }}
-          />
-          
-          {/* Gift Search FAB - floating when events exist */}
-          {activeFilter === 'next' && (
-            <TouchableOpacity 
-              style={styles.giftSearchFab}
-              onPress={() => {
-                router.push('/create-event-with-gifts');
-              }}
-            >
-              <ThemedText style={styles.giftSearchFabText}>+</ThemedText>
-            </TouchableOpacity>
-          )}
-        </>
-      )}
+
+      {/* Gift Search FAB - always visible */}
+      <TouchableOpacity
+        style={styles.giftSearchFab}
+        onPress={() => {
+          router.push('/create-event-with-gifts');
+        }}
+      >
+        <ThemedText style={styles.giftSearchFabText}>+</ThemedText>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -225,14 +240,24 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 12,
   },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  sectionHeader: {
+    paddingVertical: 12,
+    paddingTop: 20,
+    paddingLeft: 16,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+  },
+  emptyIncomingContainer: {
+    paddingVertical: 40,
     alignItems: 'center',
-    padding: 20,
+    justifyContent: 'center',
   },
   emptyText: {
     textAlign: 'center',
+    fontSize: 16,
+    opacity: 0.6,
   },
   giftSearchButtonCentered: {
     backgroundColor: '#FFA726',
