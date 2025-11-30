@@ -40,6 +40,7 @@ type GiftSuggestion struct {
 	PriceRange    string    `json:"price_range"`    // e.g., "$10-$20", "$50+", etc.
 	Category      string    `json:"category"`       // Gift category
 	URL           string    `json:"url,omitempty"`  // Optional URL for purchasing
+	CreationMode  string    `json:"creation_mode"`  // "manual" or "ai" - how this suggestion was created
 	GeneratedAt   time.Time `json:"generated_at"`   // When this suggestion was generated
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`

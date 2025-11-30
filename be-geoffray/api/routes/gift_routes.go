@@ -58,6 +58,9 @@ func SetupGiftRoutes(router *gin.Engine, db *sql.DB) {
 		// Remove vote from a gift suggestion
 		protectedVoteRoutes.DELETE("/:id/vote", giftEventController.RemoveVote)
 
+		// Update a gift suggestion (only owner can update)
+		protectedVoteRoutes.PUT("/:id", giftEventController.UpdateGiftSuggestion)
+
 		// Delete a gift suggestion (only owner can delete)
 		protectedVoteRoutes.DELETE("/:id", giftEventController.DeleteGiftSuggestion)
 	}

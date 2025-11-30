@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   ScrollView,
@@ -19,7 +19,17 @@ import { useTheme } from '@/src/contexts/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function AddGiftSuggestionScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, edit_id, mode: editMode, name: editName, description: editDesc,
+          priceRange: editPrice, category: editCategory, url: editUrl } = useLocalSearchParams<{
+    id: string;
+    edit_id?: string;
+    mode?: string;
+    name?: string;
+    description?: string;
+    priceRange?: string;
+    category?: string;
+    url?: string;
+  }>();
   const { t } = useTranslation();
   const router = useRouter();
   const { theme } = useTheme();
@@ -28,7 +38,7 @@ export default function AddGiftSuggestionScreen() {
   const [mode, setMode] = useState<'manual' | 'ai'>('manual');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Manual mode fields  
+  // Manual mode fields
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [priceRange, setPriceRange] = useState('');
@@ -38,6 +48,19 @@ export default function AddGiftSuggestionScreen() {
 
   // AI mode field
   const [prompt, setPrompt] = useState('');
+
+  // Pre-fill form if editing
+  useEffect(() => {
+    if (edit_id && typeof edit_id === 'string') {
+      // Edit mode - pre-fill form
+      setMode((editMode as 'manual' | 'ai') || 'manual');
+      setName((editName as string) || '');
+      setDescription((editDesc as string) || '');
+      setPriceRange((editPrice as string) || '');
+      setCategory((editCategory as string) || '');
+      setUrl((editUrl as string) || '');
+    }
+  }, [edit_id, editMode, editName, editDesc, editPrice, editCategory, editUrl]);
 
   const handleSubmit = async () => {
     if (mode === 'manual') {
@@ -83,18 +106,32 @@ export default function AddGiftSuggestionScreen() {
         requestData.language = t('language');
       }
 
-      const response = await apiClient.post('/api/gift-suggestions', requestData);
-      
-      // Success! Navigate to event page gifts tab and show success message
-      router.push(`/event/${id}?tab=gifts`);
-      
-      // Show success alert after navigation (works better on web)
-      setTimeout(() => {
-        Alert.alert(
-          t('success'),
-          t('giftSuggestion.addedSuccess')
-        );
-      }, 100);
+      if (edit_id && typeof edit_id === 'string') {
+        // UPDATE existing suggestion
+        await apiClient.put(`/api/gift-suggestions/${edit_id}`, requestData);
+
+        router.push(`/event/${id}?tab=gifts`);
+        setTimeout(() => {
+          Alert.alert(
+            t('success'),
+            t('giftSuggestion.updatedSuccess')
+          );
+        }, 100);
+      } else {
+        // CREATE new suggestion
+        const response = await apiClient.post('/api/gift-suggestions', requestData);
+
+        // Success! Navigate to event page gifts tab and show success message
+        router.push(`/event/${id}?tab=gifts`);
+
+        // Show success alert after navigation (works better on web)
+        setTimeout(() => {
+          Alert.alert(
+            t('success'),
+            t('giftSuggestion.addedSuccess')
+          );
+        }, 100);
+      }
     } catch (error: any) {
       console.error('Error creating gift suggestion:', error);
       Alert.alert(
@@ -278,15 +315,17 @@ export default function AddGiftSuggestionScreen() {
           ) : (
             <>
               <Ionicons
-                name={mode === 'ai' ? 'sparkles' : 'add-circle'}
+                name={mode === 'ai' ? 'sparkles' : (edit_id ? 'save' : 'add-circle')}
                 size={24}
                 color="#FFFFFF"
                 style={styles.submitIcon}
               />
               <Text style={styles.submitButtonText}>
-                {mode === 'ai'
-                  ? t('giftSuggestion.generateSuggestion')
-                  : t('giftSuggestion.addSuggestion')}
+                {edit_id
+                  ? t('giftSuggestion.updateSuggestion')
+                  : mode === 'ai'
+                    ? t('giftSuggestion.generateSuggestion')
+                    : t('giftSuggestion.addSuggestion')}
               </Text>
             </>
           )}
@@ -295,7 +334,7 @@ export default function AddGiftSuggestionScreen() {
         {/* Cancel Button */}
         <TouchableOpacity
           style={[styles.cancelButton, { borderColor: themeColors.border }]}
-          onPress={() => router.push(`/event/${id}`)}
+          onPress={() => router.push(`/event/${id}?tab=gifts`)}
         >
           <Text style={[styles.cancelButtonText, { color: themeColors.text }]}>
             {t('common.cancel')}

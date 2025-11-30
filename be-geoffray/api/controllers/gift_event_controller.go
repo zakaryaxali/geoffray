@@ -158,18 +158,19 @@ func (gec *GiftEventController) generateGiftSuggestionsForEvent(event models.Eve
 		suggestion.ID = uuid.NewString()
 		suggestion.EventID = event.ID
 		suggestion.OwnerID = event.CreatorID // Set owner to event creator
+		suggestion.CreationMode = "ai"       // Initial event gifts are AI-generated
 
 		query := `
 			INSERT INTO gift_suggestions (
 				id, event_id, owner_id, name_en, name_fr, description_en, description_fr,
-				price_range, category, url, generated_at, created_at, updated_at
-			) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+				price_range, category, url, creation_mode, generated_at, created_at, updated_at
+			) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
 		`
 
 		_, err := gec.DB.Exec(query,
 			suggestion.ID, suggestion.EventID, suggestion.OwnerID, suggestion.NameEN, suggestion.NameFR,
 			suggestion.DescriptionEN, suggestion.DescriptionFR, suggestion.PriceRange,
-			suggestion.Category, suggestion.URL, suggestion.GeneratedAt,
+			suggestion.Category, suggestion.URL, suggestion.CreationMode, suggestion.GeneratedAt,
 			suggestion.CreatedAt, suggestion.UpdatedAt,
 		)
 
@@ -197,9 +198,9 @@ func (gec *GiftEventController) GetEventGiftSuggestions(c *gin.Context) {
 	}
 
 	query := `
-		SELECT 
+		SELECT
 			gs.id, gs.event_id, gs.owner_id, gs.name_en, gs.name_fr, gs.description_en, gs.description_fr,
-			gs.price_range, gs.category, gs.url, gs.generated_at, gs.created_at, gs.updated_at,
+			gs.price_range, gs.category, gs.url, gs.creation_mode, gs.generated_at, gs.created_at, gs.updated_at,
 			COALESCE(upvotes.count, 0) as upvote_count,
 			COALESCE(downvotes.count, 0) as downvote_count,
 			user_vote.vote_type as user_vote
@@ -216,7 +217,7 @@ func (gec *GiftEventController) GetEventGiftSuggestions(c *gin.Context) {
 			WHERE vote_type = 'downvote'
 			GROUP BY suggestion_id
 		) downvotes ON gs.id = downvotes.suggestion_id
-		LEFT JOIN gift_suggestion_votes user_vote ON gs.id = user_vote.suggestion_id 
+		LEFT JOIN gift_suggestion_votes user_vote ON gs.id = user_vote.suggestion_id
 			AND user_vote.user_id = $2
 		WHERE gs.event_id = $1
 		ORDER BY (COALESCE(upvotes.count, 0) - COALESCE(downvotes.count, 0)) DESC, gs.created_at DESC
@@ -239,7 +240,7 @@ func (gec *GiftEventController) GetEventGiftSuggestions(c *gin.Context) {
 		err := rows.Scan(
 			&suggestion.ID, &suggestion.EventID, &suggestion.OwnerID, &suggestion.NameEN, &suggestion.NameFR,
 			&suggestion.DescriptionEN, &suggestion.DescriptionFR, &suggestion.PriceRange,
-			&suggestion.Category, &url, &suggestion.GeneratedAt,
+			&suggestion.Category, &url, &suggestion.CreationMode, &suggestion.GeneratedAt,
 			&suggestion.CreatedAt, &suggestion.UpdatedAt,
 			&suggestion.UpvoteCount, &suggestion.DownvoteCount, &userVote,
 		)
@@ -626,19 +627,22 @@ func (gec *GiftEventController) CreateGiftSuggestion(c *gin.Context) {
 		suggestion.UpdatedAt = time.Now()
 	}
 
+	// Set creation_mode field
+	suggestion.CreationMode = req.Mode
+
 	// Insert suggestion into database
 	insertQuery := `
 		INSERT INTO gift_suggestions (
 			id, event_id, owner_id, name_en, name_fr, description_en, description_fr,
-			price_range, category, url, generated_at, created_at, updated_at
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+			price_range, category, url, creation_mode, generated_at, created_at, updated_at
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
 	`
 
 	_, err = gec.DB.Exec(insertQuery,
 		suggestion.ID, suggestion.EventID, suggestion.OwnerID,
 		suggestion.NameEN, suggestion.NameFR,
 		suggestion.DescriptionEN, suggestion.DescriptionFR,
-		suggestion.PriceRange, suggestion.Category, suggestion.URL,
+		suggestion.PriceRange, suggestion.Category, suggestion.URL, suggestion.CreationMode,
 		suggestion.GeneratedAt, suggestion.CreatedAt, suggestion.UpdatedAt,
 	)
 
@@ -653,6 +657,187 @@ func (gec *GiftEventController) CreateGiftSuggestion(c *gin.Context) {
 	suggestion.DownvoteCount = 0
 
 	c.JSON(http.StatusCreated, suggestion)
+}
+
+// UpdateGiftSuggestion updates an existing gift suggestion if the user is the owner
+func (gec *GiftEventController) UpdateGiftSuggestion(c *gin.Context) {
+	suggestionID := c.Param("id")
+	if suggestionID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Suggestion ID is required"})
+		return
+	}
+
+	// Get user ID from context
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	userIDStr := userID.(string)
+
+	var req struct {
+		NameEN        string `json:"name_en"`
+		NameFR        string `json:"name_fr"`
+		DescriptionEN string `json:"description_en"`
+		DescriptionFR string `json:"description_fr"`
+		PriceRange    string `json:"price_range"`
+		Category      string `json:"category"`
+		URL           string `json:"url"`
+		CreationMode  string `json:"creation_mode"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body: " + err.Error()})
+		return
+	}
+
+	// Validate required fields
+	if req.NameEN == "" && req.NameFR == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Name is required in at least one language"})
+		return
+	}
+	if req.PriceRange == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Price range is required"})
+		return
+	}
+
+	// Validate creation_mode if provided
+	if req.CreationMode != "" && req.CreationMode != "manual" && req.CreationMode != "ai" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid creation_mode. Must be 'manual' or 'ai'"})
+		return
+	}
+
+	// Check if the suggestion exists and if the user is the owner
+	var ownerID string
+	checkQuery := `SELECT owner_id FROM gift_suggestions WHERE id = $1`
+	err := gec.DB.QueryRow(checkQuery, suggestionID).Scan(&ownerID)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Gift suggestion not found"})
+			return
+		}
+		fmt.Printf("Error checking gift suggestion ownership: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to verify ownership"})
+		return
+	}
+
+	// Verify user is the owner
+	if ownerID != userIDStr {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Only the suggestion owner can update this suggestion"})
+		return
+	}
+
+	// Validate and sanitize URL if provided
+	if req.URL != "" {
+		req.URL = gec.URLValidator.SanitizeURL(req.URL)
+		isValid, err := gec.URLValidator.ValidateURL(req.URL)
+		if !isValid {
+			errMsg := "Invalid URL"
+			if err != nil {
+				errMsg = fmt.Sprintf("Invalid URL: %s", err.Error())
+			}
+			c.JSON(http.StatusBadRequest, gin.H{"error": errMsg})
+			return
+		}
+	}
+
+	// If only one language provided, copy to the other
+	nameEN := req.NameEN
+	nameFR := req.NameFR
+	descEN := req.DescriptionEN
+	descFR := req.DescriptionFR
+
+	if nameEN == "" {
+		nameEN = nameFR
+	}
+	if nameFR == "" {
+		nameFR = nameEN
+	}
+	if descEN == "" {
+		descEN = descFR
+	}
+	if descFR == "" {
+		descFR = descEN
+	}
+
+	// Build update query - only include creation_mode if provided
+	var updateQuery string
+	var args []interface{}
+
+	if req.CreationMode != "" {
+		updateQuery = `
+			UPDATE gift_suggestions
+			SET name_en = $1, name_fr = $2, description_en = $3, description_fr = $4,
+				price_range = $5, category = $6, url = $7, creation_mode = $8, updated_at = $9
+			WHERE id = $10
+		`
+		args = []interface{}{
+			nameEN, nameFR, descEN, descFR,
+			req.PriceRange, req.Category, req.URL, req.CreationMode, time.Now(), suggestionID,
+		}
+	} else {
+		updateQuery = `
+			UPDATE gift_suggestions
+			SET name_en = $1, name_fr = $2, description_en = $3, description_fr = $4,
+				price_range = $5, category = $6, url = $7, updated_at = $8
+			WHERE id = $9
+		`
+		args = []interface{}{
+			nameEN, nameFR, descEN, descFR,
+			req.PriceRange, req.Category, req.URL, time.Now(), suggestionID,
+		}
+	}
+
+	result, err := gec.DB.Exec(updateQuery, args...)
+	if err != nil {
+		fmt.Printf("Error updating gift suggestion: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update suggestion"})
+		return
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Gift suggestion not found"})
+		return
+	}
+
+	// Fetch and return the updated suggestion
+	var suggestion models.GiftSuggestion
+	fetchQuery := `
+		SELECT id, event_id, owner_id, name_en, name_fr, description_en, description_fr,
+			   price_range, category, url, creation_mode, generated_at, created_at, updated_at
+		FROM gift_suggestions
+		WHERE id = $1
+	`
+	err = gec.DB.QueryRow(fetchQuery, suggestionID).Scan(
+		&suggestion.ID, &suggestion.EventID, &suggestion.OwnerID,
+		&suggestion.NameEN, &suggestion.NameFR, &suggestion.DescriptionEN, &suggestion.DescriptionFR,
+		&suggestion.PriceRange, &suggestion.Category, &suggestion.URL, &suggestion.CreationMode,
+		&suggestion.GeneratedAt, &suggestion.CreatedAt, &suggestion.UpdatedAt,
+	)
+
+	if err != nil {
+		fmt.Printf("Error fetching updated suggestion: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Suggestion updated but failed to fetch"})
+		return
+	}
+
+	// Get vote counts
+	var upvotes, downvotes int
+	voteQuery := `
+		SELECT
+			COUNT(*) FILTER (WHERE vote_type = 'upvote') as upvotes,
+			COUNT(*) FILTER (WHERE vote_type = 'downvote') as downvotes
+		FROM gift_suggestion_votes
+		WHERE suggestion_id = $1
+	`
+	gec.DB.QueryRow(voteQuery, suggestionID).Scan(&upvotes, &downvotes)
+	suggestion.UpvoteCount = upvotes
+	suggestion.DownvoteCount = downvotes
+
+	c.JSON(http.StatusOK, suggestion)
 }
 
 // DeleteGiftSuggestion deletes a gift suggestion if the user is the owner

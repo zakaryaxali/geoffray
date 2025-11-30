@@ -21,6 +21,7 @@ interface GiftSuggestion {
   price_range: string;
   category: string;
   url?: string;
+  creation_mode: string;
   generated_at: string;
   created_at: string;
   updated_at: string;
@@ -242,6 +243,26 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
     }
   };
 
+  // Handle modifying a suggestion
+  const handleModifySuggestion = (suggestion: GiftSuggestion) => {
+    // Determine current language values for pre-filling
+    const currentName = isEnglish ? suggestion.name_en : suggestion.name_fr;
+    const currentDesc = isEnglish ? suggestion.description_en : suggestion.description_fr;
+
+    router.push({
+      pathname: `/event/${eventId}/add-suggestion`,
+      params: {
+        edit_id: suggestion.id,
+        mode: suggestion.creation_mode || 'manual',
+        name: currentName,
+        description: currentDesc,
+        priceRange: suggestion.price_range,
+        category: suggestion.category,
+        url: suggestion.url || '',
+      }
+    });
+  };
+
   useEffect(() => {
     if (eventId) {
       fetchGiftSuggestions();
@@ -368,26 +389,42 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
               }}>
                 {isEnglish ? suggestion.name_en : suggestion.name_fr}
               </ThemedText>
-              
-              {/* Delete Button - only show if user is the owner */}
+
+              {/* Modify and Delete Buttons - only show if user is the owner */}
               {user && user.id === suggestion.owner_id && (
-                <TouchableOpacity
-                  onPress={() => handleDeleteSuggestion(suggestion.id)}
-                  disabled={deletingStates[suggestion.id]}
-                  style={{
-                    backgroundColor: '#ff6b6b',
-                    paddingVertical: 6,
-                    paddingHorizontal: 8,
-                    borderRadius: 6,
-                    opacity: deletingStates[suggestion.id] ? 0.7 : 1,
-                  }}
-                >
-                  {deletingStates[suggestion.id] ? (
-                    <ActivityIndicator size="small" color="#FFFFFF" />
-                  ) : (
-                    <Ionicons name="trash-outline" size={16} color="#FFFFFF" />
-                  )}
-                </TouchableOpacity>
+                <View style={{ flexDirection: 'row', gap: 8 }}>
+                  {/* Modify Button */}
+                  <TouchableOpacity
+                    onPress={() => handleModifySuggestion(suggestion)}
+                    style={{
+                      backgroundColor: BrandColors.peach,
+                      paddingVertical: 6,
+                      paddingHorizontal: 8,
+                      borderRadius: 6,
+                    }}
+                  >
+                    <Ionicons name="pencil-outline" size={16} color="#FFFFFF" />
+                  </TouchableOpacity>
+
+                  {/* Delete Button */}
+                  <TouchableOpacity
+                    onPress={() => handleDeleteSuggestion(suggestion.id)}
+                    disabled={deletingStates[suggestion.id]}
+                    style={{
+                      backgroundColor: '#ff6b6b',
+                      paddingVertical: 6,
+                      paddingHorizontal: 8,
+                      borderRadius: 6,
+                      opacity: deletingStates[suggestion.id] ? 0.7 : 1,
+                    }}
+                  >
+                    {deletingStates[suggestion.id] ? (
+                      <ActivityIndicator size="small" color="#FFFFFF" />
+                    ) : (
+                      <Ionicons name="trash-outline" size={16} color="#FFFFFF" />
+                    )}
+                  </TouchableOpacity>
+                </View>
               )}
             </View>
 

@@ -300,9 +300,12 @@
   "giftSuggestion.promptPlaceholder": "ex: Un gadget technologique de moins de 100€ utile pour le télétravail",
   "giftSuggestion.generateSuggestion": "Générer la suggestion",
   "giftSuggestion.addSuggestion": "Ajouter la suggestion",
+  "giftSuggestion.updateSuggestion": "Mettre à jour la suggestion",
   "giftSuggestion.nameRequired": "Veuillez entrer un nom de cadeau",
   "giftSuggestion.priceRequired": "Veuillez entrer une gamme de prix",
   "giftSuggestion.promptRequired": "Veuillez décrire le type de cadeau que vous souhaitez générer",
   "giftSuggestion.addedSuccess": "Suggestion de cadeau ajoutée avec succès !",
-  "giftSuggestion.addError": "Échec de l'ajout de la suggestion de cadeau"
+  "giftSuggestion.updatedSuccess": "Suggestion de cadeau mise à jour avec succès !",
+  "giftSuggestion.addError": "Échec de l'ajout de la suggestion de cadeau",
+  "giftSuggestion.updateError": "Échec de la mise à jour de la suggestion de cadeau"
 }

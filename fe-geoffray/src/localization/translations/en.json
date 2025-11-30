@@ -301,9 +301,12 @@
   "giftSuggestion.promptPlaceholder": "e.g., A tech gadget under €100 that would be useful for remote work",
   "giftSuggestion.generateSuggestion": "Generate Suggestion",
   "giftSuggestion.addSuggestion": "Add Suggestion",
+  "giftSuggestion.updateSuggestion": "Update Suggestion",
   "giftSuggestion.nameRequired": "Please enter a gift name",
   "giftSuggestion.priceRequired": "Please enter a price range",
   "giftSuggestion.promptRequired": "Please describe what kind of gift you want to generate",
   "giftSuggestion.addedSuccess": "Gift suggestion added successfully!",
-  "giftSuggestion.addError": "Failed to add gift suggestion"
+  "giftSuggestion.updatedSuccess": "Gift suggestion updated successfully!",
+  "giftSuggestion.addError": "Failed to add gift suggestion",
+  "giftSuggestion.updateError": "Failed to update gift suggestion"
 }
