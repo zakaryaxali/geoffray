@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, View, Alert, Platform } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +18,7 @@ import { EventGifts } from '@/src/components/event/EventGifts';
 import { InviteParticipantModal } from '@/src/components/event/InviteParticipantModal';
 import { useEventData } from '@/src/components/event/useEventData';
 import { eventStyles } from '@/src/components/event/EventStyles';
-import { ParticipantInviteRequest } from '@/src/api/eventApi';
+import { ParticipantInviteRequest, eventApi } from '@/src/api/eventApi';
 
 
 export default function EventScreen() {
@@ -59,6 +59,30 @@ export default function EventScreen() {
     return await inviteParticipant(request);
   };
 
+  // Handle event deletion
+  const handleDelete = async () => {
+    try {
+      const eventId = typeof id === 'string' ? id : String(id);
+      await eventApi.deleteEvent(eventId);
+
+      // Navigate back to home immediately after successful deletion
+      router.replace('/home');
+    } catch (error) {
+      console.error('Error deleting event:', error);
+
+      // Show error message - use window.alert on web, Alert.alert on native
+      if (Platform.OS === 'web') {
+        window.alert(t('common.error'));
+      } else {
+        Alert.alert(
+          t('common.error'),
+          t('common.error'),
+          [{ text: t('common.ok') }]
+        );
+      }
+    }
+  };
+
   // Loading state
   if (loading) {
     return (
@@ -95,8 +119,8 @@ export default function EventScreen() {
       
       {/* Banner with event image - hidden when scrolling in discussion */}
       {(activeTab === 'details' || showBanner) && (
-        <EventBanner 
-          title={event!.title} 
+        <EventBanner
+          title={event!.title}
           bannerUrl={event!.banner}
           persona={event!.giftee_persona}
           occasion={event!.event_occasion}
@@ -105,6 +129,7 @@ export default function EventScreen() {
             setActiveTab('details'); // Switch to details tab if not already there
             setIsEditing(true); // Set editing mode to true
           }}
+          onDeletePress={handleDelete}
         />
       )}
       

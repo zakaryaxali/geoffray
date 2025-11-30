@@ -273,11 +273,27 @@ export const eventApi = {
         updateData,
         true
       );
-      
+
       console.log('updateEvent API response:', JSON.stringify(response));
       return response.event;
     } catch (error) {
       console.error('Error updating event:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Delete an event (only available to the event creator)
+   */
+  deleteEvent: async (eventId: string): Promise<{ success: boolean; message: string }> => {
+    try {
+      const response = await apiClient.delete<{ success: boolean; message: string }>(
+        `/events/${eventId}`,
+        true
+      );
+      return response;
+    } catch (error) {
+      console.error('Error deleting event:', error);
       throw error;
     }
   },

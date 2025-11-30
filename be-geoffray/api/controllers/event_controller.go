@@ -430,3 +430,56 @@ func GetUserEvents(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"events": events})
 }
+
+// DeleteEvent handles the deletion of an event
+// Only the event creator can delete the event
+func DeleteEvent(c *gin.Context) {
+	// Get the user ID from the authenticated context
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	// Get the event ID from the URL parameter
+	eventID := c.Param("id")
+	if eventID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Event ID is required"})
+		return
+	}
+
+	// Verify that the event exists and the user is the creator
+	var creatorID string
+	eventQuery := `SELECT creator_id FROM events WHERE id = $1`
+	err := db.DB.QueryRow(eventQuery, eventID).Scan(&creatorID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to verify event"})
+		}
+		return
+	}
+
+	// Only the creator can delete the event
+	if creatorID != userID.(string) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Only the event creator can delete this event"})
+		return
+	}
+
+	// Initialize the event service
+	eventService := services.NewEventService()
+
+	// Delete the event using the service
+	err = eventService.DeleteEvent(eventID)
+	if err != nil {
+		log.Printf("Error deleting event %s: %v", eventID, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete event"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Event deleted successfully",
+	})
+}

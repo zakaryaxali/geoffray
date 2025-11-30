@@ -24,6 +24,7 @@ const MAPPING = {
   'pencil': 'edit',
   'square.and.arrow.up': 'share',
   'person.badge.plus': 'person-add',
+  'trash.fill': 'delete',
 } as Partial<
   Record<
     import('expo-symbols').SymbolViewProps['name'],

@@ -520,3 +520,67 @@ func (s *EventService) SyncParticipantCounts() error {
 	log.Println("Successfully synced participant counts for all events")
 	return nil
 }
+
+// DeleteEvent deletes an event and all its associated data
+func (s *EventService) DeleteEvent(eventID string) error {
+	// Start a transaction to ensure all deletes succeed or none do
+	tx, err := db.DB.Begin()
+	if err != nil {
+		log.Printf("Error starting transaction for event deletion: %v", err)
+		return errors.New("failed to start transaction")
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// Delete event_messages
+	_, err = tx.Exec(`DELETE FROM event_messages WHERE event_id = $1`, eventID)
+	if err != nil {
+		log.Printf("Error deleting event_messages for event %s: %v", eventID, err)
+		return errors.New("failed to delete event messages")
+	}
+
+	// Delete event invitations
+	_, err = tx.Exec(`DELETE FROM event_invitations WHERE event_id = $1`, eventID)
+	if err != nil {
+		log.Printf("Error deleting event_invitations for event %s: %v", eventID, err)
+		return errors.New("failed to delete event invitations")
+	}
+
+	// Delete event participants
+	_, err = tx.Exec(`DELETE FROM event_participants WHERE event_id = $1`, eventID)
+	if err != nil {
+		log.Printf("Error deleting event_participants for event %s: %v", eventID, err)
+		return errors.New("failed to delete event participants")
+	}
+
+	// Finally, delete the event itself
+	result, err := tx.Exec(`DELETE FROM events WHERE id = $1`, eventID)
+	if err != nil {
+		log.Printf("Error deleting event %s: %v", eventID, err)
+		return errors.New("failed to delete event")
+	}
+
+	// Check if the event was actually deleted
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Printf("Error checking rows affected: %v", err)
+		return errors.New("failed to verify deletion")
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("event not found")
+	}
+
+	// Commit the transaction
+	err = tx.Commit()
+	if err != nil {
+		log.Printf("Error committing transaction for event deletion: %v", err)
+		return errors.New("failed to commit transaction")
+	}
+
+	log.Printf("Successfully deleted event %s and all associated data", eventID)
+	return nil
+}
