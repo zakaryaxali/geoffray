@@ -22,11 +22,11 @@ import { ParticipantInviteRequest, eventApi } from '@/src/api/eventApi';
 
 
 export default function EventScreen() {
-  const { id } = useLocalSearchParams();
+  const { id, tab } = useLocalSearchParams<{ id: string; tab?: string }>();
   const router = useRouter();
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<TabType>('details');
+  const [activeTab, setActiveTab] = useState<TabType>((tab as TabType) || 'details');
   const [modalVisible, setModalVisible] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
   const [isEditing, setIsEditing] = useState(false);

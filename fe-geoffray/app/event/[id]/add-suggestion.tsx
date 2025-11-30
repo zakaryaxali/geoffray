@@ -85,8 +85,8 @@ export default function AddGiftSuggestionScreen() {
 
       const response = await apiClient.post('/api/gift-suggestions', requestData);
       
-      // Success! Navigate to event page and show success message
-      router.push(`/event/${id}`);
+      // Success! Navigate to event page gifts tab and show success message
+      router.push(`/event/${id}?tab=gifts`);
       
       // Show success alert after navigation (works better on web)
       setTimeout(() => {
