@@ -246,12 +246,29 @@ export const eventStyles = StyleSheet.create({
   messageItem: {
     marginBottom: 16,
     padding: 12,
-    borderRadius: 8,
+    borderRadius: 16,
+    maxWidth: '80%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  messageItemOwn: {
+    alignSelf: 'flex-end',
+    borderBottomRightRadius: 4,
+  },
+  messageItemOther: {
+    alignSelf: 'flex-start',
+    borderBottomLeftRadius: 4,
   },
   messageHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8,
+  },
+  messageHeaderOwn: {
+    flexDirection: 'row-reverse',
   },
   messageAvatar: {
     width: 32,
@@ -260,6 +277,10 @@ export const eventStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,
+  },
+  messageAvatarOwn: {
+    marginRight: 0,
+    marginLeft: 8,
   },
   messageSender: {
     fontWeight: 'bold',

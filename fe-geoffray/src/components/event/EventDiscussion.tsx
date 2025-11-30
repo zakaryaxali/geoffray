@@ -157,34 +157,60 @@ export const EventDiscussion: React.FC<EventDiscussionProps> = ({ eventId, onScr
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[themeColors.primary]} />
         }
-        renderItem={({ item }) => (
-          <View style={[eventStyles.messageItem, { backgroundColor: themeColors.surface }]}>
-            <View style={eventStyles.messageHeader}>
-              <View 
+        renderItem={({ item }) => {
+          const isOwnMessage = user && user.id === item.user.id;
+          return (
+            <View
+              style={[
+                eventStyles.messageItem,
+                isOwnMessage ? eventStyles.messageItemOwn : eventStyles.messageItemOther,
+                { backgroundColor: isOwnMessage ? themeColors.primary : themeColors.surfaceVariant }
+              ]}
+            >
+              {!isOwnMessage && (
+                <View style={eventStyles.messageHeader}>
+                  <View
+                    style={[
+                      eventStyles.messageAvatar,
+                      { backgroundColor: getAvatarColor(item.user.id) }
+                    ]}
+                  >
+                    <ThemedText style={eventStyles.participantInitials}>
+                      {getInitials(getUserFullName(item.user))}
+                    </ThemedText>
+                  </View>
+                  <ThemedText
+                    style={[
+                      eventStyles.messageSender,
+                      { color: themeColors.text }
+                    ]}
+                  >
+                    {getUserFullName(item.user)}
+                  </ThemedText>
+                  <ThemedText
+                    style={[
+                      eventStyles.messageTime,
+                      { color: themeColors.textSecondary }
+                    ]}
+                  >
+                    {formatTimestamp(item.created_at)}
+                  </ThemedText>
+                </View>
+              )}
+              <ThemedText
                 style={[
-                  eventStyles.messageAvatar, 
-                  { backgroundColor: getAvatarColor(item.user.id) }
+                  eventStyles.messageContent,
+                  {
+                    color: isOwnMessage ? '#FFFFFF' : themeColors.text,
+                    textAlign: isOwnMessage ? 'right' : 'left'
+                  }
                 ]}
               >
-                <ThemedText style={eventStyles.participantInitials}>
-                  {getInitials(getUserFullName(item.user))}
-                </ThemedText>
-              </View>
-              <ThemedText style={[eventStyles.messageSender, { color: themeColors.text }]}>
-                {getUserFullName(item.user)}
-                {user && user.id === item.user.id && (
-                  <ThemedText style={[{ color: themeColors.primary, fontStyle: 'italic' }]}> ({t('common.you')})</ThemedText>
-                )}
-              </ThemedText>
-              <ThemedText style={[eventStyles.messageTime, { color: themeColors.textSecondary }]}>
-                {formatTimestamp(item.created_at)}
+                {item.content}
               </ThemedText>
             </View>
-            <ThemedText style={[eventStyles.messageContent, { color: themeColors.text }]}>
-              {item.content}
-            </ThemedText>
-          </View>
-        )}
+          );
+        }}
         ListEmptyComponent={
           <View style={eventStyles.emptyMessagesContainer}>
             <ThemedText style={{ color: themeColors.textSecondary, textAlign: 'center' }}>
