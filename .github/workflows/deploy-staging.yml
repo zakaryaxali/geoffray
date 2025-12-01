@@ -1,0 +1,69 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Staging Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      - name: Deploy to server
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          # SSH with password and execute deployment commands
+          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_HOST" << 'ENDSSH'
+            set -e
+
+            echo "🚀 Starting deployment to staging..."
+
+            # Navigate to project directory
+            cd /opt/geoffray
+
+            # Pull latest changes
+            echo "📥 Pulling latest code from main..."
+            git pull origin main
+
+            # Stop services gracefully
+            echo "🛑 Stopping services..."
+            docker compose -f docker-compose.staging.yml down
+
+            # Build and start services
+            echo "🔨 Building and starting services..."
+            docker compose -f docker-compose.staging.yml up -d --build
+
+            # Wait for services to be healthy
+            echo "⏳ Waiting for services to become healthy..."
+            sleep 10
+
+            # Check service status
+            docker compose -f docker-compose.staging.yml ps
+
+            echo "✅ Deployment completed!"
+          ENDSSH
+
+      - name: Health check
+        run: |
+          echo "🏥 Running health check..."
+
+          # Wait up to 60 seconds for health endpoint
+          for i in {1..12}; do
+            if curl -f -s http://${{ secrets.SERVER_HOST }}/health > /dev/null 2>&1; then
+              echo "✅ Health check passed!"
+              exit 0
+            fi
+            echo "Attempt $i/12: Waiting for service to be ready..."
+            sleep 5
+          done
+
+          echo "❌ Health check failed after 60 seconds"
+          exit 1
