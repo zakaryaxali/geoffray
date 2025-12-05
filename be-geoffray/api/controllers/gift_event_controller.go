@@ -135,6 +135,14 @@ func (gec *GiftEventController) CreateEventWithGifts(c *gin.Context) {
 
 // generateGiftSuggestionsForEvent generates and stores gift suggestions for an event
 func (gec *GiftEventController) generateGiftSuggestionsForEvent(event models.Event) {
+	// Fetch existing suggestions for this event to avoid duplicates
+	existingSuggestions, err := gec.fetchExistingSuggestions(event.ID)
+	if err != nil {
+		fmt.Printf("Error fetching existing suggestions for event %s: %v\n", event.ID, err)
+		// Continue with empty list if fetch fails
+		existingSuggestions = []models.GiftSuggestion{}
+	}
+
 	// Prepare request for gift suggestion service
 	request := services.GiftSuggestionRequest{
 		GifteePersona: event.GifteePersona,
@@ -146,8 +154,8 @@ func (gec *GiftEventController) generateGiftSuggestionsForEvent(event models.Eve
 		Language:      "fr", // Default to French, could be made dynamic
 	}
 
-	// Generate suggestions using Mistral
-	suggestions, err := gec.GiftSuggestionService.GenerateGiftSuggestions(request)
+	// Generate suggestions using Mistral with similarity checking
+	suggestions, err := gec.GiftSuggestionService.GenerateGiftSuggestions(request, existingSuggestions)
 	if err != nil {
 		fmt.Printf("Error generating gift suggestions for event %s: %v\n", event.ID, err)
 		return
@@ -180,6 +188,94 @@ func (gec *GiftEventController) generateGiftSuggestionsForEvent(event models.Eve
 	}
 
 	fmt.Printf("Generated and stored %d gift suggestions for event %s\n", len(suggestions), event.ID)
+}
+
+// fetchExistingSuggestions retrieves existing gift suggestions for an event (without vote data)
+func (gec *GiftEventController) fetchExistingSuggestions(eventID string) ([]models.GiftSuggestion, error) {
+	query := `
+		SELECT id, event_id, owner_id, name_en, name_fr, description_en, description_fr,
+			price_range, category, url, prompt, creation_mode, generated_at, created_at, updated_at
+		FROM gift_suggestions
+		WHERE event_id = $1
+		ORDER BY created_at DESC
+	`
+
+	rows, err := gec.DB.Query(query, eventID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var suggestions []models.GiftSuggestion
+	for rows.Next() {
+		var suggestion models.GiftSuggestion
+		var prompt sql.NullString
+
+		err := rows.Scan(
+			&suggestion.ID, &suggestion.EventID, &suggestion.OwnerID,
+			&suggestion.NameEN, &suggestion.NameFR,
+			&suggestion.DescriptionEN, &suggestion.DescriptionFR,
+			&suggestion.PriceRange, &suggestion.Category, &suggestion.URL,
+			&prompt, &suggestion.CreationMode,
+			&suggestion.GeneratedAt, &suggestion.CreatedAt, &suggestion.UpdatedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if prompt.Valid {
+			suggestion.Prompt = &prompt.String
+		}
+
+		suggestions = append(suggestions, suggestion)
+	}
+
+	return suggestions, nil
+}
+
+// fetchExistingSuggestionsExcluding retrieves existing gift suggestions for an event, excluding a specific suggestion
+func (gec *GiftEventController) fetchExistingSuggestionsExcluding(eventID, excludeSuggestionID string) ([]models.GiftSuggestion, error) {
+	query := `
+		SELECT id, event_id, owner_id, name_en, name_fr, description_en, description_fr,
+			price_range, category, url, prompt, creation_mode, generated_at, created_at, updated_at
+		FROM gift_suggestions
+		WHERE event_id = $1 AND id != $2
+		ORDER BY created_at DESC
+	`
+
+	rows, err := gec.DB.Query(query, eventID, excludeSuggestionID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var suggestions []models.GiftSuggestion
+	for rows.Next() {
+		var suggestion models.GiftSuggestion
+		var prompt sql.NullString
+
+		err := rows.Scan(
+			&suggestion.ID, &suggestion.EventID, &suggestion.OwnerID,
+			&suggestion.NameEN, &suggestion.NameFR,
+			&suggestion.DescriptionEN, &suggestion.DescriptionFR,
+			&suggestion.PriceRange, &suggestion.Category, &suggestion.URL,
+			&prompt, &suggestion.CreationMode,
+			&suggestion.GeneratedAt, &suggestion.CreatedAt, &suggestion.UpdatedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if prompt.Valid {
+			suggestion.Prompt = &prompt.String
+		}
+
+		suggestions = append(suggestions, suggestion)
+	}
+
+	return suggestions, nil
 }
 
 // GetEventGiftSuggestions retrieves gift suggestions for a specific event with vote data
@@ -593,6 +689,14 @@ func (gec *GiftEventController) CreateGiftSuggestion(c *gin.Context) {
 			return
 		}
 
+		// Fetch existing suggestions to avoid duplicates
+		existingSuggestions, err := gec.fetchExistingSuggestions(req.EventID)
+		if err != nil {
+			fmt.Printf("Error fetching existing suggestions: %v\n", err)
+			// Continue with empty list if fetch fails
+			existingSuggestions = []models.GiftSuggestion{}
+		}
+
 		// Prepare request for AI service with user prompt
 		aiRequest := services.GiftSuggestionRequest{
 			GifteePersona:    event.GifteePersona,
@@ -610,8 +714,8 @@ func (gec *GiftEventController) CreateGiftSuggestion(c *gin.Context) {
 			aiRequest.Language = "en"
 		}
 
-		// Generate single suggestion using Mistral
-		suggestions, err := gec.GiftSuggestionService.GenerateGiftSuggestions(aiRequest)
+		// Generate single suggestion using Mistral with similarity checking
+		suggestions, err := gec.GiftSuggestionService.GenerateGiftSuggestions(aiRequest, existingSuggestions)
 		if err != nil {
 			fmt.Printf("Error generating gift suggestion: %v\n", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate gift suggestion"})
@@ -688,15 +792,17 @@ func (gec *GiftEventController) UpdateGiftSuggestion(c *gin.Context) {
 	userIDStr := userID.(string)
 
 	var req struct {
-		NameEN        string  `json:"name_en"`
-		NameFR        string  `json:"name_fr"`
-		DescriptionEN string  `json:"description_en"`
-		DescriptionFR string  `json:"description_fr"`
-		PriceRange    string  `json:"price_range"`
-		Category      string  `json:"category"`
-		URL           string  `json:"url"`
-		Prompt        *string `json:"prompt"`
-		CreationMode  string  `json:"creation_mode"`
+		NameEN           string  `json:"name_en"`
+		NameFR           string  `json:"name_fr"`
+		DescriptionEN    string  `json:"description_en"`
+		DescriptionFR    string  `json:"description_fr"`
+		PriceRange       string  `json:"price_range"`
+		Category         string  `json:"category"`
+		URL              string  `json:"url"`
+		Prompt           *string `json:"prompt"`
+		CreationMode     string  `json:"creation_mode"`
+		RegenerateWithAI bool    `json:"regenerate_with_ai"` // If true, regenerate with AI using new prompt
+		Language         string  `json:"language"`           // Language for AI regeneration
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -755,11 +861,97 @@ func (gec *GiftEventController) UpdateGiftSuggestion(c *gin.Context) {
 		}
 	}
 
-	// If only one language provided, copy to the other
+	// Smart detection: If prompt changed, regenerate with AI
 	nameEN := req.NameEN
 	nameFR := req.NameFR
 	descEN := req.DescriptionEN
 	descFR := req.DescriptionFR
+
+	if req.RegenerateWithAI && req.Prompt != nil && *req.Prompt != "" {
+		fmt.Printf("Regenerating gift suggestion with new prompt for suggestion %s\n", suggestionID)
+
+		// Get the suggestion to find the event ID
+		var eventID string
+		eventQuery := `SELECT event_id FROM gift_suggestions WHERE id = $1`
+		err := gec.DB.QueryRow(eventQuery, suggestionID).Scan(&eventID)
+		if err != nil {
+			fmt.Printf("Error fetching event ID: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch event information"})
+			return
+		}
+
+		// Fetch the event details for context
+		var event models.Event
+		eventDetailsQuery := `
+			SELECT id, title, description, location, start_date, giftee_persona, event_occasion
+			FROM events
+			WHERE id = $1
+		`
+		err = gec.DB.QueryRow(eventDetailsQuery, eventID).Scan(
+			&event.ID, &event.Title, &event.Description, &event.Location,
+			&event.StartDate, &event.GifteePersona, &event.EventOccasion,
+		)
+		if err != nil {
+			fmt.Printf("Error fetching event details: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch event details"})
+			return
+		}
+
+		// Fetch OTHER existing suggestions (excluding this one) to avoid duplicates
+		existingSuggestions, err := gec.fetchExistingSuggestionsExcluding(eventID, suggestionID)
+		if err != nil {
+			fmt.Printf("Error fetching existing suggestions: %v\n", err)
+			// Continue with empty list if fetch fails
+			existingSuggestions = []models.GiftSuggestion{}
+		}
+
+		// Prepare request for AI service with user prompt
+		aiRequest := services.GiftSuggestionRequest{
+			GifteePersona:    event.GifteePersona,
+			EventOccasion:    event.EventOccasion,
+			EventTitle:       event.Title,
+			EventDate:        event.StartDate.Format("2006-01-02"),
+			Location:         event.Location,
+			Description:      event.Description,
+			UserPrompt:       *req.Prompt, // Dereference pointer
+			Language:         req.Language,
+			SingleSuggestion: true,
+		}
+
+		if aiRequest.Language == "" {
+			aiRequest.Language = "en"
+		}
+
+		// Generate new suggestion using Mistral with similarity checking
+		suggestions, err := gec.GiftSuggestionService.GenerateGiftSuggestions(aiRequest, existingSuggestions)
+		if err != nil {
+			fmt.Printf("Error regenerating gift suggestion: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to regenerate gift suggestion with AI"})
+			return
+		}
+
+		if len(suggestions) == 0 {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "AI did not generate any suggestions"})
+			return
+		}
+
+		// Use the first generated suggestion to update the fields
+		generated := suggestions[0]
+		nameEN = generated.NameEN
+		nameFR = generated.NameFR
+		descEN = generated.DescriptionEN
+		descFR = generated.DescriptionFR
+		req.PriceRange = generated.PriceRange
+		req.Category = generated.Category
+		// Keep the user-provided URL if any, otherwise use generated URL
+		if req.URL == "" {
+			req.URL = generated.URL
+		}
+
+		fmt.Printf("Successfully regenerated suggestion: %s\n", nameEN)
+	}
+
+	// If only one language provided, copy to the other
 
 	if nameEN == "" {
 		nameEN = nameFR

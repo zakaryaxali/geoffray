@@ -49,6 +49,7 @@ export default function AddGiftSuggestionScreen() {
 
   // AI mode field
   const [prompt, setPrompt] = useState('');
+  const [originalPrompt, setOriginalPrompt] = useState(''); // Track original prompt to detect changes
 
   // Pre-fill form if editing
   useEffect(() => {
@@ -61,6 +62,7 @@ export default function AddGiftSuggestionScreen() {
       setCategory((editCategory as string) || '');
       setUrl((editUrl as string) || '');
       setPrompt((editPrompt as string) || '');
+      setOriginalPrompt((editPrompt as string) || ''); // Store original for comparison
     }
   }, [edit_id, editMode, editName, editDesc, editPrice, editCategory, editUrl, editPrompt]);
 
@@ -113,6 +115,10 @@ export default function AddGiftSuggestionScreen() {
         // For updates, we need to include all fields (even in AI mode)
         // to preserve the existing suggestion content
         const currentLanguage = t('language');
+
+        // Detect if prompt changed - if yes, trigger AI regeneration
+        const promptChanged = mode === 'ai' && prompt !== originalPrompt;
+
         const updateData: any = {
           name_en: mode === 'ai' && edit_id ? name : requestData.name_en || '',
           name_fr: mode === 'ai' && edit_id ? name : requestData.name_fr || '',
@@ -122,11 +128,17 @@ export default function AddGiftSuggestionScreen() {
           category: mode === 'ai' && edit_id ? category : requestData.category,
           url: mode === 'ai' && edit_id ? url : requestData.url || '',
           creation_mode: mode,
+          regenerate_with_ai: promptChanged, // Smart detection: regenerate if prompt changed
         };
 
         // Include prompt if available (for AI mode)
         if (mode === 'ai' && prompt) {
           updateData.prompt = prompt;
+        }
+
+        // Add language for AI regeneration
+        if (promptChanged) {
+          updateData.language = currentLanguage;
         }
 
         await apiClient.put(`/api/gift-suggestions/${edit_id}`, updateData);
