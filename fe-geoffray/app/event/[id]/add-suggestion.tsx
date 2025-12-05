@@ -20,7 +20,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function AddGiftSuggestionScreen() {
   const { id, edit_id, mode: editMode, name: editName, description: editDesc,
-          priceRange: editPrice, category: editCategory, url: editUrl } = useLocalSearchParams<{
+          priceRange: editPrice, category: editCategory, url: editUrl, prompt: editPrompt } = useLocalSearchParams<{
     id: string;
     edit_id?: string;
     mode?: string;
@@ -29,6 +29,7 @@ export default function AddGiftSuggestionScreen() {
     priceRange?: string;
     category?: string;
     url?: string;
+    prompt?: string;
   }>();
   const { t } = useTranslation();
   const router = useRouter();
@@ -59,8 +60,9 @@ export default function AddGiftSuggestionScreen() {
       setPriceRange((editPrice as string) || '');
       setCategory((editCategory as string) || '');
       setUrl((editUrl as string) || '');
+      setPrompt((editPrompt as string) || '');
     }
-  }, [edit_id, editMode, editName, editDesc, editPrice, editCategory, editUrl]);
+  }, [edit_id, editMode, editName, editDesc, editPrice, editCategory, editUrl, editPrompt]);
 
   const handleSubmit = async () => {
     if (mode === 'manual') {
@@ -108,7 +110,26 @@ export default function AddGiftSuggestionScreen() {
 
       if (edit_id && typeof edit_id === 'string') {
         // UPDATE existing suggestion
-        await apiClient.put(`/api/gift-suggestions/${edit_id}`, requestData);
+        // For updates, we need to include all fields (even in AI mode)
+        // to preserve the existing suggestion content
+        const currentLanguage = t('language');
+        const updateData: any = {
+          name_en: mode === 'ai' && edit_id ? name : requestData.name_en || '',
+          name_fr: mode === 'ai' && edit_id ? name : requestData.name_fr || '',
+          description_en: mode === 'ai' && edit_id ? description : requestData.description_en || '',
+          description_fr: mode === 'ai' && edit_id ? description : requestData.description_fr || '',
+          price_range: mode === 'ai' && edit_id ? priceRange : requestData.price_range,
+          category: mode === 'ai' && edit_id ? category : requestData.category,
+          url: mode === 'ai' && edit_id ? url : requestData.url || '',
+          creation_mode: mode,
+        };
+
+        // Include prompt if available (for AI mode)
+        if (mode === 'ai' && prompt) {
+          updateData.prompt = prompt;
+        }
+
+        await apiClient.put(`/api/gift-suggestions/${edit_id}`, updateData);
 
         router.push(`/event/${id}?tab=gifts`);
         setTimeout(() => {

@@ -21,6 +21,7 @@ interface GiftSuggestion {
   price_range: string;
   category: string;
   url?: string;
+  prompt?: string;
   creation_mode: string;
   generated_at: string;
   created_at: string;
@@ -259,6 +260,7 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
         priceRange: suggestion.price_range,
         category: suggestion.category,
         url: suggestion.url || '',
+        prompt: suggestion.prompt || '',
       }
     });
   };

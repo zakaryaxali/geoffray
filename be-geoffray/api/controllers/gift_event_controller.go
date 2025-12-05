@@ -200,7 +200,7 @@ func (gec *GiftEventController) GetEventGiftSuggestions(c *gin.Context) {
 	query := `
 		SELECT
 			gs.id, gs.event_id, gs.owner_id, gs.name_en, gs.name_fr, gs.description_en, gs.description_fr,
-			gs.price_range, gs.category, gs.url, gs.creation_mode, gs.generated_at, gs.created_at, gs.updated_at,
+			gs.price_range, gs.category, gs.url, gs.prompt, gs.creation_mode, gs.generated_at, gs.created_at, gs.updated_at,
 			COALESCE(upvotes.count, 0) as upvote_count,
 			COALESCE(downvotes.count, 0) as downvote_count,
 			user_vote.vote_type as user_vote
@@ -236,11 +236,12 @@ func (gec *GiftEventController) GetEventGiftSuggestions(c *gin.Context) {
 		var suggestion models.GiftSuggestion
 		var userVote sql.NullString
 		var url sql.NullString
+		var prompt sql.NullString
 
 		err := rows.Scan(
 			&suggestion.ID, &suggestion.EventID, &suggestion.OwnerID, &suggestion.NameEN, &suggestion.NameFR,
 			&suggestion.DescriptionEN, &suggestion.DescriptionFR, &suggestion.PriceRange,
-			&suggestion.Category, &url, &suggestion.CreationMode, &suggestion.GeneratedAt,
+			&suggestion.Category, &url, &prompt, &suggestion.CreationMode, &suggestion.GeneratedAt,
 			&suggestion.CreatedAt, &suggestion.UpdatedAt,
 			&suggestion.UpvoteCount, &suggestion.DownvoteCount, &userVote,
 		)
@@ -254,6 +255,11 @@ func (gec *GiftEventController) GetEventGiftSuggestions(c *gin.Context) {
 			suggestion.URL = url.String
 		} else {
 			suggestion.URL = ""
+		}
+
+		// Handle nullable prompt field
+		if prompt.Valid {
+			suggestion.Prompt = &prompt.String
 		}
 
 		if userVote.Valid {
@@ -630,19 +636,24 @@ func (gec *GiftEventController) CreateGiftSuggestion(c *gin.Context) {
 	// Set creation_mode field
 	suggestion.CreationMode = req.Mode
 
+	// Set prompt if in AI mode
+	if req.Mode == "ai" && req.Prompt != "" {
+		suggestion.Prompt = &req.Prompt
+	}
+
 	// Insert suggestion into database
 	insertQuery := `
 		INSERT INTO gift_suggestions (
 			id, event_id, owner_id, name_en, name_fr, description_en, description_fr,
-			price_range, category, url, creation_mode, generated_at, created_at, updated_at
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+			price_range, category, url, prompt, creation_mode, generated_at, created_at, updated_at
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
 	`
 
 	_, err = gec.DB.Exec(insertQuery,
 		suggestion.ID, suggestion.EventID, suggestion.OwnerID,
 		suggestion.NameEN, suggestion.NameFR,
 		suggestion.DescriptionEN, suggestion.DescriptionFR,
-		suggestion.PriceRange, suggestion.Category, suggestion.URL, suggestion.CreationMode,
+		suggestion.PriceRange, suggestion.Category, suggestion.URL, suggestion.Prompt, suggestion.CreationMode,
 		suggestion.GeneratedAt, suggestion.CreatedAt, suggestion.UpdatedAt,
 	)
 
@@ -677,14 +688,15 @@ func (gec *GiftEventController) UpdateGiftSuggestion(c *gin.Context) {
 	userIDStr := userID.(string)
 
 	var req struct {
-		NameEN        string `json:"name_en"`
-		NameFR        string `json:"name_fr"`
-		DescriptionEN string `json:"description_en"`
-		DescriptionFR string `json:"description_fr"`
-		PriceRange    string `json:"price_range"`
-		Category      string `json:"category"`
-		URL           string `json:"url"`
-		CreationMode  string `json:"creation_mode"`
+		NameEN        string  `json:"name_en"`
+		NameFR        string  `json:"name_fr"`
+		DescriptionEN string  `json:"description_en"`
+		DescriptionFR string  `json:"description_fr"`
+		PriceRange    string  `json:"price_range"`
+		Category      string  `json:"category"`
+		URL           string  `json:"url"`
+		Prompt        *string `json:"prompt"`
+		CreationMode  string  `json:"creation_mode"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -770,23 +782,23 @@ func (gec *GiftEventController) UpdateGiftSuggestion(c *gin.Context) {
 		updateQuery = `
 			UPDATE gift_suggestions
 			SET name_en = $1, name_fr = $2, description_en = $3, description_fr = $4,
-				price_range = $5, category = $6, url = $7, creation_mode = $8, updated_at = $9
-			WHERE id = $10
+				price_range = $5, category = $6, url = $7, prompt = $8, creation_mode = $9, updated_at = $10
+			WHERE id = $11
 		`
 		args = []interface{}{
 			nameEN, nameFR, descEN, descFR,
-			req.PriceRange, req.Category, req.URL, req.CreationMode, time.Now(), suggestionID,
+			req.PriceRange, req.Category, req.URL, req.Prompt, req.CreationMode, time.Now(), suggestionID,
 		}
 	} else {
 		updateQuery = `
 			UPDATE gift_suggestions
 			SET name_en = $1, name_fr = $2, description_en = $3, description_fr = $4,
-				price_range = $5, category = $6, url = $7, updated_at = $8
-			WHERE id = $9
+				price_range = $5, category = $6, url = $7, prompt = $8, updated_at = $9
+			WHERE id = $10
 		`
 		args = []interface{}{
 			nameEN, nameFR, descEN, descFR,
-			req.PriceRange, req.Category, req.URL, time.Now(), suggestionID,
+			req.PriceRange, req.Category, req.URL, req.Prompt, time.Now(), suggestionID,
 		}
 	}
 
@@ -805,18 +817,24 @@ func (gec *GiftEventController) UpdateGiftSuggestion(c *gin.Context) {
 
 	// Fetch and return the updated suggestion
 	var suggestion models.GiftSuggestion
+	var prompt sql.NullString
 	fetchQuery := `
 		SELECT id, event_id, owner_id, name_en, name_fr, description_en, description_fr,
-			   price_range, category, url, creation_mode, generated_at, created_at, updated_at
+			   price_range, category, url, prompt, creation_mode, generated_at, created_at, updated_at
 		FROM gift_suggestions
 		WHERE id = $1
 	`
 	err = gec.DB.QueryRow(fetchQuery, suggestionID).Scan(
 		&suggestion.ID, &suggestion.EventID, &suggestion.OwnerID,
 		&suggestion.NameEN, &suggestion.NameFR, &suggestion.DescriptionEN, &suggestion.DescriptionFR,
-		&suggestion.PriceRange, &suggestion.Category, &suggestion.URL, &suggestion.CreationMode,
+		&suggestion.PriceRange, &suggestion.Category, &suggestion.URL, &prompt, &suggestion.CreationMode,
 		&suggestion.GeneratedAt, &suggestion.CreatedAt, &suggestion.UpdatedAt,
 	)
+
+	// Handle nullable prompt field
+	if prompt.Valid {
+		suggestion.Prompt = &prompt.String
+	}
 
 	if err != nil {
 		fmt.Printf("Error fetching updated suggestion: %v\n", err)
