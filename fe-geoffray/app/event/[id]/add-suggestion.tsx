@@ -35,7 +35,7 @@ export default function AddGiftSuggestionScreen() {
   const { theme } = useTheme();
   const themeColors = theme === 'dark' ? Colors.dark : Colors.light;
 
-  const [mode, setMode] = useState<'manual' | 'ai'>('manual');
+  const [mode, setMode] = useState<'manual' | 'ai'>('ai');
   const [isLoading, setIsLoading] = useState(false);
 
   // Manual mode fields
@@ -154,27 +154,6 @@ export default function AddGiftSuggestionScreen() {
           <TouchableOpacity
             style={[
               styles.modeButton,
-              mode === 'manual' && { backgroundColor: themeColors.primary },
-            ]}
-            onPress={() => setMode('manual')}
-          >
-            <Ionicons
-              name="create-outline"
-              size={20}
-              color={mode === 'manual' ? '#FFFFFF' : themeColors.text}
-            />
-            <Text
-              style={[
-                styles.modeButtonText,
-                mode === 'manual' && { color: '#FFFFFF' },
-              ]}
-            >
-              {t('giftSuggestion.manualMode')}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.modeButton,
               mode === 'ai' && { backgroundColor: themeColors.primary },
             ]}
             onPress={() => setMode('ai')}
@@ -191,6 +170,27 @@ export default function AddGiftSuggestionScreen() {
               ]}
             >
               {t('giftSuggestion.aiMode')}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.modeButton,
+              mode === 'manual' && { backgroundColor: themeColors.primary },
+            ]}
+            onPress={() => setMode('manual')}
+          >
+            <Ionicons
+              name="create-outline"
+              size={20}
+              color={mode === 'manual' ? '#FFFFFF' : themeColors.text}
+            />
+            <Text
+              style={[
+                styles.modeButtonText,
+                mode === 'manual' && { color: '#FFFFFF' },
+              ]}
+            >
+              {t('giftSuggestion.manualMode')}
             </Text>
           </TouchableOpacity>
         </View>
