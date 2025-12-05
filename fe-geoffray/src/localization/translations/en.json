@@ -297,6 +297,7 @@
   "giftSuggestion.categoryPlaceholder": "e.g., Books, Electronics, Fashion",
   "giftSuggestion.url": "Product URL (optional)",
   "giftSuggestion.urlPlaceholder": "https://example.com/product",
+  "giftSuggestion.urlHelp": "Add a link where people can purchase this gift",
   "giftSuggestion.aiDescription": "Describe the gift you'd like to generate. Our AI will create a personalized suggestion based on the event context.",
   "giftSuggestion.prompt": "Your Request",
   "giftSuggestion.promptPlaceholder": "e.g., A tech gadget under €100 that would be useful for remote work",
