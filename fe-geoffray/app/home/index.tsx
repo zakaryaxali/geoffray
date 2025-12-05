@@ -71,14 +71,14 @@ export default function HomeScreen() {
 
     // Always add Incoming section
     newSections.push({
-      title: 'Incoming',
+      title: t('home.incomingEvents'),
       data: incomingEvents,
     });
 
     // Only add Past Events section if there are past events
     if (pastEvents.length > 0) {
       newSections.push({
-        title: 'Past Events',
+        title: t('home.pastEvents'),
         data: pastEvents,
       });
     }
@@ -135,7 +135,7 @@ export default function HomeScreen() {
   }
 
   // Determine if there are any past events to show the appropriate empty state
-  const hasPastEvents = sections.some(section => section.title === 'Past Events');
+  const hasPastEvents = sections.some(section => section.title === t('home.pastEvents'));
   const hasIncomingEvents = sections.length > 0 && sections[0].data.length > 0;
 
   return (
@@ -153,7 +153,7 @@ export default function HomeScreen() {
         )}
         renderSectionFooter={({ section: { title, data } }) => {
           // Show empty state only for Incoming section when it's empty
-          if (title === 'Incoming' && data.length === 0) {
+          if (title === t('home.incomingEvents') && data.length === 0) {
             // If there are past events, show simple message. Otherwise show button
             if (hasPastEvents) {
               return (
