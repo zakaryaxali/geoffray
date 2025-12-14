@@ -1,42 +1,42 @@
 import { useMemo } from 'react';
 
-// Import all SVG files as components
-import AdventurerBarbecue from '../../assets/events-background/adventurer-barbecue.svg';
-import AdventurerBirthday from '../../assets/events-background/adventurer-birthday.svg';
-import AdventurerChristmas from '../../assets/events-background/adventurer-christmas.svg';
-import AdventurerJustforfun from '../../assets/events-background/adventurer-justforfun.svg';
-import AdventurerRetirement from '../../assets/events-background/adventurer-retirement.svg';
-import AdventurerWedding from '../../assets/events-background/adventurer-wedding.svg';
-import ArtistBarbecue from '../../assets/events-background/artist-barbecue.svg';
-import ArtistBirthday from '../../assets/events-background/artist-birthday.svg';
-import ArtistChristmas from '../../assets/events-background/artist-christmas.svg';
-import ArtistJustforfun from '../../assets/events-background/artist-justforfun.svg';
-import ArtistRetirement from '../../assets/events-background/artist-retirement.svg';
-import ArtistWedding from '../../assets/events-background/artist-wedding.svg';
-import GeekBarbecue from '../../assets/events-background/geek-barbecue.svg';
-import GeekBirthday from '../../assets/events-background/geek-birthday.svg';
-import GeekChristmas from '../../assets/events-background/geek-christmas.svg';
-import GeekJustforfun from '../../assets/events-background/geek-justforfun.svg';
-import GeekRetirement from '../../assets/events-background/geek-retirement.svg';
-import GeekWedding from '../../assets/events-background/geek-wedding.svg';
-import GourmetBarbecue from '../../assets/events-background/gourmet-barbecue.svg';
-import GourmetBirthday from '../../assets/events-background/gourmet-birthday.svg';
-import GourmetChristmas from '../../assets/events-background/gourmet-christmas.svg';
-import GourmetJustforfun from '../../assets/events-background/gourmet-justforfun.svg';
-import GourmetRetirement from '../../assets/events-background/gourmet-retirement.svg';
-import GourmetWedding from '../../assets/events-background/gourmet-wedding.svg';
-import ParentBarbecue from '../../assets/events-background/parent-barbecue.svg';
-import ParentBirthday from '../../assets/events-background/parent-birthday.svg';
-import ParentChristmas from '../../assets/events-background/parent-christmas.svg';
-import ParentJustforfun from '../../assets/events-background/parent-justforfun.svg';
-import ParentRetirement from '../../assets/events-background/parent-retirement.svg';
-import ParentWedding from '../../assets/events-background/parent-wedding.svg';
-import TrendyBarbecue from '../../assets/events-background/trendy-barbecue.svg';
-import TrendyBirthday from '../../assets/events-background/trendy-birthday.svg';
-import TrendyChristmas from '../../assets/events-background/trendy-christmas.svg';
-import TrendyJustforfun from '../../assets/events-background/trendy-justforfun.svg';
-import TrendyRetirement from '../../assets/events-background/trendy-retirement.svg';
-import TrendyWedding from '../../assets/events-background/trendy-wedding.svg';
+// Import all WebP files as image sources
+import AdventurerBarbecue from '../../assets/events-background/adventurer-barbecue.webp';
+import AdventurerBirthday from '../../assets/events-background/adventurer-birthday.webp';
+import AdventurerChristmas from '../../assets/events-background/adventurer-christmas.webp';
+import AdventurerJustforfun from '../../assets/events-background/adventurer-justforfun.webp';
+import AdventurerRetirement from '../../assets/events-background/adventurer-retirement.webp';
+import AdventurerWedding from '../../assets/events-background/adventurer-wedding.webp';
+import ArtistBarbecue from '../../assets/events-background/artist-barbecue.webp';
+import ArtistBirthday from '../../assets/events-background/artist-birthday.webp';
+import ArtistChristmas from '../../assets/events-background/artist-christmas.webp';
+import ArtistJustforfun from '../../assets/events-background/artist-justforfun.webp';
+import ArtistRetirement from '../../assets/events-background/artist-retirement.webp';
+import ArtistWedding from '../../assets/events-background/artist-wedding.webp';
+import GeekBarbecue from '../../assets/events-background/geek-barbecue.webp';
+import GeekBirthday from '../../assets/events-background/geek-birthday.webp';
+import GeekChristmas from '../../assets/events-background/geek-christmas.webp';
+import GeekJustforfun from '../../assets/events-background/geek-justforfun.webp';
+import GeekRetirement from '../../assets/events-background/geek-retirement.webp';
+import GeekWedding from '../../assets/events-background/geek-wedding.webp';
+import GourmetBarbecue from '../../assets/events-background/gourmet-barbecue.webp';
+import GourmetBirthday from '../../assets/events-background/gourmet-birthday.webp';
+import GourmetChristmas from '../../assets/events-background/gourmet-christmas.webp';
+import GourmetJustforfun from '../../assets/events-background/gourmet-justforfun.webp';
+import GourmetRetirement from '../../assets/events-background/gourmet-retirement.webp';
+import GourmetWedding from '../../assets/events-background/gourmet-wedding.webp';
+import ParentBarbecue from '../../assets/events-background/parent-barbecue.webp';
+import ParentBirthday from '../../assets/events-background/parent-birthday.webp';
+import ParentChristmas from '../../assets/events-background/parent-christmas.webp';
+import ParentJustforfun from '../../assets/events-background/parent-justforfun.webp';
+import ParentRetirement from '../../assets/events-background/parent-retirement.webp';
+import ParentWedding from '../../assets/events-background/parent-wedding.webp';
+import TrendyBarbecue from '../../assets/events-background/trendy-barbecue.webp';
+import TrendyBirthday from '../../assets/events-background/trendy-birthday.webp';
+import TrendyChristmas from '../../assets/events-background/trendy-christmas.webp';
+import TrendyJustforfun from '../../assets/events-background/trendy-justforfun.webp';
+import TrendyRetirement from '../../assets/events-background/trendy-retirement.webp';
+import TrendyWedding from '../../assets/events-background/trendy-wedding.webp';
 
 // Random fallback images
 const randomEventBanners = [
@@ -125,17 +125,17 @@ export const useEventBackground = ({
       };
     }
 
-    // If we have persona and occasion, try to find matching SVG
+    // If we have persona and occasion, try to find matching WebP image
     if (persona && occasion) {
       // Normalize occasion format (justForFun -> justforfun)
       const normalizedOccasion = occasion.toLowerCase().replace(/\s+/g, '');
       const key = `${persona.toLowerCase()}-${normalizedOccasion}`;
-      
-      // Return the local SVG component if it exists
+
+      // Return the local WebP image if it exists
       if (personaOccasionBackgrounds[key]) {
         return {
           backgroundSource: personaOccasionBackgrounds[key],
-          isComponent: true,
+          isComponent: false,
         };
       }
     }

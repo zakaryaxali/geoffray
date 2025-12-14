@@ -40,7 +40,6 @@ export const eventStyles = StyleSheet.create({
   bannerImage: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
   },
   bannerOverlay: {
     position: 'absolute',

@@ -59,25 +59,15 @@ export const EventBanner: React.FC<EventBannerProps> = ({ title, bannerUrl, pers
     }
   };
 
-  // Render the appropriate component based on source type
+  // Render banner image (WebP or URL)
   const renderBanner = () => {
-    if (isComponent) {
-      // For SVG components
-      const SvgComponent = backgroundSource;
-      return (
-        <View style={eventStyles.bannerImage}>
-          <SvgComponent width="100%" height="100%" preserveAspectRatio="xMidYMid slice" />
-        </View>
-      );
-    } else {
-      // For URL strings
-      return (
-        <Image 
-          source={{ uri: backgroundSource }} 
-          style={eventStyles.bannerImage}
-        />
-      );
-    }
+    return (
+      <Image
+        source={typeof backgroundSource === 'string' ? { uri: backgroundSource } : backgroundSource}
+        style={eventStyles.bannerImage}
+        resizeMode="cover"
+      />
+    );
   };
 
   return (

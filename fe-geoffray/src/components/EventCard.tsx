@@ -104,17 +104,11 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
       ]}
       onPress={handlePress}
     >
-      {isComponent ? (
-        <View style={styles.backgroundImage}>
-          {React.createElement(backgroundSource, {
-            width: '100%',
-            height: '100%',
-            preserveAspectRatio: 'xMidYMid slice'
-          })}
-        </View>
-      ) : (
-        <Image source={{ uri: backgroundSource }} style={styles.backgroundImage} />
-      )}
+      <Image
+        source={typeof backgroundSource === 'string' ? { uri: backgroundSource } : backgroundSource}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      />
       <View style={styles.overlay}>
         <View style={styles.contentContainer}>
           <ThemedText type="subtitle" style={styles.name} numberOfLines={2} ellipsizeMode="tail">
