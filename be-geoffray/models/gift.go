@@ -46,6 +46,16 @@ type GiftSuggestion struct {
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 
+	// Amazon affiliate fields
+	AmazonASIN         *string    `json:"amazon_asin,omitempty"`
+	AmazonAffiliateURL *string    `json:"amazon_affiliate_url,omitempty"`
+	AmazonPrice        *string    `json:"amazon_price,omitempty"`
+	AmazonRegion       *string    `json:"amazon_region,omitempty"`
+	AmazonLastUpdated  *time.Time `json:"amazon_last_updated,omitempty"`
+
+	// Computed field for frontend (true if amazon_affiliate_url is set)
+	IsAffiliateLink bool `json:"is_affiliate_link"`
+
 	// Vote-related fields (populated when fetching suggestions)
 	UpvoteCount   int     `json:"upvote_count"`
 	DownvoteCount int     `json:"downvote_count"`

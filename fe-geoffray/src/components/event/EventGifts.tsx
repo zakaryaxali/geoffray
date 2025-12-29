@@ -29,6 +29,12 @@ interface GiftSuggestion {
   upvote_count: number;
   downvote_count: number;
   user_vote?: 'upvote' | 'downvote' | null;
+  // Amazon affiliate fields
+  amazon_asin?: string;
+  amazon_affiliate_url?: string;
+  amazon_price?: string;
+  amazon_region?: string;
+  is_affiliate_link?: boolean;
 }
 
 interface EventGiftsProps {
@@ -485,6 +491,36 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
                 </TouchableOpacity>
               )}
             </View>
+
+            {/* Amazon Affiliate Link Button */}
+            {suggestion.amazon_affiliate_url && suggestion.amazon_affiliate_url.trim() !== '' && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                <TouchableOpacity
+                  onPress={() => handleOpenGift(suggestion.amazon_affiliate_url!)}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    backgroundColor: '#FF9900',
+                    paddingVertical: 6,
+                    paddingHorizontal: 12,
+                    borderRadius: 4,
+                  }}
+                >
+                  <Ionicons name="cart-outline" size={14} color="#000000" />
+                  <ThemedText style={{ color: '#000000', fontWeight: '600', fontSize: 12, marginLeft: 6 }}>
+                    {t('event.gifts.viewOnAmazon')}
+                  </ThemedText>
+                </TouchableOpacity>
+                <ThemedText style={{
+                  fontSize: 10,
+                  color: themeColors.textSecondary,
+                  marginLeft: 8,
+                  fontStyle: 'italic'
+                }}>
+                  {t('event.gifts.affiliateDisclosure')}
+                </ThemedText>
+              </View>
+            )}
 
             {/* Description */}
             <ThemedText style={{

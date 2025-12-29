@@ -257,6 +257,8 @@
   "event.gifts.noSuggestionsDesc": "Gift suggestions will be generated automatically when this event is created with the gift flow.",
   "event.gifts.viewGift": "View Gift",
   "event.gifts.addFirstSuggestion": "Add First Suggestion",
+  "event.gifts.viewOnAmazon": "View on Amazon",
+  "event.gifts.affiliateDisclosure": "Affiliate link",
   "home.giftSearch": "I'm looking for the perfect gift",
   "gift.pageTitle": "It's for...",
   "gift.categories.gourmet": "A gourmet",

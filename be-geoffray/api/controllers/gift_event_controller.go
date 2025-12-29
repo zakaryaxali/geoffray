@@ -171,8 +171,9 @@ func (gec *GiftEventController) generateGiftSuggestionsForEvent(event models.Eve
 		query := `
 			INSERT INTO gift_suggestions (
 				id, event_id, owner_id, name_en, name_fr, description_en, description_fr,
-				price_range, category, url, creation_mode, generated_at, created_at, updated_at
-			) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+				price_range, category, url, creation_mode, generated_at, created_at, updated_at,
+				amazon_asin, amazon_affiliate_url, amazon_price, amazon_region, amazon_last_updated
+			) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
 		`
 
 		_, err := gec.DB.Exec(query,
@@ -180,6 +181,8 @@ func (gec *GiftEventController) generateGiftSuggestionsForEvent(event models.Eve
 			suggestion.DescriptionEN, suggestion.DescriptionFR, suggestion.PriceRange,
 			suggestion.Category, suggestion.URL, suggestion.CreationMode, suggestion.GeneratedAt,
 			suggestion.CreatedAt, suggestion.UpdatedAt,
+			suggestion.AmazonASIN, suggestion.AmazonAffiliateURL, suggestion.AmazonPrice,
+			suggestion.AmazonRegion, suggestion.AmazonLastUpdated,
 		)
 
 		if err != nil {
@@ -297,6 +300,7 @@ func (gec *GiftEventController) GetEventGiftSuggestions(c *gin.Context) {
 		SELECT
 			gs.id, gs.event_id, gs.owner_id, gs.name_en, gs.name_fr, gs.description_en, gs.description_fr,
 			gs.price_range, gs.category, gs.url, gs.prompt, gs.creation_mode, gs.generated_at, gs.created_at, gs.updated_at,
+			gs.amazon_asin, gs.amazon_affiliate_url, gs.amazon_price, gs.amazon_region, gs.amazon_last_updated,
 			COALESCE(upvotes.count, 0) as upvote_count,
 			COALESCE(downvotes.count, 0) as downvote_count,
 			user_vote.vote_type as user_vote
@@ -333,12 +337,15 @@ func (gec *GiftEventController) GetEventGiftSuggestions(c *gin.Context) {
 		var userVote sql.NullString
 		var url sql.NullString
 		var prompt sql.NullString
+		var amazonASIN, amazonAffiliateURL, amazonPrice, amazonRegion sql.NullString
+		var amazonLastUpdated sql.NullTime
 
 		err := rows.Scan(
 			&suggestion.ID, &suggestion.EventID, &suggestion.OwnerID, &suggestion.NameEN, &suggestion.NameFR,
 			&suggestion.DescriptionEN, &suggestion.DescriptionFR, &suggestion.PriceRange,
 			&suggestion.Category, &url, &prompt, &suggestion.CreationMode, &suggestion.GeneratedAt,
 			&suggestion.CreatedAt, &suggestion.UpdatedAt,
+			&amazonASIN, &amazonAffiliateURL, &amazonPrice, &amazonRegion, &amazonLastUpdated,
 			&suggestion.UpvoteCount, &suggestion.DownvoteCount, &userVote,
 		)
 		if err != nil {
@@ -356,6 +363,24 @@ func (gec *GiftEventController) GetEventGiftSuggestions(c *gin.Context) {
 		// Handle nullable prompt field
 		if prompt.Valid {
 			suggestion.Prompt = &prompt.String
+		}
+
+		// Handle nullable Amazon fields
+		if amazonASIN.Valid {
+			suggestion.AmazonASIN = &amazonASIN.String
+		}
+		if amazonAffiliateURL.Valid {
+			suggestion.AmazonAffiliateURL = &amazonAffiliateURL.String
+			suggestion.IsAffiliateLink = true
+		}
+		if amazonPrice.Valid {
+			suggestion.AmazonPrice = &amazonPrice.String
+		}
+		if amazonRegion.Valid {
+			suggestion.AmazonRegion = &amazonRegion.String
+		}
+		if amazonLastUpdated.Valid {
+			suggestion.AmazonLastUpdated = &amazonLastUpdated.Time
 		}
 
 		if userVote.Valid {
@@ -749,8 +774,9 @@ func (gec *GiftEventController) CreateGiftSuggestion(c *gin.Context) {
 	insertQuery := `
 		INSERT INTO gift_suggestions (
 			id, event_id, owner_id, name_en, name_fr, description_en, description_fr,
-			price_range, category, url, prompt, creation_mode, generated_at, created_at, updated_at
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+			price_range, category, url, prompt, creation_mode, generated_at, created_at, updated_at,
+			amazon_asin, amazon_affiliate_url, amazon_price, amazon_region, amazon_last_updated
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
 	`
 
 	_, err = gec.DB.Exec(insertQuery,
@@ -759,6 +785,8 @@ func (gec *GiftEventController) CreateGiftSuggestion(c *gin.Context) {
 		suggestion.DescriptionEN, suggestion.DescriptionFR,
 		suggestion.PriceRange, suggestion.Category, suggestion.URL, suggestion.Prompt, suggestion.CreationMode,
 		suggestion.GeneratedAt, suggestion.CreatedAt, suggestion.UpdatedAt,
+		suggestion.AmazonASIN, suggestion.AmazonAffiliateURL, suggestion.AmazonPrice,
+		suggestion.AmazonRegion, suggestion.AmazonLastUpdated,
 	)
 
 	if err != nil {
@@ -770,6 +798,9 @@ func (gec *GiftEventController) CreateGiftSuggestion(c *gin.Context) {
 	// Initialize vote counts for response
 	suggestion.UpvoteCount = 0
 	suggestion.DownvoteCount = 0
+
+	// Set IsAffiliateLink based on Amazon URL presence
+	suggestion.IsAffiliateLink = suggestion.AmazonAffiliateURL != nil && *suggestion.AmazonAffiliateURL != ""
 
 	c.JSON(http.StatusCreated, suggestion)
 }
@@ -867,6 +898,10 @@ func (gec *GiftEventController) UpdateGiftSuggestion(c *gin.Context) {
 	descEN := req.DescriptionEN
 	descFR := req.DescriptionFR
 
+	// Amazon fields (only populated when regenerating with AI)
+	var amazonASIN, amazonAffiliateURL, amazonPrice, amazonRegion *string
+	var amazonLastUpdated *time.Time
+
 	if req.RegenerateWithAI && req.Prompt != nil && *req.Prompt != "" {
 		fmt.Printf("Regenerating gift suggestion with new prompt for suggestion %s\n", suggestionID)
 
@@ -948,6 +983,13 @@ func (gec *GiftEventController) UpdateGiftSuggestion(c *gin.Context) {
 			req.URL = generated.URL
 		}
 
+		// Update Amazon fields from regenerated suggestion
+		amazonASIN = generated.AmazonASIN
+		amazonAffiliateURL = generated.AmazonAffiliateURL
+		amazonPrice = generated.AmazonPrice
+		amazonRegion = generated.AmazonRegion
+		amazonLastUpdated = generated.AmazonLastUpdated
+
 		fmt.Printf("Successfully regenerated suggestion: %s\n", nameEN)
 	}
 
@@ -974,23 +1016,27 @@ func (gec *GiftEventController) UpdateGiftSuggestion(c *gin.Context) {
 		updateQuery = `
 			UPDATE gift_suggestions
 			SET name_en = $1, name_fr = $2, description_en = $3, description_fr = $4,
-				price_range = $5, category = $6, url = $7, prompt = $8, creation_mode = $9, updated_at = $10
-			WHERE id = $11
+				price_range = $5, category = $6, url = $7, prompt = $8, creation_mode = $9, updated_at = $10,
+				amazon_asin = $11, amazon_affiliate_url = $12, amazon_price = $13, amazon_region = $14, amazon_last_updated = $15
+			WHERE id = $16
 		`
 		args = []interface{}{
 			nameEN, nameFR, descEN, descFR,
-			req.PriceRange, req.Category, req.URL, req.Prompt, req.CreationMode, time.Now(), suggestionID,
+			req.PriceRange, req.Category, req.URL, req.Prompt, req.CreationMode, time.Now(),
+			amazonASIN, amazonAffiliateURL, amazonPrice, amazonRegion, amazonLastUpdated, suggestionID,
 		}
 	} else {
 		updateQuery = `
 			UPDATE gift_suggestions
 			SET name_en = $1, name_fr = $2, description_en = $3, description_fr = $4,
-				price_range = $5, category = $6, url = $7, prompt = $8, updated_at = $9
-			WHERE id = $10
+				price_range = $5, category = $6, url = $7, prompt = $8, updated_at = $9,
+				amazon_asin = $10, amazon_affiliate_url = $11, amazon_price = $12, amazon_region = $13, amazon_last_updated = $14
+			WHERE id = $15
 		`
 		args = []interface{}{
 			nameEN, nameFR, descEN, descFR,
-			req.PriceRange, req.Category, req.URL, req.Prompt, time.Now(), suggestionID,
+			req.PriceRange, req.Category, req.URL, req.Prompt, time.Now(),
+			amazonASIN, amazonAffiliateURL, amazonPrice, amazonRegion, amazonLastUpdated, suggestionID,
 		}
 	}
 
@@ -1010,9 +1056,12 @@ func (gec *GiftEventController) UpdateGiftSuggestion(c *gin.Context) {
 	// Fetch and return the updated suggestion
 	var suggestion models.GiftSuggestion
 	var prompt sql.NullString
+	var fetchAmazonASIN, fetchAmazonAffiliateURL, fetchAmazonPrice, fetchAmazonRegion sql.NullString
+	var fetchAmazonLastUpdated sql.NullTime
 	fetchQuery := `
 		SELECT id, event_id, owner_id, name_en, name_fr, description_en, description_fr,
-			   price_range, category, url, prompt, creation_mode, generated_at, created_at, updated_at
+			   price_range, category, url, prompt, creation_mode, generated_at, created_at, updated_at,
+			   amazon_asin, amazon_affiliate_url, amazon_price, amazon_region, amazon_last_updated
 		FROM gift_suggestions
 		WHERE id = $1
 	`
@@ -1021,11 +1070,30 @@ func (gec *GiftEventController) UpdateGiftSuggestion(c *gin.Context) {
 		&suggestion.NameEN, &suggestion.NameFR, &suggestion.DescriptionEN, &suggestion.DescriptionFR,
 		&suggestion.PriceRange, &suggestion.Category, &suggestion.URL, &prompt, &suggestion.CreationMode,
 		&suggestion.GeneratedAt, &suggestion.CreatedAt, &suggestion.UpdatedAt,
+		&fetchAmazonASIN, &fetchAmazonAffiliateURL, &fetchAmazonPrice, &fetchAmazonRegion, &fetchAmazonLastUpdated,
 	)
 
 	// Handle nullable prompt field
 	if prompt.Valid {
 		suggestion.Prompt = &prompt.String
+	}
+
+	// Handle nullable Amazon fields
+	if fetchAmazonASIN.Valid {
+		suggestion.AmazonASIN = &fetchAmazonASIN.String
+	}
+	if fetchAmazonAffiliateURL.Valid {
+		suggestion.AmazonAffiliateURL = &fetchAmazonAffiliateURL.String
+		suggestion.IsAffiliateLink = true
+	}
+	if fetchAmazonPrice.Valid {
+		suggestion.AmazonPrice = &fetchAmazonPrice.String
+	}
+	if fetchAmazonRegion.Valid {
+		suggestion.AmazonRegion = &fetchAmazonRegion.String
+	}
+	if fetchAmazonLastUpdated.Valid {
+		suggestion.AmazonLastUpdated = &fetchAmazonLastUpdated.Time
 	}
 
 	if err != nil {

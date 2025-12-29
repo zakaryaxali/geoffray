@@ -99,6 +99,7 @@ type GiftSuggestionService struct {
 	mistralAPIKey  string
 	mistralAgentID string
 	mistralURL     string
+	amazonService  *AmazonService
 }
 
 // NewGiftSuggestionService creates a new gift suggestion service
@@ -107,6 +108,7 @@ func NewGiftSuggestionService() *GiftSuggestionService {
 		mistralAPIKey:  os.Getenv("MISTRAL_API_KEY"),
 		mistralAgentID: os.Getenv("MISTRAL_AGENT_ID"),
 		mistralURL:     "https://api.mistral.ai/v1/conversations",
+		amazonService:  NewAmazonService(),
 	}
 }
 
@@ -182,6 +184,9 @@ func (g *GiftSuggestionService) GenerateGiftSuggestions(request GiftSuggestionRe
 	if len(validSuggestions) == 0 {
 		return nil, fmt.Errorf("failed to generate unique suggestions after %d attempts", maxRetries)
 	}
+
+	// Enrich suggestions with Amazon affiliate data
+	g.enrichWithAmazonData(validSuggestions, request.Language)
 
 	return validSuggestions, nil
 }
@@ -518,4 +523,64 @@ func (g *GiftSuggestionService) buildSimilarityCheckPrompt(newSuggestion models.
 	prompt.WriteString("You may add a brief reason after your YES/NO answer.\n")
 
 	return prompt.String()
+}
+
+// enrichWithAmazonData adds Amazon affiliate links to suggestions
+// This is best-effort: failures don't block suggestion creation
+func (g *GiftSuggestionService) enrichWithAmazonData(suggestions []models.GiftSuggestion, language string) {
+	if g.amazonService == nil {
+		fmt.Println("Amazon service not initialized, skipping enrichment")
+		return
+	}
+
+	if !g.amazonService.IsEnabled() {
+		fmt.Println("Amazon service not enabled, using fallback search URLs")
+		// Still generate search URLs as fallback
+		region := MapLanguageToRegion(language)
+		for i := range suggestions {
+			name := suggestions[i].NameEN
+			if language == "fr" {
+				name = suggestions[i].NameFR
+			}
+			searchURL := g.amazonService.GenerateSearchURL(name, region)
+			suggestions[i].AmazonAffiliateURL = &searchURL
+			suggestions[i].AmazonRegion = &region
+			now := time.Now()
+			suggestions[i].AmazonLastUpdated = &now
+			suggestions[i].IsAffiliateLink = true
+		}
+		return
+	}
+
+	region := MapLanguageToRegion(language)
+
+	for i := range suggestions {
+		// Use appropriate language name for search
+		name := suggestions[i].NameEN
+		if language == "fr" {
+			name = suggestions[i].NameFR
+		}
+
+		// Try to enrich with Amazon data
+		affiliateURL, price, asin, err := g.amazonService.EnrichWithAmazonData(name, suggestions[i].Category, region)
+		if err != nil {
+			fmt.Printf("Warning: Amazon enrichment failed for suggestion '%s': %v\n", name, err)
+			// Still use fallback search URL
+			searchURL := g.amazonService.GenerateSearchURL(name, region)
+			suggestions[i].AmazonAffiliateURL = &searchURL
+		} else {
+			suggestions[i].AmazonAffiliateURL = &affiliateURL
+			if price != "" {
+				suggestions[i].AmazonPrice = &price
+			}
+			if asin != "" {
+				suggestions[i].AmazonASIN = &asin
+			}
+		}
+
+		suggestions[i].AmazonRegion = &region
+		now := time.Now()
+		suggestions[i].AmazonLastUpdated = &now
+		suggestions[i].IsAffiliateLink = suggestions[i].AmazonAffiliateURL != nil && *suggestions[i].AmazonAffiliateURL != ""
+	}
 }
