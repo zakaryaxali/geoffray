@@ -14,13 +14,61 @@ jobs:
       - name: Install sshpass
         run: sudo apt-get update && sudo apt-get install -y sshpass
 
+      - name: Generate .env file
+        run: |
+          cat > .env << 'EOF'
+          # Server Configuration
+          PORT=8080
+          ENV=staging
+          GIN_MODE=release
+
+          # Database Configuration
+          DB_HOST=postgres
+          DB_PORT=5432
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_NAME=${{ secrets.DB_NAME }}
+
+          # JWT Configuration
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          JWT_EXPIRATION=24h
+
+          # Mistral AI Configuration
+          MISTRAL_API_KEY=${{ secrets.MISTRAL_API_KEY }}
+          MISTRAL_API_URL=https://api.mistral.ai/
+          MISTRAL_AGENT_ID=${{ secrets.MISTRAL_AGENT_ID }}
+
+          # Stripe Configuration (Optional)
+          STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
+
+          # Google OAuth Configuration
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+          FIREBASE_SERVICE_ACCOUNT_BASE64=${{ secrets.FIREBASE_SERVICE_ACCOUNT_BASE64 }}
+
+          # Frontend Google OAuth
+          EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+
+          # Firebase Frontend Configuration
+          EXPO_PUBLIC_FIREBASE_API_KEY=${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
+          EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=${{ secrets.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          EXPO_PUBLIC_FIREBASE_PROJECT_ID=${{ secrets.EXPO_PUBLIC_FIREBASE_PROJECT_ID }}
+          EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=${{ secrets.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          EXPO_PUBLIC_FIREBASE_APP_ID=${{ secrets.EXPO_PUBLIC_FIREBASE_APP_ID }}
+          EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID=${{ secrets.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID }}
+          EOF
+
       - name: Deploy to server
         env:
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
         run: |
-          # SSH with password and execute deployment commands
+          # Copy .env file to server
+          sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no .env "$SERVER_USER@$SERVER_HOST":/opt/geoffray/.env
+
+          # SSH and deploy
           sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_HOST" << 'ENDSSH'
             set -e
 
