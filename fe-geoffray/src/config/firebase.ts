@@ -2,13 +2,13 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyABfOpj7WIW5sDDzny71_EpP4GQx0tH-Ak",
-  authDomain: "geoffray-f341d.firebaseapp.com",
-  projectId: "geoffray-f341d",
-  storageBucket: "geoffray-f341d.firebasestorage.app",
-  messagingSenderId: "507196746203",
-  appId: "1:507196746203:web:885a24db71b712bb419ffe",
-  measurementId: "G-SF6BSX7SWL"
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
