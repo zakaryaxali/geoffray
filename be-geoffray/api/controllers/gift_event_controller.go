@@ -17,6 +17,7 @@ import (
 type GiftEventController struct {
 	DB                    *sql.DB
 	GiftSuggestionService *services.GiftSuggestionService
+	StaticGiftService     *services.StaticGiftService
 	URLValidator          *services.URLValidator
 }
 
@@ -25,6 +26,7 @@ func NewGiftEventController(db *sql.DB) *GiftEventController {
 	return &GiftEventController{
 		DB:                    db,
 		GiftSuggestionService: services.NewGiftSuggestionService(),
+		StaticGiftService:     services.NewStaticGiftService(db),
 		URLValidator:          services.NewURLValidator(),
 	}
 }
@@ -134,6 +136,7 @@ func (gec *GiftEventController) CreateEventWithGifts(c *gin.Context) {
 }
 
 // generateGiftSuggestionsForEvent generates and stores gift suggestions for an event
+// Uses static-first approach: 1 curated static suggestion + 2 AI-generated suggestions
 func (gec *GiftEventController) generateGiftSuggestionsForEvent(event models.Event) {
 	// Fetch existing suggestions for this event to avoid duplicates
 	existingSuggestions, err := gec.fetchExistingSuggestions(event.ID)
@@ -143,31 +146,58 @@ func (gec *GiftEventController) generateGiftSuggestionsForEvent(event models.Eve
 		existingSuggestions = []models.GiftSuggestion{}
 	}
 
+	var allSuggestions []models.GiftSuggestion
+
+	// Step 1: Try to get a static (curated) suggestion first
+	staticSuggestion, err := gec.StaticGiftService.GetStaticGiftSuggestion(event.GifteePersona, event.EventOccasion)
+	if err != nil {
+		fmt.Printf("No static gift found for event %s (persona=%s, occasion=%s): %v\n",
+			event.ID, event.GifteePersona, event.EventOccasion, err)
+		// Continue without static suggestion - will generate 3 AI suggestions instead
+	} else {
+		// Set IDs and event reference for the static suggestion
+		staticSuggestion.ID = uuid.NewString()
+		staticSuggestion.EventID = event.ID
+		staticSuggestion.OwnerID = event.CreatorID
+		allSuggestions = append(allSuggestions, *staticSuggestion)
+		fmt.Printf("Added static gift suggestion '%s' for event %s\n", staticSuggestion.NameEN, event.ID)
+	}
+
+	// Step 2: Generate AI suggestions (2 if we have static, 3 otherwise)
+	// Combine existing suggestions with static suggestion to avoid duplicates
+	suggestionsToAvoid := append(existingSuggestions, allSuggestions...)
+
 	// Prepare request for gift suggestion service
 	request := services.GiftSuggestionRequest{
-		GifteePersona: event.GifteePersona,
-		EventOccasion: event.EventOccasion,
-		EventTitle:    event.Title,
-		EventDate:     event.StartDate.Format("2006-01-02"),
-		Location:      event.Location,
-		Description:   event.Description,
-		Language:      "fr", // Default to French, could be made dynamic
+		GifteePersona:    event.GifteePersona,
+		EventOccasion:    event.EventOccasion,
+		EventTitle:       event.Title,
+		EventDate:        event.StartDate.Format("2006-01-02"),
+		Location:         event.Location,
+		Description:      event.Description,
+		Language:         "fr", // Default to French, could be made dynamic
+		SingleSuggestion: false,
 	}
 
-	// Generate suggestions using Mistral with similarity checking
-	suggestions, err := gec.GiftSuggestionService.GenerateGiftSuggestions(request, existingSuggestions)
+	// Generate AI suggestions using Mistral with similarity checking
+	aiSuggestions, err := gec.GiftSuggestionService.GenerateGiftSuggestions(request, suggestionsToAvoid)
 	if err != nil {
-		fmt.Printf("Error generating gift suggestions for event %s: %v\n", event.ID, err)
-		return
+		fmt.Printf("Error generating AI gift suggestions for event %s: %v\n", event.ID, err)
+		// Continue with just static suggestion if available
+	} else {
+		// Set IDs and event reference for AI suggestions
+		for i := range aiSuggestions {
+			aiSuggestions[i].ID = uuid.NewString()
+			aiSuggestions[i].EventID = event.ID
+			aiSuggestions[i].OwnerID = event.CreatorID
+			aiSuggestions[i].CreationMode = "ai"
+		}
+		allSuggestions = append(allSuggestions, aiSuggestions...)
+		fmt.Printf("Generated %d AI suggestions for event %s\n", len(aiSuggestions), event.ID)
 	}
 
-	// Store suggestions in database
-	for _, suggestion := range suggestions {
-		suggestion.ID = uuid.NewString()
-		suggestion.EventID = event.ID
-		suggestion.OwnerID = event.CreatorID // Set owner to event creator
-		suggestion.CreationMode = "ai"       // Initial event gifts are AI-generated
-
+	// Step 3: Store all suggestions in database
+	for _, suggestion := range allSuggestions {
 		query := `
 			INSERT INTO gift_suggestions (
 				id, event_id, owner_id, name_en, name_fr, description_en, description_fr,
@@ -190,7 +220,17 @@ func (gec *GiftEventController) generateGiftSuggestionsForEvent(event models.Eve
 		}
 	}
 
-	fmt.Printf("Generated and stored %d gift suggestions for event %s\n", len(suggestions), event.ID)
+	staticCount := 0
+	aiCount := 0
+	for _, s := range allSuggestions {
+		if s.CreationMode == "static" {
+			staticCount++
+		} else {
+			aiCount++
+		}
+	}
+	fmt.Printf("Generated and stored %d gift suggestions for event %s (%d static, %d AI)\n",
+		len(allSuggestions), event.ID, staticCount, aiCount)
 }
 
 // fetchExistingSuggestions retrieves existing gift suggestions for an event (without vote data)
@@ -602,7 +642,7 @@ func (gec *GiftEventController) CreateGiftSuggestion(c *gin.Context) {
 		return
 	}
 
-	// Validate mode
+	// Validate mode (note: 'static' is only used internally, not via API)
 	if req.Mode != "manual" && req.Mode != "ai" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid mode. Must be 'manual' or 'ai'"})
 		return
@@ -852,8 +892,8 @@ func (gec *GiftEventController) UpdateGiftSuggestion(c *gin.Context) {
 	}
 
 	// Validate creation_mode if provided
-	if req.CreationMode != "" && req.CreationMode != "manual" && req.CreationMode != "ai" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid creation_mode. Must be 'manual' or 'ai'"})
+	if req.CreationMode != "" && req.CreationMode != "manual" && req.CreationMode != "ai" && req.CreationMode != "static" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid creation_mode. Must be 'manual', 'ai', or 'static'"})
 		return
 	}
 
