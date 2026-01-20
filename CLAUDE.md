@@ -221,6 +221,8 @@ git commit -m "refactor: improve code structure"
 gh pr create --title "Clear PR title" --body "Description of changes"
 ```
 
+**IMPORTANT**: NEVER include "Co-Authored-By" lines in commit messages.
+
 ### Parallel Development with Git Worktrees
 For working on multiple features simultaneously:
 ```bash
