@@ -27,6 +27,11 @@ services:
       context: ./be-geoffray
       dockerfile: Dockerfile
     container_name: geoffray-backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
     environment:
       PORT: 8080
       ENV: staging
