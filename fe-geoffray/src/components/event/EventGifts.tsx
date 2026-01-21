@@ -55,6 +55,7 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
   const [error, setError] = useState<string | null>(null);
   const [votingStates, setVotingStates] = useState<Record<string, boolean>>({});
   const [deletingStates, setDeletingStates] = useState<Record<string, boolean>>({});
+  const [isPolling, setIsPolling] = useState(true);
   
   const isEnglish = i18n.language === 'en';
 
@@ -271,11 +272,28 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
     });
   };
 
+  // Initial fetch and polling for AI suggestions
   useEffect(() => {
     if (eventId) {
       fetchGiftSuggestions();
+
+      // Poll every 3 seconds until we have 3+ suggestions
+      const interval = setInterval(() => {
+        if (isPolling) {
+          fetchGiftSuggestions();
+        }
+      }, 3000);
+
+      return () => clearInterval(interval);
     }
-  }, [eventId]);
+  }, [eventId, isPolling]);
+
+  // Stop polling when we have enough suggestions
+  useEffect(() => {
+    if (suggestions.length >= 3) {
+      setIsPolling(false);
+    }
+  }, [suggestions.length]);
 
   if (loading) {
     return (
@@ -615,6 +633,28 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
 
           </View>
         ))}
+
+        {/* Generating More Suggestions Indicator */}
+        {isPolling && suggestions && suggestions.length > 0 && suggestions.length < 3 && (
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 16,
+            backgroundColor: themeColors.surfaceVariant,
+            borderRadius: 8,
+            marginBottom: 16,
+          }}>
+            <ActivityIndicator size="small" color={themeColors.primary} />
+            <ThemedText style={{
+              marginLeft: 12,
+              color: themeColors.textSecondary,
+              fontSize: 14,
+            }}>
+              {t('event.gifts.generatingMore')}
+            </ThemedText>
+          </View>
+        )}
 
         {/* Add New Suggestion Button - centered below suggestions */}
         {suggestions && suggestions.length > 0 && (

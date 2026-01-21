@@ -129,8 +129,45 @@ func (gec *GiftEventController) CreateEventWithGifts(c *gin.Context) {
 		// Continue even if this fails - event creation is more important
 	}
 
-	// Generate gift suggestions asynchronously
-	go gec.generateGiftSuggestionsForEvent(event)
+	// Insert static gift synchronously (fast ~20ms) so user sees content immediately
+	var staticSuggestion *models.GiftSuggestion
+	staticSuggestion, err = gec.StaticGiftService.GetStaticGiftSuggestion(event.GifteePersona, event.EventOccasion)
+	if err == nil && staticSuggestion != nil {
+		staticSuggestion.ID = uuid.NewString()
+		staticSuggestion.EventID = event.ID
+		staticSuggestion.OwnerID = event.CreatorID
+
+		// Insert static gift into database
+		staticQuery := `
+			INSERT INTO gift_suggestions (
+				id, event_id, owner_id, name_en, name_fr, description_en, description_fr,
+				price_range, category, url, creation_mode, generated_at, created_at, updated_at,
+				amazon_asin, amazon_affiliate_url, amazon_price, amazon_region, amazon_last_updated
+			) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+		`
+		_, insertErr := gec.DB.Exec(staticQuery,
+			staticSuggestion.ID, staticSuggestion.EventID, staticSuggestion.OwnerID,
+			staticSuggestion.NameEN, staticSuggestion.NameFR,
+			staticSuggestion.DescriptionEN, staticSuggestion.DescriptionFR,
+			staticSuggestion.PriceRange, staticSuggestion.Category, staticSuggestion.URL,
+			staticSuggestion.CreationMode, staticSuggestion.GeneratedAt,
+			staticSuggestion.CreatedAt, staticSuggestion.UpdatedAt,
+			staticSuggestion.AmazonASIN, staticSuggestion.AmazonAffiliateURL,
+			staticSuggestion.AmazonPrice, staticSuggestion.AmazonRegion, staticSuggestion.AmazonLastUpdated,
+		)
+		if insertErr != nil {
+			fmt.Printf("Error inserting static gift suggestion: %v\n", insertErr)
+			staticSuggestion = nil // Clear so AI knows to generate 3 instead of 2
+		} else {
+			fmt.Printf("Inserted static gift suggestion '%s' for event %s\n", staticSuggestion.NameEN, event.ID)
+		}
+	} else {
+		fmt.Printf("No static gift found for event %s (persona=%s, occasion=%s): %v\n",
+			event.ID, event.GifteePersona, event.EventOccasion, err)
+	}
+
+	// Generate AI gift suggestions asynchronously (slow ~12s)
+	go gec.generateAIGiftSuggestionsForEvent(event, staticSuggestion)
 
 	c.JSON(http.StatusCreated, event)
 }
@@ -231,6 +268,78 @@ func (gec *GiftEventController) generateGiftSuggestionsForEvent(event models.Eve
 	}
 	fmt.Printf("Generated and stored %d gift suggestions for event %s (%d static, %d AI)\n",
 		len(allSuggestions), event.ID, staticCount, aiCount)
+}
+
+// generateAIGiftSuggestionsForEvent generates only AI gift suggestions (static gift already inserted synchronously)
+// This function is called asynchronously after the event is created
+func (gec *GiftEventController) generateAIGiftSuggestionsForEvent(event models.Event, staticSuggestion *models.GiftSuggestion) {
+	// Build list of suggestions to avoid duplicates
+	var suggestionsToAvoid []models.GiftSuggestion
+
+	// Include the static suggestion if it was inserted
+	if staticSuggestion != nil {
+		suggestionsToAvoid = append(suggestionsToAvoid, *staticSuggestion)
+	}
+
+	// Also fetch any existing suggestions from the database (in case of race conditions)
+	existingSuggestions, err := gec.fetchExistingSuggestions(event.ID)
+	if err != nil {
+		fmt.Printf("Error fetching existing suggestions for event %s: %v\n", event.ID, err)
+	} else {
+		suggestionsToAvoid = append(suggestionsToAvoid, existingSuggestions...)
+	}
+
+	// Prepare request for gift suggestion service
+	request := services.GiftSuggestionRequest{
+		GifteePersona:    event.GifteePersona,
+		EventOccasion:    event.EventOccasion,
+		EventTitle:       event.Title,
+		EventDate:        event.StartDate.Format("2006-01-02"),
+		Location:         event.Location,
+		Description:      event.Description,
+		Language:         "fr", // Default to French, could be made dynamic
+		SingleSuggestion: false,
+	}
+
+	// Generate AI suggestions using Mistral with similarity checking
+	aiSuggestions, err := gec.GiftSuggestionService.GenerateGiftSuggestions(request, suggestionsToAvoid)
+	if err != nil {
+		fmt.Printf("Error generating AI gift suggestions for event %s: %v\n", event.ID, err)
+		return
+	}
+
+	// Set IDs and event reference for AI suggestions, then store them
+	for i := range aiSuggestions {
+		aiSuggestions[i].ID = uuid.NewString()
+		aiSuggestions[i].EventID = event.ID
+		aiSuggestions[i].OwnerID = event.CreatorID
+		aiSuggestions[i].CreationMode = "ai"
+
+		query := `
+			INSERT INTO gift_suggestions (
+				id, event_id, owner_id, name_en, name_fr, description_en, description_fr,
+				price_range, category, url, creation_mode, generated_at, created_at, updated_at,
+				amazon_asin, amazon_affiliate_url, amazon_price, amazon_region, amazon_last_updated
+			) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+		`
+
+		_, err := gec.DB.Exec(query,
+			aiSuggestions[i].ID, aiSuggestions[i].EventID, aiSuggestions[i].OwnerID,
+			aiSuggestions[i].NameEN, aiSuggestions[i].NameFR,
+			aiSuggestions[i].DescriptionEN, aiSuggestions[i].DescriptionFR,
+			aiSuggestions[i].PriceRange, aiSuggestions[i].Category, aiSuggestions[i].URL,
+			aiSuggestions[i].CreationMode, aiSuggestions[i].GeneratedAt,
+			aiSuggestions[i].CreatedAt, aiSuggestions[i].UpdatedAt,
+			aiSuggestions[i].AmazonASIN, aiSuggestions[i].AmazonAffiliateURL,
+			aiSuggestions[i].AmazonPrice, aiSuggestions[i].AmazonRegion, aiSuggestions[i].AmazonLastUpdated,
+		)
+
+		if err != nil {
+			fmt.Printf("Error storing AI gift suggestion %s: %v\n", aiSuggestions[i].ID, err)
+		}
+	}
+
+	fmt.Printf("Generated and stored %d AI gift suggestions for event %s\n", len(aiSuggestions), event.ID)
 }
 
 // fetchExistingSuggestions retrieves existing gift suggestions for an event (without vote data)
