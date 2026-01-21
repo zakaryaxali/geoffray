@@ -529,14 +529,16 @@ export const EventGifts: React.FC<EventGiftsProps> = ({ eventId, isCreator }) =>
                     {t('event.gifts.viewOnAmazon')}
                   </ThemedText>
                 </TouchableOpacity>
-                <ThemedText style={{
-                  fontSize: 10,
-                  color: themeColors.textSecondary,
-                  marginLeft: 8,
-                  fontStyle: 'italic'
-                }}>
-                  {t('event.gifts.affiliateDisclosure')}
-                </ThemedText>
+                {suggestion.creation_mode === 'static' && (
+                  <ThemedText style={{
+                    fontSize: 10,
+                    color: themeColors.textSecondary,
+                    marginLeft: 8,
+                    fontStyle: 'italic'
+                  }}>
+                    {t('event.gifts.affiliateDisclosure')}
+                  </ThemedText>
+                )}
               </View>
             )}
 
