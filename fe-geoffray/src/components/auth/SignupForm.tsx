@@ -2,6 +2,7 @@ import React from 'react';
 import {ActivityIndicator, TextInput, TouchableOpacity, View} from 'react-native';
 import {ThemedText} from '@/src/components/ThemedText';
 import {useTranslation} from 'react-i18next';
+import {useRouter} from 'expo-router';
 import {authStyles} from './AuthStyles';
 import {InviteValidationResponse} from '@/src/api/eventApi';
 
@@ -59,6 +60,7 @@ export const SignupForm = ({
   navigateToLogin,
 }: SignupFormProps) => {
   const { t } = useTranslation();
+  const router = useRouter();
 
   return (
     <View style={authStyles.formContainer}>
@@ -204,6 +206,19 @@ export const SignupForm = ({
           </ThemedText>
         )}
       </TouchableOpacity>
+
+      {/* Terms of Use */}
+      <View style={authStyles.termsContainer}>
+        <ThemedText style={[authStyles.termsText, { color: themeColors.textSecondary }]}>
+          {t('auth.termsAgreement')}
+          <ThemedText
+            style={[authStyles.termsLink, { color: themeColors.primary }]}
+            onPress={() => router.push('/terms-of-use')}
+          >
+            {t('auth.termsOfUseLink')}
+          </ThemedText>
+        </ThemedText>
+      </View>
 
       {/* Already have an account */}
       <View style={authStyles.loginLinkContainer}>

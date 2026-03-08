@@ -35,7 +35,8 @@ function RootLayoutNav() {
     const inAuthGroup = segments[0] === 'auth';
     const inInviteGroup = segments[0] === 'invite';
     const isPrivacyPolicy = segments[0] === 'privacy-policy';
-    const isPublicRoute = inAuthGroup || inInviteGroup || isPrivacyPolicy;
+    const isTermsOfUse = segments[0] === 'terms-of-use';
+    const isPublicRoute = inAuthGroup || inInviteGroup || isPrivacyPolicy || isTermsOfUse;
     
     // Handle authentication-based navigation
     if (!isAuthenticated && !isPublicRoute) {
@@ -97,6 +98,7 @@ function RootLayoutNav() {
       <Stack.Screen name="create-event-with-gifts/occasions/[persona]" options={{ headerShown: false }} />
       <Stack.Screen name="create-event-with-gifts/details/[persona]/[occasion]" options={{ headerShown: false }} />
       <Stack.Screen name="privacy-policy/index" options={{ headerShown: false }} />
+      <Stack.Screen name="terms-of-use/index" options={{ headerShown: false }} />
       <Stack.Screen name="+not-found" />
     </Stack>
   );

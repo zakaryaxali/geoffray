@@ -224,10 +224,19 @@ export default function LoginScreen() {
           <TouchableOpacity onPress={navigateToSignup}>
             <Text style={styles.signupLink}>{t('auth.signup')}</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity onPress={() => console.log('Forgot password pressed')}>
             <Text style={styles.forgotPasswordText}>{t('auth.forgotPassword')}</Text>
           </TouchableOpacity>
+        </View>
+
+        <View style={styles.termsContainer}>
+          <Text style={styles.termsText}>
+            {t('auth.termsAgreement')}
+            <Text style={styles.termsLink} onPress={() => router.push('/terms-of-use')}>
+              {t('auth.termsOfUseLink')}
+            </Text>
+          </Text>
         </View>
       </View>
     </LinearGradient>
@@ -359,5 +368,19 @@ const styles = StyleSheet.create({
     color: '#4285F4',
     fontSize: 18,
     fontWeight: '600',
+  },
+  termsContainer: {
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  termsText: {
+    fontSize: 12,
+    color: BrandColors.gradientTextSecondary,
+    textAlign: 'center',
+  },
+  termsLink: {
+    fontSize: 12,
+    color: BrandColors.gradientText,
+    textDecorationLine: 'underline',
   },
 });

@@ -196,4 +196,16 @@ export const authStyles = StyleSheet.create({
     fontWeight: '600',
     marginLeft: 4,
   },
+  termsContainer: {
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  termsText: {
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  termsLink: {
+    fontSize: 12,
+    textDecorationLine: 'underline',
+  },
 });
